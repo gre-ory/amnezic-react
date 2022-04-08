@@ -39,3 +39,206 @@
     transform: rotate(360deg);
   }
 }
+
+/* ------------------------- card ------------------------- */
+
+/* card */
+
+.card {
+  position: relative;
+  float: left;
+  /* 
+   */
+  background: #fff;
+  border-radius: 10px;
+  -webkit-box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
+  box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+}
+
+.card {
+  border: 5px solid white;
+}
+
+.card--selected {
+  border: 5px solid gold;
+}
+
+/* card size */
+
+.card--square{
+  width: 60px;
+  height: 60px;
+}
+
+.card--normal {
+  width: 60px;
+  height: 75px;
+}
+
+.card--tarot {
+  width: 60px;
+  height: 90px;
+}
+
+.card--small.card--square {
+  width: 40px;
+  height: 40px;
+}
+
+.card--small.card--normal {
+  width: 40px;
+  height: 50px;
+}
+
+.card--small.card--tarot {
+  width: 40px;
+  height: 60px;
+}
+
+.card--large.card--square {
+  width: 80px;
+  height: 80px;
+}
+
+.card--large.card--normal {
+  width: 80px;
+  height: 100px;
+}
+
+.card--large.card--tarot {
+  width: 80px;
+  height: 120px;
+}
+
+/* card value */
+
+.card--value {
+  text-align: center;
+  font-size: 4vw;
+  width: 20%;
+  height: 20%;
+  border: 1px solid gray;
+  /* font: 100px/220px Georgia, Times New Roman, serif; */ 
+}
+
+/* card symbol */
+
+.card:before,
+.card:after {
+  position: absolute;
+  /* border: 1px solid gray; */
+}
+
+.card:before,
+.card:after {  
+  font-size: 12px,
+}
+
+.card:before {
+  left: 3px;
+  top: 3px;
+}
+
+.card:after {
+  right: 3px;
+  bottom: 3px;
+}
+
+.card.card--small:before,
+.card.card--small:after {  
+  font-size: 10px,
+}
+
+.card.card--small:before {
+  left: 2px;
+  top: 2px;
+}
+
+.card.card--small:after {
+  right: 2px;
+  bottom: 2px;
+}
+
+.card.card--large:before,
+.card.card--large:after {  
+  font-size: 15px,
+}
+
+.card.card--large:before {
+  left: 5px;
+  top: 5px;
+}
+
+.card.card--large:after {
+  right: 5px;
+  bottom: 5px;
+}
+
+.card--diamond:before, .card--diamond:after {
+  content: "♦";
+}
+ 
+.card--heart:before, .card--heart:after {
+  content: "♥";  
+}
+ 
+.card--club:before, .card--club:after {
+  content: "♣";
+}
+ 
+.card--spade:before, .card--spade:after {
+  content: "♠";
+}
+ 
+.card--dot:before, .card--dot:after {
+  content: "•";
+}
+ 
+.card--star:before, .card--star:after {
+  content: "★";
+}
+
+/* card color */
+ 
+.card--black {
+  color: black;
+}
+ 
+.card--white {
+  color: white;
+}
+ 
+.card--gray {
+  color: gray;
+}
+ 
+.card--yellow {
+  color: yellow;
+}
+ 
+.card--red {
+  color: red;
+}
+ 
+.card--green {
+  color: green;
+}
+ 
+.card--blue {
+  color: blue;
+}
+ 
+.card--purple {
+  color: purple;
+}
+ 
+.card--orange {
+  color: orange;
+}
+ 
+.card--pink {
+  color: pink;
+}

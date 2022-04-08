@@ -63,6 +63,7 @@ const PlayersPage = ( props: Props ) => {
                                             key={player.id}
                                             game={game}
                                             player={player}
+                                            updateGame={updateGame}
                                         />
                                     </Grid>
                                 )

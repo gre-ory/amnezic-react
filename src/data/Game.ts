@@ -30,7 +30,7 @@ export interface Game {
 // //////////////////////////////////////////////////
 // create
 
-export function newGame( id: string = newGameId(), nbQuestion: number = 10, nbPlayer: number = 2 ): Game {
+export function newGame( id: string = newGameId(), nbQuestion: number = 10, nbPlayer: number = 5 ): Game {
   return {
     id: id,  
     code: newGameCode(),  
@@ -106,11 +106,23 @@ export function updatePlayers( game: Game, players: Player[] ): Game {
   }
 }
 
+export function updatePlayer( game: Game, player: Player ): Game {
+  return updatePlayers( game, game.players.map( other => other.id == player.id ? player : other ) )
+}
+
+export function updatePlayername( game: Game, player: Player ): Game {
+  return updatePlayers( game, game.players.map( other => other.id == player.id ? player : other ) )
+}
+
 export function updateQuestions( game: Game, questions: Question[] ): Game {
   return {
     ...game,
     questions: questions,
   }
+}
+
+export function updateQuestion( game: Game, question: Question ): Game {
+  return updateQuestions( game, game.questions.map( other => other.id == question.id ? question : other ) )
 }
 
 // //////////////////////////////////////////////////
