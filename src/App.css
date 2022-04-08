@@ -1,16 +1,19 @@
-.App {
+.root {
+  width: 100%;
+}
+
+.app {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  width: 100%;
+}
+
+.footer {
+  width: 100%;
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
 }
 
 .App-header {
