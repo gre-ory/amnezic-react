@@ -40,205 +40,229 @@
   }
 }
 
+/* ------------------------- selectable ------------------------- */
+
+.selected {
+  border: 5px solid gold;
+  border-radius: 10px;
+}
+
+.selectable {
+  border: 5px solid white;
+  border-radius: 10px;
+}
+
+.selectable:hover {
+  border: 5px solid #aaa;
+  border-radius: 10px;
+}
+
 /* ------------------------- card ------------------------- */
 
 /* card */
 
 .card {
-  position: relative;
-  float: left;
-  /* 
-   */
   background: #fff;
-  border-radius: 10px;
   -webkit-box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
   box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
-}
-
-.card {
-  border: 5px solid white;
-}
-
-.card--selected {
-  border: 5px solid gold;
-}
-
-/* card size */
-
-.card--square{
-  width: 60px;
-  height: 60px;
-}
-
-.card--normal {
-  width: 60px;
-  height: 75px;
-}
-
-.card--tarot {
-  width: 60px;
-  height: 90px;
-}
-
-.card--small.card--square {
-  width: 40px;
-  height: 40px;
-}
-
-.card--small.card--normal {
-  width: 40px;
-  height: 50px;
-}
-
-.card--small.card--tarot {
-  width: 40px;
-  height: 60px;
-}
-
-.card--large.card--square {
-  width: 80px;
-  height: 80px;
-}
-
-.card--large.card--normal {
-  width: 80px;
-  height: 100px;
-}
-
-.card--large.card--tarot {
-  width: 80px;
-  height: 120px;
+  padding: 5px;
+  border-radius: 15%;
+  border: 1px soid #777;
+  aspect-ratio: 3/5;
 }
 
 /* card value */
 
 .card--value {
-  text-align: center;
-  font-size: 4vw;
-  width: 20%;
-  height: 20%;
-  border: 1px solid gray;
-  /* font: 100px/220px Georgia, Times New Roman, serif; */ 
+  font-weight: bold;
 }
 
-/* card symbol */
+/* card default skeleton */
 
-.card:before,
-.card:after {
-  position: absolute;
-  /* border: 1px solid gray; */
-}
-
-.card:before,
-.card:after {  
-  font-size: 12px,
+.card {  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;  
 }
 
-.card:before {
-  left: 3px;
-  top: 3px;
+.card--header {
+  height: 20%; 
+  align-self: flex-start;
+
+  display: flex;
+  justify-content: left;
+  align-items: center;
 }
 
-.card:after {
-  right: 3px;
-  bottom: 3px;
+.card--content {
+  height: 60%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.card.card--small:before,
-.card.card--small:after {  
-  font-size: 10px,
+.card--footer {
+  height: 20%;  
+  align-self: flex-end;
+
+  display: flex;
+  justify-content: right;
+  align-items: bottom;
 }
 
-.card.card--small:before {
-  left: 2px;
-  top: 2px;
+.card--symbol {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.card.card--small:after {
-  right: 2px;
-  bottom: 2px;
+.card--symbol svg {
+  width: 100%;
 }
 
-.card.card--large:before,
-.card.card--large:after {  
-  font-size: 15px,
+/* card XS */
+
+.card.size-XS {
+  width: 20px;
 }
 
-.card.card--large:before {
-  left: 5px;
-  top: 5px;
+.card.size-XS .card--value {
+  font-size: 20px;
 }
 
-.card.card--large:after {
-  right: 5px;
-  bottom: 5px;
+.card.size-XS .card--symbol {
+  width: 15px;
 }
 
-.card--diamond:before, .card--diamond:after {
-  content: "♦";
+.card.size-XS .card--header,
+.card.size-XS .card--footer {
+  display: none;
 }
- 
-.card--heart:before, .card--heart:after {
-  content: "♥";  
+
+/* card S */
+
+.card.size-S {
+  width: 30px;
 }
- 
-.card--club:before, .card--club:after {
-  content: "♣";
+
+.card.size-S .card--value {
+  font-size: 30px;
 }
- 
-.card--spade:before, .card--spade:after {
-  content: "♠";
+
+.card.size-S .card--symbol {
+  width: 20px;
 }
- 
-.card--dot:before, .card--dot:after {
-  content: "•";
+
+.card.size-S .card--header,
+.card.size-S .card--footer {
+  display: none;
 }
- 
-.card--star:before, .card--star:after {
-  content: "★";
+
+/* card M */
+
+.card.size-M {
+  width: 40px;
+}
+
+.card.size-M .card--header .card--symbol,
+.card.size-M .card--footer .card--symbol {
+  width: 10px;
+}
+
+.card.size-M .card--value {
+  font-size: 30px;
+}
+
+.card.size-M .card--content .card--symbol {
+  width: 20px;
+}
+
+/* card L */
+
+.card.size-L {
+  width: 50px;
+}
+
+.card.size-L .card--header .card--symbol,
+.card.size-L .card--footer .card--symbol {
+  width: 12px;
+}
+
+.card.size-L .card--value {
+  font-size: 35px;
+}
+
+.card.size-L .card--content .card--symbol {
+  width: 22px;
+}
+
+/* card XL */
+
+.card.size-XL {
+  width: 60px;
+}
+
+.card.size-XL .card--header .card--symbol,
+.card.size-XL .card--footer .card--symbol {
+  width: 15px;
+}
+
+.card.size-XL .card--value {
+  font-size: 40px;
+}
+
+.card.size-XL .card--content .card--symbol {
+  width: 27px;
 }
 
 /* card color */
  
-.card--black {
-  color: black;
+svg.icon {
+  fill: currentColor;
+}
+
+.color-black {
+  color: #343a40;
 }
  
-.card--white {
-  color: white;
+.color-white {
+  color: #e9ecef;
 }
  
-.card--gray {
-  color: gray;
+.color-gray {
+  color: #adb5bd;
 }
  
-.card--yellow {
-  color: yellow;
+.color-yellow {
+  color: #fee440;
 }
  
-.card--red {
-  color: red;
+.color-red {
+  color: #ff595e;
 }
  
-.card--green {
-  color: green;
+.color-green {
+  color: #52b788;
 }
  
-.card--blue {
-  color: blue;
+.color-blue {
+  color: #00bbf9;
 }
  
-.card--purple {
-  color: purple;
+.color-purple {
+  color: #9b5de5;
 }
  
-.card--orange {
-  color: orange;
+.color-orange {
+  color: #ff9f1c;
 }
  
-.card--pink {
-  color: pink;
+.color-pink {
+  color: #f15bb5;
+}
+ 
+.color-brown {
+  color: #9d6b53;
 }

@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 import { Card } from '../data/Card'
+import PlayingCardIcon from './PlayingCardIcon';
 
 interface Props {
     card: Card
@@ -23,23 +24,36 @@ const PlayingCard = ( props: Props ) => {
     }
 
     let classNames = `card`
-    classNames = `${classNames} card--${card.symbol}`
-    classNames = `${classNames} card--${card.shape}`
-    classNames = `${classNames} card--${card.color}`
     if ( card.size ) {
-        classNames = `${classNames} card--${card.size}`
+        classNames = `${classNames} size-${card.size}`
     }
     if ( selected ) {
-        classNames = `${classNames} card--selected`
+        classNames = `${classNames} selected`
     }
-
-    // const [ symbol, setSymbol ] = React.useState( card.symbol )
-    // const [ color, setColor ] = React.useState( card.color )
-    // const [ size, setSize ] = React.useState( card.size )
+    if ( onClick ) {
+        classNames = `${classNames} selectable`
+    }
 
     return (
         <div className={classNames} onClick={onClick}>
-            {card.value && <div>{card.value}</div>}
+            <div className="card--header">
+                <div className="card--symbol">
+                    <PlayingCardIcon symbol={card.symbol} color={card.color}/>
+                </div>                
+            </div>
+            <div className="card--content">
+                <div className="card--value">
+                    {card.value}
+                </div>
+                <div className="card--symbol">
+                    <PlayingCardIcon symbol={card.symbol} color={card.color}/>
+                </div>
+            </div>
+            <div className="card--footer">
+                <div className="card--symbol">
+                    <PlayingCardIcon symbol={card.symbol} color={card.color}/>
+                </div>
+            </div>
         </div>
     )
 }

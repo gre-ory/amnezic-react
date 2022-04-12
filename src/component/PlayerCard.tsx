@@ -21,12 +21,14 @@ import TextField from '@mui/material/TextField';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 
 import { Game, updatePlayer } from '../data/Game'
-import { Card as DataCard, CardShape, CardSymbol, CardColor } from '../data/Card'
+import { Card as DataCard, CardSymbol, CardColor } from '../data/Card'
 import { Player, updateCard } from '../data/Player'
 import { toDecimalString } from '../data/Util'
 
 import NextButton from './NextButton'
-import PlayingCard from './PlayingCard';
+import PlayingCard from './PlayingCard'
+import PlayingCardIcon from './PlayingCardIcon'
+import SpadeIcon from './icon/SpadeIcon'
 
 interface Props {
     game: Game
@@ -65,14 +67,6 @@ const PlayerCard = ( props: Props ) => {
         })
     }
 
-    const onShapeChange = (shape: CardShape) => {
-        console.log(`[onShapeChange] shape = ${shape}`)
-        onCardChange({
-            ...player.card,
-            shape: shape
-        })
-    }
-
     const onColorChange = (color: CardColor) => {
         console.log(`[onColorChange] color = ${color}`)
         onCardChange({
@@ -81,12 +75,11 @@ const PlayerCard = ( props: Props ) => {
         })
     }
 
-    const cardShapes: CardShape[] = [ 'square', 'normal', 'tarot' ]
-    const xsShape = 4
-    const cardColors: CardColor[] = [ 'black', 'red', 'yellow', 'green', 'blue', 'purple' ]
-    const xsColor = 2
+    const cardColors: CardColor[] = [ 'black', 'red', 'yellow', 'green', 'blue', 'purple', 'orange', 'pink', 'brown' ]
     const cardSymbols: CardSymbol[] = [ 'heart', 'diamond', 'club', 'spade', 'star', 'dot' ]
-    const xsSymbol = 2
+
+    console.log(player)
+    console.log(player.card)
 
     return (
         <Card variant="outlined">
@@ -95,13 +88,8 @@ const PlayerCard = ( props: Props ) => {
             <Grid container spacing={2}>
 
                 <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                    <PersonIcon style={{ marginRight: '10px' }} color="primary"/>
-                    Player {toDecimalString(player.id)}
-                </Grid>
-
-                <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
                     <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-                        <AccountCircle sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+                        <AccountCircle sx={{ color: 'secondary', mr: 1, my: 0.5 }} />
                         <TextField id="standard-basic" label="Name" variant="standard" value={name} onChange={onNameChange} onBlur={onNameBlur} />
                     </Box>                    
                 </Grid>
@@ -109,63 +97,90 @@ const PlayerCard = ( props: Props ) => {
                 <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
                     <Grid container spacing={2}>
 
-                        {/* shape */}
-
-                        {
-                            cardShapes.map( newShape => { 
-                                return (
-                                    <Grid item xs={xsShape} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                                        <PlayingCard 
-                                            card={{...player.card, shape: newShape, color: 'gray', size: 'small' }} 
-                                            onClick={() => onShapeChange(newShape)} 
-                                            selected={player.card.shape == newShape}
-                                        />
-                                    </Grid>
-                                )
-                            } )
-                        }
-
                         {/* colors */}
 
-                        {
-                            cardColors.map( newColor => { 
-                                return (
-                                    <Grid item xs={xsColor} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                                        <PlayingCard 
-                                            card={{...player.card, color: newColor, size: 'small' }} 
-                                            onClick={() => onColorChange(newColor)} 
-                                            selected={player.card.color == newColor}
-                                        />
-                                    </Grid>
-                                )
-                            } )
-                        }
+                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        
+                            {
+                                cardColors.map( newColor => { 
+                                    return (
+                                        <div style={{ width: '100%', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className={player.card.color == newColor ? 'selected' : 'selectable'} onClick={() => onColorChange(newColor)}>
+                                            <PlayingCardIcon 
+                                                symbol="square"
+                                                color={newColor}
+                                            />
+                                        </div> 
+                                    )
+                                } )
+                            }
+
+                        </Grid>
 
                         {/* symbols */}
 
-                        {
-                            cardSymbols.map( newSymbol => { 
-                                return (
-                                    <Grid item xs={xsSymbol} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                                        <PlayingCard 
-                                            card={{...player.card, symbol: newSymbol, color: 'gray', size: 'small' }} 
-                                            onClick={() => onSymbolChange(newSymbol)} 
-                                            selected={player.card.symbol == newSymbol}
-                                        />
-                                    </Grid>
-                                )
-                            } )
-                        }
+                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
+                        
+                            {
+                                cardSymbols.map( newSymbol => { 
+                                    return (
+                                        <div style={{ width: '100%', margin: '5px', padding: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className={player.card.symbol == newSymbol ? 'selected' : 'selectable'} onClick={() => onSymbolChange(newSymbol)}>
+                                            <PlayingCardIcon 
+                                                symbol={newSymbol}
+                                                color="gray"
+                                            />
+                                        </div>
+                                    )
+                                } )
+                            }
+
+                        </Grid>
 
                         {/* final card */}
 
-                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 
+                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
+                            
                             <PlayingCard card={{
-                                ...player.card,
-                                value: '#',
-                                size: 'large'
-                            }} />
+                                    ...player.card,
+                                    value: '2',
+                                    size: 'XS'
+                                }} 
+                                onClick={() => {}}
+                            />
+
+                            <PlayingCard card={{
+                                    ...player.card,
+                                    value: '2',
+                                    size: 'S'
+                                }} 
+                                onClick={() => {}} 
+                            />
+
+                            <PlayingCard card={{
+                                    ...player.card,
+                                    value: '2',
+                                    size: 'M'
+                                }} 
+                                onClick={() => {}}  
+                            />
+
+                            <PlayingCard card={{
+                                    ...player.card,
+                                    value: '2',
+                                    size: 'L'
+                                }} 
+                                onClick={() => {}} 
+                            />
+
+                            <PlayingCard card={{
+                                    ...player.card,
+                                    value: '2',
+                                    size: 'XL'
+                                }}  
+                                onClick={() => {}} 
+                            />
+
                         </Grid>
+
                     </Grid>
                 </Grid>
 

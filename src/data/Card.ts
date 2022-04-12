@@ -13,7 +13,8 @@ export type CardSymbol =
   | 'club' 
   | 'spade' 
   | 'star' 
-  | 'dot'
+  | 'dot' 
+  | 'square'
 
 export type CardColor = 
   | 'white' 
@@ -28,44 +29,40 @@ export type CardColor =
   | 'pink'  
   | 'brown'  
 
-export type CardShape = 
-  | 'square' 
-  | 'normal' 
-  | 'tarot'  
-
 export type CardSize = 
-  | 'small' 
-  | 'medium' 
-  | 'large'
+  | 'XS' 
+  | 'S' 
+  | 'M' 
+  | 'L' 
+  | 'XL'
   
 export interface Card {
   readonly symbol: CardSymbol
   readonly color: CardColor
-  readonly shape: CardShape
-  value?: string
   size?: CardSize
+  value?: string
 }
 
-export const HeartCard: Card = { symbol: 'heart', color: 'red', shape: 'normal' }
-export const DiamondCard: Card = { symbol: 'diamond', color: 'red', shape: 'normal' }
-export const ClubCard: Card = { symbol: 'club', color: 'green', shape: 'normal' }
-export const SpadeCard: Card = { symbol: 'spade', color: 'black', shape: 'normal' }
+export const HeartCard: Card = { symbol: 'heart', color: 'red' }
+export const DiamondCard: Card = { symbol: 'diamond', color: 'red' }
+export const ClubCard: Card = { symbol: 'club', color: 'black' }
+export const SpadeCard: Card = { symbol: 'spade', color: 'black' }
 
 export const Cards: Card[] = [ HeartCard, DiamondCard, ClubCard, SpadeCard ]
 
-export const HeartTarotCard: Card = { symbol: 'heart', color: 'red', shape: 'tarot' }
-export const DiamondTarotCard: Card = { symbol: 'diamond', color: 'red', shape: 'tarot' }
-export const ClubTarotCard: Card = { symbol: 'club', color: 'green', shape: 'tarot' }
-export const SpadeTarotCard: Card = { symbol: 'spade', color: 'black', shape: 'tarot' }
-export const TrumpTarotCard: Card = { symbol: 'star', color: 'gray', shape: 'tarot' }
-
-export const TarotCards: Card[] = [ HeartTarotCard, DiamondTarotCard, ClubTarotCard, SpadeTarotCard, TrumpTarotCard ]
-
-export const YellowUnoCard: Card = { symbol: 'dot', color: 'yellow', shape: 'square' }
-export const GreenUnoCard: Card = { symbol: 'dot', color: 'green', shape: 'square' }
-export const RedUnoCard: Card = { symbol: 'dot', color: 'red', shape: 'square' }
-export const BlueUnoCard: Card = { symbol: 'dot', color: 'blue', shape: 'square' }
+export const YellowUnoCard: Card = { symbol: 'dot', color: 'yellow' }
+export const GreenUnoCard: Card = { symbol: 'dot', color: 'green' }
+export const RedUnoCard: Card = { symbol: 'dot', color: 'red' }
+export const BlueUnoCard: Card = { symbol: 'dot', color: 'blue' }
 
 export const UnoCards: Card[] = [ YellowUnoCard, GreenUnoCard, RedUnoCard, BlueUnoCard ]
 
-export const DefaultCards: Card[] = [ HeartCard, TrumpTarotCard, GreenUnoCard, ClubCard, SpadeTarotCard ]
+export const TrumpCard: Card = { symbol: 'star', color: 'gray' }
+export const SquareCard: Card = { symbol: 'square', color: 'pink' }
+export const BrownSpadeCard: Card = { symbol: 'spade', color: 'brown' }
+export const OrangeDiamondCard: Card = { symbol: 'diamond', color: 'orange' }
+export const PurpleHeartCard: Card = { symbol: 'heart', color: 'purple' }
+
+export const OtherCards: Card[] = [ TrumpCard, SquareCard, BrownSpadeCard, OrangeDiamondCard, PurpleHeartCard ]
+
+export const DefaultCards: Card[] = [ HeartCard, GreenUnoCard, ClubCard, YellowUnoCard, TrumpCard, OrangeDiamondCard, PurpleHeartCard ]

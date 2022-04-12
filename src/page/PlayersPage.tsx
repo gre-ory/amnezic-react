@@ -58,7 +58,7 @@ const PlayersPage = ( props: Props ) => {
                         <>
                             {game.players.map( player => {
                                 return (
-                                    <Grid key={player.id} item xs={4} textAlign="left">
+                                    <Grid key={player.id} item xs={6} textAlign="left">
                                         <PlayerCard
                                             key={player.id}
                                             game={game}
