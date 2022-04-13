@@ -1,5 +1,16 @@
-import { QuestionStatus } from './QuestionStatus'
 import { Answer } from './Answer'
+import { Media } from './Media'
+
+// //////////////////////////////////////////////////
+// status
+
+export type QuestionStatus = 
+  | 'start'
+  | 'playing'
+  | 'paused'
+  | 'played'
+  | 'answered'
+  | 'end'
 
 // //////////////////////////////////////////////////
 // model
@@ -8,19 +19,19 @@ export interface Question {
   id: number
   status: QuestionStatus
   title: string
-  mediaUrl: string
+  media: Media
   answers: Answer[]
 }
 
 // //////////////////////////////////////////////////
 // create
 
-export function newQuestion( id: number, title: string, mediaUrl: string, answers: Answer[] ): Question {
+export function newQuestion( title: string, media: Media, answers: Answer[] ): Question {
   return {
-    id: id,
+    id: 0,
     status: 'start',
     title: title,
-    mediaUrl: mediaUrl,
-    answers: answers,
+    media: media,
+    answers: answers.map( ( answer, index ) => { return { ...answer, id: ( index + 1 ) } } ),
   }
 }

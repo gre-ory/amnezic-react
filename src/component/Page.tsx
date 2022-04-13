@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Game } from '../data/Game'
-import { PageLabel } from '../data/PageLabel'
+import { PageLabel } from '../data/Page'
 
 import Header from './Header'
 import Footer from './Footer'

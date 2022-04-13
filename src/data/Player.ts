@@ -1,6 +1,12 @@
 
 import { Card, DefaultCards } from './Card'
-import { PlayerStatus } from './PlayerStatus'
+
+// //////////////////////////////////////////////////
+// status
+
+export type PlayerStatus =
+  | 'paused'
+  | 'active'
 
 // //////////////////////////////////////////////////
 // model
@@ -10,7 +16,7 @@ export interface Player {
   status: PlayerStatus
   name: string
   card: Card
-  score?: number
+  score: number
 }
 
 // //////////////////////////////////////////////////
@@ -27,7 +33,7 @@ export function newPlayer( id: number, card: Card ): Player {
 }
 
 export function newPlayers( nbPlayer: number ): Player[] {
-  return Array.from( { length: nbPlayer }, ( _, i ) => newPlayer( i + 1, DefaultCards[i] ) )
+  return Array.from( { length: nbPlayer }, ( _, index ) => newPlayer( index + 1, DefaultCards[index] ) )
 }
 
 // //////////////////////////////////////////////////

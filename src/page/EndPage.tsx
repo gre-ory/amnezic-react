@@ -7,7 +7,7 @@ import Footer from '../component/Footer'
 
 import { Game, selectGame } from '../data/Game'
 import { toGamePage } from '../data/Util'
-import { PageLabel } from '../data/PageLabel'
+import { PageLabel } from '../data/Page'
 
 interface Props {
     games: Game[]

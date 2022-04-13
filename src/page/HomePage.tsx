@@ -20,7 +20,7 @@ import PersonIcon from '@mui/icons-material/Person';
 
 import { Game, newGame } from '../data/Game'
 import { toGamePage } from '../data/Util'
-import { PageLabel } from '../data/PageLabel'
+import { PageLabel } from '../data/Page'
 
 import Page from '../component/Page'
 import GameCard from '../component/GameCard'

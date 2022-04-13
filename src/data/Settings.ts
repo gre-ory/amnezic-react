@@ -3,14 +3,16 @@
 
 export interface Settings {
   nbQuestion: number
+  nbPlayer: number
 }
 
 // //////////////////////////////////////////////////
 // create
 
-export function newSettings( nbQuestion: number ): Settings {
+export function newSettings( nbQuestion: number = 10, nbPlayer: number = 2 ): Settings {
   return {
     nbQuestion: nbQuestion,
+    nbPlayer: nbPlayer,
   }
 }
 
@@ -21,5 +23,12 @@ export function updateNbQuestion( prev: Settings, nbQuestion: number ): Settings
   return {
     ...prev,
     nbQuestion: nbQuestion,
+  }
+}
+
+export function updateNbPlayer( prev: Settings, nbPlayer: number ): Settings {
+  return {
+    ...prev,
+    nbPlayer: nbPlayer,
   }
 }

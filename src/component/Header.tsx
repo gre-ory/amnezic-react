@@ -21,7 +21,7 @@ import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import FlagIcon from '@mui/icons-material/Flag';
 import Grid from '@mui/material/Grid';
 
-import { PageLabel } from '../data/PageLabel'
+import { PageLabel } from '../data/Page'
 
 import { Game, updatePage } from '../data/Game'
 import { toHomePage, toSettingsPage, toPlayersPage, toQuizzPage, toScoresPage, toEndPage } from '../data/Util'

@@ -16,6 +16,9 @@ export function toPlayersPage( game: Game ): string {
 }
 
 export function toQuizzPage( game: Game ): string {
+    if ( game.questionId == 0 ) {
+        return `/game/${game.id}/quizz`    
+    }
     return `/game/${game.id}/quizz/${game.questionId}`
 }
 

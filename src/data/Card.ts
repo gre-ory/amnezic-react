@@ -15,6 +15,8 @@ export type CardSymbol =
   | 'star' 
   | 'dot' 
   | 'square'
+  | 'triangle'
+  | 'cross'
 
 export type CardColor = 
   | 'white' 
@@ -48,21 +50,17 @@ export const DiamondCard: Card = { symbol: 'diamond', color: 'red' }
 export const ClubCard: Card = { symbol: 'club', color: 'black' }
 export const SpadeCard: Card = { symbol: 'spade', color: 'black' }
 
-export const Cards: Card[] = [ HeartCard, DiamondCard, ClubCard, SpadeCard ]
+export const Cards: Card[] = [ ClubCard, DiamondCard, HeartCard, SpadeCard ]
 
-export const YellowUnoCard: Card = { symbol: 'dot', color: 'yellow' }
-export const GreenUnoCard: Card = { symbol: 'dot', color: 'green' }
-export const RedUnoCard: Card = { symbol: 'dot', color: 'red' }
-export const BlueUnoCard: Card = { symbol: 'dot', color: 'blue' }
+export const RedDotCard: Card = { symbol: 'dot', color: 'red' }
+export const OrangeDotCard: Card = { symbol: 'dot', color: 'orange' }
+export const YellowDotCard: Card = { symbol: 'dot', color: 'yellow' }
+export const GreenDotCard: Card = { symbol: 'dot', color: 'green' }
+export const PurpleDotCard: Card = { symbol: 'dot', color: 'purple' }
+export const BlueDotCard: Card = { symbol: 'dot', color: 'blue' }
+export const PinkDotCard: Card = { symbol: 'dot', color: 'pink' }
+export const BrownDotCard: Card = { symbol: 'dot', color: 'brown' }
 
-export const UnoCards: Card[] = [ YellowUnoCard, GreenUnoCard, RedUnoCard, BlueUnoCard ]
+export const ColorCards: Card[] = [ BlueDotCard, YellowDotCard, GreenDotCard, RedDotCard, OrangeDotCard, PurpleDotCard, PinkDotCard, BrownDotCard ]
 
-export const TrumpCard: Card = { symbol: 'star', color: 'gray' }
-export const SquareCard: Card = { symbol: 'square', color: 'pink' }
-export const BrownSpadeCard: Card = { symbol: 'spade', color: 'brown' }
-export const OrangeDiamondCard: Card = { symbol: 'diamond', color: 'orange' }
-export const PurpleHeartCard: Card = { symbol: 'heart', color: 'purple' }
-
-export const OtherCards: Card[] = [ TrumpCard, SquareCard, BrownSpadeCard, OrangeDiamondCard, PurpleHeartCard ]
-
-export const DefaultCards: Card[] = [ HeartCard, GreenUnoCard, ClubCard, YellowUnoCard, TrumpCard, OrangeDiamondCard, PurpleHeartCard ]
+export const DefaultCards: Card[] = [ ...Cards, ...ColorCards ]

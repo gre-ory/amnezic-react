@@ -6,14 +6,14 @@ interface Props {
     onClick?: () => void 
 }
 
-const SquareIcon = ( props: Props ) => {
+const CrossIcon = ( props: Props ) => {
     const { color, onClick } = props
 
     return (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className={`icon color-${color}`} onClick={onClick}>
-            <path d="M10 19 19 19 19 1 1 1 1 19z"/>
+            <path d="M1 16 4 19 10 13 16 19 19 16 13 10 19 4 16 1 10 7 4 1 1 4 7 10z"/>
         </svg>
     )
 }
 
-export default SquareIcon
+export default CrossIcon

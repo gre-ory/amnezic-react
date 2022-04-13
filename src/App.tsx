@@ -10,6 +10,7 @@ import QuizzPage from './page/QuizzPage';
 import QuestionPage from './page/QuestionPage';
 import ScoresPage from './page/ScoresPage';
 import EndPage from './page/EndPage';
+import AvatarsPage from './page/AvatarsPage';
 
 import { Game, newGame, loadGames, storeGames } from './data/Game';
 
@@ -64,6 +65,7 @@ function App() {
           <Route path="/game/:gameId/quizz/:question" element={<QuestionPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/scores" element={<ScoresPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/end" element={<EndPage games={games} updateGame={updateGame} />} />
+          <Route path="/avatars" element={<AvatarsPage />} />
         </Routes>
       </Router>
 

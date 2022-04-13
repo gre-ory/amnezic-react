@@ -1,11 +1,15 @@
 import { customAlphabet } from 'nanoid'
 
-import { newSettings, Settings, updateNbQuestion } from './Settings'
+import { newSettings, Settings, updateNbQuestion, updateNbPlayer } from './Settings'
 import { newPlayers, Player } from './Player'
 import { newQuestion, Question } from './Question'
 import { newAnswer } from './Answer'
+import { newArtist, Artist } from './Artist'
+import { newAlbum, Album } from './Album'
 import { range } from './Util'
-import { PageLabel } from './PageLabel'
+import { PageLabel } from './Page'
+import { newMedia } from './Media'
+import { updateParameter } from 'typescript'
 
 // //////////////////////////////////////////////////
 // model
@@ -30,9 +34,9 @@ export interface Game {
 // //////////////////////////////////////////////////
 // create
 
-export function newGame( id: string = newGameId(), nbQuestion: number = 10, nbPlayer: number = 5 ): Game {
+export function newGame(): Game {
   return {
-    id: id,  
+    id: newGameId(),  
     code: newGameCode(),  
     date: Date.now(),
     page: 'settings',
@@ -40,8 +44,8 @@ export function newGame( id: string = newGameId(), nbQuestion: number = 10, nbPl
     started: false,
     questionId: 0,
     ended: false,
-    settings: newSettings( nbQuestion ),
-    players: newPlayers( nbPlayer ),
+    settings: newSettings(),
+    players: [],
     questions: [],
   }
 }
@@ -99,6 +103,14 @@ export function updateSettingsNbQuestion( game: Game, nbQuestion: number ): Game
   }
 }
 
+export function updateSettingsNbPlayer( game: Game, nbPlayer: number ): Game {
+  console.log( `[updateSettingsNbPlayer] nbPlayer = ${nbPlayer}` )
+  return {
+    ...game,
+    settings: updateNbPlayer( game.settings, nbPlayer ),
+  }
+}
+
 export function updatePlayers( game: Game, players: Player[] ): Game {
   return {
     ...game,
@@ -117,7 +129,7 @@ export function updatePlayername( game: Game, player: Player ): Game {
 export function updateQuestions( game: Game, questions: Question[] ): Game {
   return {
     ...game,
-    questions: questions,
+    questions: questions.map( ( question, index ) => { return { ...question, id: ( index + 1 ) } } ),
   }
 }
 
@@ -144,19 +156,44 @@ export function loadGames(): Game[] {
 export function selectGame( games: Game[], gameId: string | undefined ): Game | undefined {
   const game = loadGames().find( g => g.id == gameId )
   console.log(`[select] game #${gameId}`)
-  return game || newGame( gameId )
+  return game
 }
 
 // //////////////////////////////////////////////////
 // status
 
 export function onSetUp( game: Game ): Game {
+
+  //
+  // create default players
+  //
+
+  const nbPlayer = game.settings.nbPlayer
+  game = updatePlayers( game, newPlayers( nbPlayer ) )
+
+  //
+  // create dummy questions
+  //
+
   const nbQuestion = game.settings.nbQuestion
-  const questions = range( nbQuestion ).map( i => i+1 ).map( i => newQuestion( i, `Question ${i}`, 'media-url', [
-    newAnswer(1,`Answer ${i}-1`,`Hint ${i}-1`,i % 2 == 0),
-    newAnswer(2,`Answer ${i}-2`,`Hint ${i}-2`,i % 2 == 1),
-  ] ) )
-  return updateSetUp( updateQuestions( game, questions ), true )
+  const questions = range( nbQuestion ).map( i => i+1 ).map( i => {
+    // "https://api.deezer.com/artist/27/image"
+    const artist = newArtist( "Daft Punk", "https://e-cdns-images.dzcdn.net/images/artist/f2bc007e9133c946ac3c3907ddc5d2ea/56x56-000000-80-0-0.jpg" )
+    // "https://api.deezer.com/album/302127/image"
+    const album = newAlbum( "Discovery", "https://e-cdns-images.dzcdn.net/images/cover/2e018122cb56986277102d2041a592c8/56x56-000000-80-0-0.jpg" )
+    const media = newMedia( "Harder, Better, Faster, Stronger", "https://cdns-preview-d.dzcdn.net/stream/c-deda7fa9316d9e9e880d2c6207e92260-8.mp3", artist, album )
+    const goodAnswer = newAnswer( media.title, artist.name, true )
+    const wrongAnswer = newAnswer( "Xxx", "Xxx", false )
+    const question = newQuestion( "Style", media, ( i % 2 == 0 ) ? [goodAnswer, wrongAnswer] : [wrongAnswer, goodAnswer] )
+    return question
+  } )
+
+  game = updateQuestions( game, questions )
+  
+  game = updateSetUp( game, true )
+  game = updatePage( game, 'players' )
+
+  return game
 }
 
 export function onStart( game: Game ): Game {

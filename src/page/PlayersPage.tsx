@@ -11,8 +11,9 @@ import PlayerCard from '../component/PlayerCard'
 import NextButton from '../component/NextButton'
 
 import { Game, selectGame } from '../data/Game'
-import { PageLabel } from '../data/PageLabel'
+import { PageLabel } from '../data/Page'
 import { toGamePage } from '../data/Util'
+import PlayerAvatar, { AvatarSize } from '../component/PlayerAvatar';
 
 interface Props {
     games: Game[]
@@ -40,7 +41,7 @@ const PlayersPage = ( props: Props ) => {
         return null
     }
     
-    const goToNextStep = () => {
+    const onNextStep = () => {
         game.started = true
         game.page = 'quizz'
         updateGame( game )
@@ -60,7 +61,6 @@ const PlayersPage = ( props: Props ) => {
                                 return (
                                     <Grid key={player.id} item xs={6} textAlign="left">
                                         <PlayerCard
-                                            key={player.id}
                                             game={game}
                                             player={player}
                                             updateGame={updateGame}
@@ -73,7 +73,7 @@ const PlayersPage = ( props: Props ) => {
                 }
 
                 <Grid item xs={12} textAlign="right" style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
-                    <NextButton title="Set-up Players"  onClick={goToNextStep} />
+                    <NextButton title="Set-up Players"  onClick={onNextStep} />
                 </Grid>
 
             </Grid>

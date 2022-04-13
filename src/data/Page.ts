@@ -6,3 +6,4 @@ export type PageLabel =
   | 'quizz'
   | 'scores'
   | 'end'
+  | 'avatars'

@@ -46,7 +46,7 @@ const GameCard = ( props: Props ) => {
                     </Grid>
 
                     <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        <PersonIcon style={{ marginRight: '10px' }} color="primary"/> {game.players.length} players
+                        <PersonIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbPlayer} players
                     </Grid>
 
                     <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 

@@ -5,16 +5,16 @@
 export interface Answer {
   id: number
   answer: string
-  hint?: string
-  correct?: boolean
+  hint: string
+  correct: boolean
 }
 
 // //////////////////////////////////////////////////
 // create
 
-export function newAnswer( id: number, answer: string, hint?: string, correct?: boolean ): Answer {
+export function newAnswer( answer: string, hint: string = "", correct: boolean = false ): Answer {
   return {
-    id: id,
+    id: 0,
     answer: answer,
     hint: hint,
     correct: correct,

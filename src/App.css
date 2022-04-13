@@ -45,15 +45,17 @@
 .selected {
   border: 5px solid gold;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 .selectable {
   border: 5px solid white;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 .selectable:hover {
-  border: 5px solid #aaa;
+  border: 5px solid gold;
   border-radius: 10px;
 }
 
@@ -266,3 +268,164 @@ svg.icon {
 .color-brown {
   color: #9d6b53;
 }
+
+/* ------------------------- avatar ------------------------- */
+/* cf. https://dribbble.com/shots/16176055-Monster-Avatars-Icons */
+
+.avatar {
+  background-image: url(static/avatars-dhigital.webp);
+  /* border: 1px solid red; */
+}
+
+.avatar-XS {
+  width: 25px;
+  height: 25px;
+  background-size: 153px;
+  --avatar-start-x: -15px;
+  --avatar-start-y: -9px;
+  --avatar-delta-x: -24px;
+  --avatar-delta-y: -24px;
+}
+
+.avatar-S {
+  width: 30px;
+  height: 30px;
+  background-size: 191px;
+  --avatar-start-x: -19px;
+  --avatar-start-y: -11px;
+  --avatar-delta-x: -30px;
+  --avatar-delta-y: -30px;
+}
+
+.avatar-M {
+  width: 40px;
+  height: 40px;
+  background-size: 254px;
+  --avatar-start-x: -26px;
+  --avatar-start-y: -15px;
+  --avatar-delta-x: -40px;
+  --avatar-delta-y: -40px;
+}
+
+.avatar-L {
+  width: 50px;
+  height: 50px;
+  background-size: 309px;
+  --avatar-start-x: -31px;
+  --avatar-start-y: -18px;
+  --avatar-delta-x: -49px;
+  --avatar-delta-y: -48px;
+}
+
+.avatar-XL {
+  width: 60px;
+  height: 60px;
+  background-size: 390px;
+  --avatar-start-x: -42px;
+  --avatar-start-y: -24px;
+  --avatar-delta-x: -61px;
+  --avatar-delta-y: -61px;
+}
+
+.avatar-1 {
+  background-position-x: calc( var(--avatar-start-x) + 0 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 0 * var(--avatar-delta-y) );
+}
+
+.avatar-2 {
+  background-position-x: calc( var(--avatar-start-x) + 1 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 0 * var(--avatar-delta-y) );
+}
+
+.avatar-3 {
+  background-position-x: calc( var(--avatar-start-x) + 2 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 0 * var(--avatar-delta-y) );
+}
+
+.avatar-4 {
+  background-position-x: calc( var(--avatar-start-x) + 3 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 0 * var(--avatar-delta-y) );
+}
+
+.avatar-5 {
+  background-position-x: calc( var(--avatar-start-x) + 4 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 0 * var(--avatar-delta-y) );
+}
+
+.avatar-6 {
+  background-position-x: calc( var(--avatar-start-x) + 0 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 1 * var(--avatar-delta-y) );
+}
+
+.avatar-7 {
+  background-position-x: calc( var(--avatar-start-x) + 1 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 1 * var(--avatar-delta-y) );
+}
+
+.avatar-8 {
+  background-position-x: calc( var(--avatar-start-x) + 2 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 1 * var(--avatar-delta-y) );
+}
+
+.avatar-9 {
+  background-position-x: calc( var(--avatar-start-x) + 3 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 1 * var(--avatar-delta-y) );
+}
+
+.avatar-10 {
+  background-position-x: calc( var(--avatar-start-x) + 4 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 1 * var(--avatar-delta-y) );
+}
+
+.avatar-11 {
+  background-position-x: calc( var(--avatar-start-x) + 0 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 2 * var(--avatar-delta-y) );
+}
+
+.avatar-12 {
+  background-position-x: calc( var(--avatar-start-x) + 1 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 2 * var(--avatar-delta-y) );
+}
+
+.avatar-13 {
+  background-position-x: calc( var(--avatar-start-x) + 2 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 2 * var(--avatar-delta-y) );
+}
+
+.avatar-14 {
+  background-position-x: calc( var(--avatar-start-x) + 3 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 2 * var(--avatar-delta-y) );
+}
+
+.avatar-15 {
+  background-position-x: calc( var(--avatar-start-x) + 4 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 2 * var(--avatar-delta-y) );
+}
+
+.avatar-16 {
+  background-position-x: calc( var(--avatar-start-x) + 0 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 3 * var(--avatar-delta-y) );
+}
+
+.avatar-17 {
+  background-position-x: calc( var(--avatar-start-x) + 1 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 3 * var(--avatar-delta-y) );
+}
+
+.avatar-18 {
+  background-position-x: calc( var(--avatar-start-x) + 2 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 3 * var(--avatar-delta-y) );
+}
+
+.avatar-19 {
+  background-position-x: calc( var(--avatar-start-x) + 3 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 3 * var(--avatar-delta-y) );
+}
+
+.avatar-20 {
+  background-position-x: calc( var(--avatar-start-x) + 4 * var(--avatar-delta-x) );
+  background-position-y: calc( var(--avatar-start-y) + 3 * var(--avatar-delta-y) );
+}
+
+
+

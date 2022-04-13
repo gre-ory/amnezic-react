@@ -10,7 +10,8 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 import { Game, selectGame } from '../data/Game'
 import { toGamePage } from '../data/Util'
-import { PageLabel } from '../data/PageLabel'
+import { PageLabel } from '../data/Page'
+import NextButton from '../component/NextButton'
 
 interface Props {
     games: Game[]
@@ -39,13 +40,17 @@ const QuizzPage = ( props: Props ) => {
         return null
     }
 
+    const onNextStep = () => {
+        game.started = true
+        game.page = 'quizz'
+        updateGame( game )
+    }
+
     return (
         <>
             <Header label="quizz" game={game} updateGame={updateGame} />
-            <div className="page page-quizz">
-                <IconButton aria-label="Start" href="/quizz/1">
-                    <PlayArrowIcon />
-                </IconButton>
+            <div className="page page-quizz" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px' }}>
+                <NextButton title="Start Game" onClick={onNextStep}/>
             </div>
             <Footer />
         </>                
