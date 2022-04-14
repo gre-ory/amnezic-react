@@ -2,48 +2,41 @@ import React from 'react'
 import { useParams } from "react-router"
 import { useNavigate } from 'react-router-dom'
 
-import Header from '../component/Header'
-import Footer from '../component/Footer'
+import GamePage from '../component/GamePage'
+import ReplayButton from '../component/ReplayButton'
 
-import { Game, selectGame } from '../data/Game'
-import { toGamePage } from '../data/Util'
-import { PageLabel } from '../data/Page'
+import { Game, GameStep, selectGame, newGame } from '../data/Game'
+import { toGamePage } from '../data/Navigate'
 
 interface Props {
     games: Game[]
     updateGame: ( game: Game ) => void
+    addGame: ( game: Game ) => void
 }
 
-const current: PageLabel = 'end'
-
 const EndPage = ( props: Props ) => {
-    const { games, updateGame } = props
-
-    const { gameId } = useParams()
+    const { games, updateGame, addGame } = props
 
     const navigate = useNavigate()
 
-    const game = selectGame( games, gameId || '' )
-
-    React.useEffect( () => { 
-        if ( !game || game.page != current ) {
-            console.log('[effect] page=`${game.page}`')
-            navigate( toGamePage( game ), { replace: true } )
-        }
-    }, [ game ] )
-    
+    const { gameId } = useParams()
+    const game = selectGame( games, gameId )
     if ( !game ) {
         return null
     }
 
+    const onStartGame = () => {
+        const game = newGame()
+        addGame( game )
+        navigate( toGamePage( game ) )
+    }
+
     return (
-        <>
-            <Header label="end" game={game} updateGame={updateGame} />
-            <div className="page page-end">
-                end
+        <GamePage gameStep={GameStep.END} game={game} updateGame={updateGame}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px' }}>
+                <ReplayButton title="Start Game" onClick={onStartGame}/>
             </div>
-            <Footer />
-        </>
+        </GamePage>
     )
 }
 

@@ -15,6 +15,7 @@ import AvatarsPage from './page/AvatarsPage';
 import { Game, newGame, loadGames, storeGames } from './data/Game';
 
 import './App.css';
+import PlayingCardsPage from './page/PlayingCardsPage';
 
 function App() {
 
@@ -64,8 +65,9 @@ function App() {
           <Route path="/game/:gameId/quizz" element={<QuizzPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/quizz/:question" element={<QuestionPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/scores" element={<ScoresPage games={games} updateGame={updateGame} />} />
-          <Route path="/game/:gameId/end" element={<EndPage games={games} updateGame={updateGame} />} />
+          <Route path="/game/:gameId/end" element={<EndPage games={games} updateGame={updateGame} addGame={addGame} />} />
           <Route path="/avatars" element={<AvatarsPage />} />
+          <Route path="/cards" element={<PlayingCardsPage />} />
         </Routes>
       </Router>
 

@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import { Card, CardColor, CardSymbol } from '../data/Card'
 import ClubIcon from './icon/ClubIcon';
 import DiamondIcon from './icon/DiamondIcon';
-import DotIcon from './icon/DotIcon';
+import CircleIcon from './icon/CircleIcon';
 import HeartIcon from './icon/HeartIcon';
 import SpadeIcon from './icon/SpadeIcon';
 import SquareIcon from './icon/SquareIcon';
@@ -23,23 +23,23 @@ const PlayingCardIcon = ( props: Props ) => {
     const { symbol, color, onClick } = props
 
     switch ( symbol ) {
-        case 'club':
+        case CardSymbol.CLUB:
             return <ClubIcon color={color} onClick={onClick} />
-        case 'cross':
+        case CardSymbol.CROSS:
             return <CrossIcon color={color} onClick={onClick} />
-        case 'diamond':
+        case CardSymbol.DIAMOND:
             return <DiamondIcon color={color} onClick={onClick} />
-        case 'dot':
-            return <DotIcon color={color} onClick={onClick} />
-        case 'heart':
+        case CardSymbol.CIRCLE:
+            return <CircleIcon color={color} onClick={onClick} />
+        case CardSymbol.HEART:
             return <HeartIcon color={color} onClick={onClick} />
-        case 'spade':
+        case CardSymbol.SPADE:
             return <SpadeIcon color={color} onClick={onClick} />
-        case 'square':
+        case CardSymbol.SQUARE:
             return <SquareIcon color={color} onClick={onClick} />
-        case 'star':
+        case CardSymbol.STAR:
             return <StarIcon color={color} onClick={onClick} />
-        case 'triangle':
+        case CardSymbol.TRIANGLE:
             return <TriangleIcon color={color} onClick={onClick} />
         default:
             return null

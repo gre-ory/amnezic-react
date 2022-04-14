@@ -1,48 +1,26 @@
 import React from 'react'
 import { useParams } from "react-router"
-import { useNavigate } from 'react-router-dom'
 
-import IconButton from '@mui/material/IconButton';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PersonIcon from '@mui/icons-material/Person';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 
-import Page from '../component/Page'
+import GamePage from '../component/GamePage'
 import NextButton from '../component/NextButton'
 
-import { Game, selectGame, updateSettingsNbQuestion, updateSettingsNbPlayer, onSetUp } from '../data/Game'
-import { toGamePage } from '../data/Util'
-import { PageLabel } from '../data/Page'
-import { newPlayers } from '../data/Player';
+import { Game, GameStep, selectGame, updateSettingsNbQuestion, updateSettingsNbPlayer, onSetUp } from '../data/Game'
 
 interface Props {
     games: Game[]
     updateGame: ( game: Game ) => void
 }
 
-const current: PageLabel = 'settings'
-
 const SettingsPage = ( props: Props ) => {
     const { games, updateGame } = props
 
-    const navigate = useNavigate()
-
     const { gameId } = useParams()
     const game = selectGame( games, gameId )
-
-    React.useEffect( () => { 
-        if ( !game || game.page != current ) {
-            console.log('[effect] page=`${game.page}`')
-            navigate( toGamePage( game ), { replace: true } )
-        }
-    }, [ game ] )
-    
     if ( !game ) {
         return null
     }
@@ -89,7 +67,7 @@ const SettingsPage = ( props: Props ) => {
     console.log( `[render] settings - ${game.settings.nbQuestion}` )
 
     return (
-        <Page label="settings" game={game} updateGame={updateGame}>
+        <GamePage gameStep={GameStep.SETTINGS} game={game} updateGame={updateGame}>
             
             <h3>Settings</h3>
 
@@ -121,7 +99,7 @@ const SettingsPage = ( props: Props ) => {
 
             </Grid>
 
-        </Page>
+        </GamePage>
     )
 }
 

@@ -1,43 +1,37 @@
 
-//
-// french  : heart, diamond|tile, clover|club, pike|spade
-// german  : heart, bell, acorn, leave
-// swiss   : rose, bell, acorn, shield
-// italian : cup|coppe, coin|denari, club|bastoni, sword|spade
-// spanish : cup|copas, coin|oros, cluc|bastos, sword|espadas
-//
+export enum CardSymbol {
+  HEART = 'HEART',
+  DIAMOND = 'DIAMOND',
+  CLUB = 'CLUB',
+  SPADE = 'SPADE',
+  STAR = 'STAR',
+  CIRCLE = 'CIRCLE',
+  SQUARE = 'SQUARE',
+  TRIANGLE = 'TRIANGLE',
+  CROSS = 'CROSS',
+}  
 
-export type CardSymbol = 
-  | 'heart' 
-  | 'diamond' 
-  | 'club' 
-  | 'spade' 
-  | 'star' 
-  | 'dot' 
-  | 'square'
-  | 'triangle'
-  | 'cross'
+export enum CardColor {
+  BLACK = 'BLACK',
+  RED = 'RED',
+  BLUE = 'BLUE',
+  GREEN = 'GREEN',
+  PURPLE = 'PURPLE',
+  YELLOW = 'YELLOW',
+  ORANGE = 'ORANGE',
+  PINK = 'PINK',
+  BROWN = 'BROWN',
+  GRAY = 'GRAY',
+}
 
-export type CardColor = 
-  | 'white' 
-  | 'gray' 
-  | 'black' 
-  | 'red'  
-  | 'blue'  
-  | 'green'  
-  | 'purple'
-  | 'yellow'  
-  | 'orange'      
-  | 'pink'  
-  | 'brown'  
+export enum CardSize {
+  XS = 'XS',
+  S = 'S',
+  M = 'M',
+  L = 'L',
+  XL = 'XL',
+}
 
-export type CardSize = 
-  | 'XS' 
-  | 'S' 
-  | 'M' 
-  | 'L' 
-  | 'XL'
-  
 export interface Card {
   readonly symbol: CardSymbol
   readonly color: CardColor
@@ -45,22 +39,22 @@ export interface Card {
   value?: string
 }
 
-export const HeartCard: Card = { symbol: 'heart', color: 'red' }
-export const DiamondCard: Card = { symbol: 'diamond', color: 'red' }
-export const ClubCard: Card = { symbol: 'club', color: 'black' }
-export const SpadeCard: Card = { symbol: 'spade', color: 'black' }
+export const HeartCard: Card = { symbol: CardSymbol.HEART, color: CardColor.RED }
+export const DiamondCard: Card = { symbol: CardSymbol.DIAMOND, color: CardColor.RED }
+export const ClubCard: Card = { symbol: CardSymbol.CLUB, color: CardColor.BLACK }
+export const SpadeCard: Card = { symbol: CardSymbol.SPADE, color: CardColor.BLACK }
 
 export const Cards: Card[] = [ ClubCard, DiamondCard, HeartCard, SpadeCard ]
 
-export const RedDotCard: Card = { symbol: 'dot', color: 'red' }
-export const OrangeDotCard: Card = { symbol: 'dot', color: 'orange' }
-export const YellowDotCard: Card = { symbol: 'dot', color: 'yellow' }
-export const GreenDotCard: Card = { symbol: 'dot', color: 'green' }
-export const PurpleDotCard: Card = { symbol: 'dot', color: 'purple' }
-export const BlueDotCard: Card = { symbol: 'dot', color: 'blue' }
-export const PinkDotCard: Card = { symbol: 'dot', color: 'pink' }
-export const BrownDotCard: Card = { symbol: 'dot', color: 'brown' }
+export const RedCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.RED }
+export const OrangeCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.ORANGE }
+export const YellowCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.YELLOW }
+export const GreenCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.GREEN }
+export const PurpleCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.PURPLE }
+export const BlueCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.BLUE }
+export const PinkCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.PINK }
+export const BrownCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.BROWN }
 
-export const ColorCards: Card[] = [ BlueDotCard, YellowDotCard, GreenDotCard, RedDotCard, OrangeDotCard, PurpleDotCard, PinkDotCard, BrownDotCard ]
+export const ColorCards: Card[] = [ BlueCircleCard, YellowCircleCard, GreenCircleCard, RedCircleCard, OrangeCircleCard, PurpleCircleCard, PinkCircleCard, BrownCircleCard ]
 
 export const DefaultCards: Card[] = [ ...Cards, ...ColorCards ]

@@ -22,6 +22,7 @@ import { Game } from '../data/Game'
 import { toDateTimeString } from '../data/Util'
 
 import NextButton from './NextButton'
+import DoneIcon from './DoneIcon'
 
 interface Props {
     game: Game
@@ -35,44 +36,25 @@ const GameCard = ( props: Props ) => {
     const progress = game.started && game.questions.length > 0 ? game.questionId * 100 / game.questions.length : 0
 
     return (
-        <Card variant="outlined">
+        <Card variant="outlined" className="selectable" onClick={() => startGame( game )}>
             <CardContent>
-                <h3>Game {game.id}</h3>
-
                 <Grid container spacing={2}>
-
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        <CalendarTodayIcon style={{ marginRight: '10px' }} color="primary"/> {toDateTimeString(game.date)}
+                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Game {game.id}</span>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><PersonIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbPlayer} players</span>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MusicNoteIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbQuestion} questions</span>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{game.questionId} / {game.questions.length} question(s)</span>
                     </Grid>
-
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        <PersonIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbPlayer} players
+                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CalendarTodayIcon style={{ marginRight: '10px' }} color="primary"/> {toDateTimeString(game.date)}</span>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>set-up: <DoneIcon done={game.setUp} /></span>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>started: <DoneIcon done={game.started} /></span>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>progress: {progress}%</span>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>ended: <DoneIcon done={game.ended} /></span>
                     </Grid>
-
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        <MusicNoteIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbQuestion} questions
-                    </Grid>
-
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        {game.setUp ? <CheckIcon style={{ marginRight: '10px' }} color="success" /> : <CloseIcon style={{ marginRight: '10px' }} color="error" />} set-up
-                    </Grid>
-
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        {game.started ? <CheckIcon style={{ marginRight: '10px' }} color="success" /> : <CloseIcon style={{ marginRight: '10px' }} color="error" />} started
-                    </Grid>
-
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        {game.ended ? <CheckIcon style={{ marginRight: '10px' }} color="success" /> : <CloseIcon style={{ marginRight: '10px' }} color="error"/>} ended
-                    </Grid>
-
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        {game.questionId} / {game.questions.length} question(s)
-                    </Grid>
-
                     <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
                         <LinearProgress variant="determinate" value={progress} />
                     </Grid>
-
                 </Grid>
 
             </CardContent>

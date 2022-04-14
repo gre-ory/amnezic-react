@@ -7,9 +7,7 @@ import { newAnswer } from './Answer'
 import { newArtist, Artist } from './Artist'
 import { newAlbum, Album } from './Album'
 import { range } from './Util'
-import { PageLabel } from './Page'
 import { newMedia } from './Media'
-import { updateParameter } from 'typescript'
 
 // //////////////////////////////////////////////////
 // model
@@ -17,11 +15,19 @@ import { updateParameter } from 'typescript'
 export const newGameId = customAlphabet( 'ABCDEFGHIJKLMNPQRSTUVWXYZ', 6 )
 export const newGameCode = customAlphabet( '0123456789', 6 )
 
+export enum GameStep {
+  SETTINGS = 'SETTINGS',
+  PLAYERS = 'PLAYERS',
+  QUIZZ = 'QUIZZ',
+  SCORES = 'SCORES',
+  END = 'END',
+}
+
 export interface Game {
   readonly id: string
   readonly code: string
   readonly date: number
-  page: PageLabel
+  step: GameStep
   setUp: boolean
   started: boolean
   questionId: number
@@ -39,7 +45,7 @@ export function newGame(): Game {
     id: newGameId(),  
     code: newGameCode(),  
     date: Date.now(),
-    page: 'settings',
+    step: GameStep.SETTINGS,
     setUp: false,
     started: false,
     questionId: 0,
@@ -53,10 +59,10 @@ export function newGame(): Game {
 // //////////////////////////////////////////////////
 // update
 
-export function updatePage( game: Game, page: PageLabel ): Game {
+export function updateStep( game: Game, step: GameStep ): Game {
   return {
     ...game,
-    page: page,
+    step: step,
   }
 }
 
@@ -191,7 +197,7 @@ export function onSetUp( game: Game ): Game {
   game = updateQuestions( game, questions )
   
   game = updateSetUp( game, true )
-  game = updatePage( game, 'players' )
+  game = updateStep( game, GameStep.PLAYERS )
 
   return game
 }

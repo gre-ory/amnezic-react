@@ -1,27 +1,17 @@
 import React from 'react'
-import { useParams } from "react-router"
-import { useNavigate } from 'react-router-dom'
 
 import Grid from '@mui/material/Grid';
 
 import Page from '../component/Page'
-import Header from '../component/Header'
-import Footer from '../component/Footer'
-import PlayerCard from '../component/PlayerCard'
-import NextButton from '../component/NextButton'
 
-import { Game, selectGame } from '../data/Game'
-import { PageLabel } from '../data/Page'
-import { toGamePage } from '../data/Util'
 import PlayerAvatar, { AvatarSize } from '../component/PlayerAvatar';
 
-interface Props {
-}
+interface Props {}
 
 const AvatarsPage = ( props: Props ) => {
 
     return (
-        <Page label="avatars">
+        <Page>
             
             <h3>Avatars</h3>
 

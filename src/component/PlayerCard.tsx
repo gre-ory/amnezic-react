@@ -21,7 +21,7 @@ import TextField from '@mui/material/TextField';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 
 import { Game, updatePlayer } from '../data/Game'
-import { Card as DataCard, CardSymbol, CardColor } from '../data/Card'
+import { Card as DataCard, CardSymbol, CardColor, CardSize } from '../data/Card'
 import { Player, updateCard } from '../data/Player'
 import { toDecimalString } from '../data/Util'
 
@@ -76,12 +76,6 @@ const PlayerCard = ( props: Props ) => {
         })
     }
 
-    const cardColors: CardColor[] = [ 'black', 'red', 'yellow', 'green', 'blue', 'purple', 'orange', 'pink', 'brown' ]
-    const cardSymbols: CardSymbol[] = [ 'heart', 'diamond', 'club', 'spade', 'dot', 'square', 'triangle', 'cross', 'star' ]
-
-    console.log(player)
-    console.log(player.card)
-
     return (
         <Card variant="outlined">
             <CardContent>
@@ -99,7 +93,7 @@ const PlayerCard = ( props: Props ) => {
                     <PlayingCard card={{
                             ...player.card,
                             value: `${player.id}`,
-                            size: 'L'
+                            size: CardSize.L,
                         }} 
                         onClick={() => {}} 
                     />
@@ -113,11 +107,17 @@ const PlayerCard = ( props: Props ) => {
                         <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         
                             {
-                                cardColors.map( newColor => { 
+                                Object.keys(CardColor).map( key => { 
+                                    const newColor = key as CardColor
                                     return (
-                                        <div key={newColor} style={{ width: '100%', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className={player.card.color == newColor ? 'selected' : 'selectable'} onClick={() => onColorChange(newColor)}>
+                                        <div 
+                                            key={newColor} 
+                                            style={{ width: '100%', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                                            className={player.card.color == newColor ? 'selected' : 'selectable'} 
+                                            onClick={() => onColorChange(newColor)}
+                                        >
                                             <PlayingCardIcon 
-                                                symbol="dot"
+                                                symbol={CardSymbol.CIRCLE}
                                                 color={newColor}
                                             />
                                         </div> 
@@ -132,12 +132,18 @@ const PlayerCard = ( props: Props ) => {
                         <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
                         
                             {
-                                cardSymbols.map( newSymbol => { 
+                                Object.keys(CardSymbol).map( key => { 
+                                    const newSymbol = key as CardSymbol
                                     return (
-                                        <div key={newSymbol} style={{ width: '100%', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className={player.card.symbol == newSymbol ? 'selected' : 'selectable'} onClick={() => onSymbolChange(newSymbol)}>
+                                        <div 
+                                            key={newSymbol} 
+                                            style={{ width: '100%', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                            className={player.card.symbol == newSymbol ? 'selected' : 'selectable'} 
+                                            onClick={() => onSymbolChange(newSymbol)}
+                                        >
                                             <PlayingCardIcon 
                                                 symbol={newSymbol}
-                                                color="gray"
+                                                color={CardColor.GRAY}
                                             />
                                         </div>
                                     )

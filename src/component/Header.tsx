@@ -1,39 +1,30 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Link, NavLink } from "react-router-dom";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import SendIcon from '@mui/icons-material/Send';
 
 import SettingsIcon from '@mui/icons-material/Settings';
 import HomeIcon from '@mui/icons-material/Home';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import GroupIcon from '@mui/icons-material/Group';
-import StarIcon from '@mui/icons-material/Star';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import FlagIcon from '@mui/icons-material/Flag';
 import Grid from '@mui/material/Grid';
 
-import { PageLabel } from '../data/Page'
-
-import { Game, updatePage } from '../data/Game'
-import { toHomePage, toSettingsPage, toPlayersPage, toQuizzPage, toScoresPage, toEndPage } from '../data/Util'
+import { Game, GameStep, updateStep } from '../data/Game'
+import { toHomePage } from '../data/Navigate'
 
 interface Props {
-    label: PageLabel
+    gameStep?: GameStep
     game?: Game
     updateGame?: ( game: Game ) => void
 }
 
 const Header = ( props: Props ) => {
-    const { label, game, updateGame } = props
+    const { gameStep, game, updateGame } = props
 
     const navigate = useNavigate()
 
@@ -44,9 +35,9 @@ const Header = ( props: Props ) => {
     const isScoresPageDisabled = !game || !game.started
     const isEndPageDisabled = !game || !game.started
 
-    const setPage = ( page: PageLabel ) => {
-        console.log(`[header] page = ${page}`);
-        game && updateGame && updateGame( updatePage( game, page ) )
+    const setStep = ( gameStep: GameStep ) => {
+        console.log(`[header] gameStep = ${gameStep}`);
+        game && updateGame && updateGame( updateStep( game, gameStep ) )
     }
 
     return (
@@ -58,7 +49,7 @@ const Header = ( props: Props ) => {
                         <Grid item xs={2} textAlign="center">
                             <IconButton 
                                 aria-label="home" 
-                                color={label == 'home' ? 'secondary' : 'default'} 
+                                color={gameStep === undefined ? 'secondary' : 'default'} 
                                 disabled={isHomePageDisabled} 
                                 onClick={() => navigate( toHomePage() )}
                             >
@@ -69,9 +60,9 @@ const Header = ( props: Props ) => {
                         <Grid item xs={2} textAlign="center">
                             <IconButton
                                 aria-label="Settings" 
-                                color={label == 'settings' ? 'secondary' : 'default'} 
+                                color={ gameStep == GameStep.SETTINGS ? 'secondary' : 'default' } 
                                 disabled={isSettingsPageDisabled} 
-                                onClick={() => setPage( 'settings' )}
+                                onClick={() => setStep( GameStep.SETTINGS )}
                             >
                                 <SettingsIcon />
                             </IconButton>
@@ -80,9 +71,9 @@ const Header = ( props: Props ) => {
                         <Grid item xs={2} textAlign="center">
                             <IconButton 
                                 aria-label="Players" 
-                                color={label == 'players' ? 'secondary' : 'default'} 
+                                color={ gameStep == GameStep.PLAYERS ? 'secondary' : 'default' } 
                                 disabled={isPlayersPageDisabled} 
-                                onClick={() => setPage( 'players' )}
+                                onClick={() => setStep( GameStep.PLAYERS )}
                             >
                                 <GroupIcon />
                             </IconButton>
@@ -91,9 +82,9 @@ const Header = ( props: Props ) => {
                         <Grid item xs={2} textAlign="center">
                             <IconButton 
                                 aria-label="Quizz" 
-                                color={label == 'quizz' ? 'secondary' : 'default'} 
+                                color={ gameStep == GameStep.QUIZZ ? 'secondary' : 'default' } 
                                 disabled={isQuizzPageDisabled} 
-                                onClick={() => setPage( 'quizz' )}
+                                onClick={() => setStep( GameStep.QUIZZ )}
                             >
                                 <MusicNoteIcon />
                             </IconButton>
@@ -102,9 +93,9 @@ const Header = ( props: Props ) => {
                         <Grid item xs={2} textAlign="center">
                             <IconButton 
                                 aria-label="Scores" 
-                                color={label == 'scores' ? 'secondary' : 'default'} 
+                                color={ gameStep == GameStep.SCORES ? 'secondary' : 'default' } 
                                 disabled={isScoresPageDisabled} 
-                                onClick={() => setPage( 'scores' )}
+                                onClick={() => setStep( GameStep.SCORES )}
                             >
                                 <MilitaryTechIcon />
                             </IconButton>
@@ -113,9 +104,9 @@ const Header = ( props: Props ) => {
                         <Grid item xs={2} textAlign="center">
                             <IconButton 
                                 aria-label="End" 
-                                color={label == 'end' ? 'secondary' : 'default'} 
+                                color={ gameStep == GameStep.END ? 'secondary' : 'default' } 
                                 disabled={isEndPageDisabled} 
-                                onClick={() => setPage( 'end' )}
+                                onClick={() => setStep( GameStep.END )}
                             >
                                 <FlagIcon />
                             </IconButton>
