@@ -1,19 +1,22 @@
 import { customAlphabet } from 'nanoid'
 
-import { newSettings, Settings, updateNbQuestion, updateNbPlayer } from './Settings'
-import { newPlayers, Player } from './Player'
-import { newQuestion, Question } from './Question'
+import { newSettings, Settings, SettingsUpdater } from './Settings'
+import { newPlayer, Player, PlayerId, PlayerUpdater } from './Player'
+import { newQuestion, Question, QuestionId, QuestionUpdater } from './Question'
 import { newAnswer } from './Answer'
-import { newArtist, Artist } from './Artist'
-import { newAlbum, Album } from './Album'
+import { newArtist } from './Artist'
+import { newAlbum } from './Album'
 import { range } from './Util'
 import { newMedia } from './Media'
+import { GameStats, newGameStats } from './GameStats'
+import { DefaultCards } from './Card'
 
 // //////////////////////////////////////////////////
 // model
 
-export const newGameId = customAlphabet( 'ABCDEFGHIJKLMNPQRSTUVWXYZ', 6 )
-export const newGameCode = customAlphabet( '0123456789', 6 )
+// export const newGameId = customAlphabet( 'ABCDEFGHIJKLMNPQRSTUVWXYZ', 3 )
+export const newGameId = customAlphabet( '0123456789', 3 )
+export const newGameCode = customAlphabet( '0123456789', 4 )
 
 export enum GameStep {
   SETTINGS = 'SETTINGS',
@@ -23,159 +26,187 @@ export enum GameStep {
   END = 'END',
 }
 
+export type GameId = string
+
 export interface Game {
   readonly id: string
   readonly code: string
-  readonly date: number
+  readonly created: number
+  readonly updated: number
   step: GameStep
-  setUp: boolean
-  started: boolean
-  questionId: number
-  ended: boolean
   settings: Settings
-  players: Player[]
-  questions: Question[]
+  players?: Player[]
+  questions?: Question[]
+  started: boolean
+  questionId?: QuestionId
+  ended: boolean
+  stats?: GameStats
 }
+
+export type GameUpdater = ( game: Game ) => Game
+export type OnGameUpdate = ( gameId: GameId, gameUpdater: GameUpdater ) => void
+export type OnPlayerUpdate = ( gameId: GameId, playerId: PlayerId, gameUpdater: GameUpdater ) => void
+// export type OnQuestionUpdate = ( gameId: GameId, playerId: PlayerId, gameUpdater: GameUpdater ) => void
 
 // //////////////////////////////////////////////////
 // create
 
-export function newGame(): Game {
+export function newGame( nbQuestion: number = 10, nbPlayer: number = 2 ): Game {
   return {
-    id: newGameId(),  
+    id: `G-${newGameId()}`,  
     code: newGameCode(),  
-    date: Date.now(),
+    created: Date.now(),  
+    updated: Date.now(),
     step: GameStep.SETTINGS,
-    setUp: false,
+    settings: newSettings( nbQuestion, nbPlayer ),
     started: false,
-    questionId: 0,
     ended: false,
-    settings: newSettings(),
-    players: [],
-    questions: [],
   }
 }
 
 // //////////////////////////////////////////////////
 // update
 
-export function updateStep( game: Game, step: GameStep ): Game {
-  return {
-    ...game,
-    step: step,
+export function updateSettings( update: SettingsUpdater ): GameUpdater {
+  return ( game: Game ) => {
+    return {
+      ...game,
+      settings: update( game.settings ),
+    }
   }
 }
 
-export function updateSetUp( game: Game, setUp: boolean ): Game {
-  return {
-    ...game,
-    setUp: setUp,
+export function updatePlayer( playerId: PlayerId, update: PlayerUpdater ): GameUpdater {
+  return ( game: Game ) => {
+    if ( !game.players ) {
+      return game
+    }
+    return {
+      ...game,
+      players: game.players.map( player => player.id == playerId ? update( player ) : player ),
+    }
   }
 }
 
-export function updateStarted( game: Game, started: boolean ): Game {
-  return {
-    ...game,
-    started: started,
+export function updateQuestion( questionId: QuestionId, update: QuestionUpdater ): GameUpdater {
+  return ( game: Game ) => {
+    if ( !game.questions ) {
+      return game
+    }
+    return {
+      ...game,
+      questions: game.questions.map( question => question.id == questionId ? update( question ) : question ),
+    }
   }
 }
 
-export function updateQuestionId( game: Game, questionId: number ): Game {
-  return {
-    ...game,
-    questionId: questionId,
+// //////////////////////////////////////////////////
+// sanitize
+
+export function sanitizePlayers( players: Player[] ): Player[] {
+  if ( players.length > 0 ) {
+    players.forEach( ( player, index ) => {
+      player.number = ( index + 1 )
+      if ( player.name === undefined ) {
+        player.name = `Player ${player.number}`
+      }
+    } )
   }
+  return players
 }
 
-export function updateEnded( game: Game, ended: boolean ): Game {
-  return {
-    ...game,
-    ended: ended,
+export function sanitizeQuestions( questions: Question[] ): Question[] {
+  if ( questions.length > 0 ) {
+    let previousQuestion: Question
+    questions.forEach( ( question, index ) => {
+      question.number = ( index + 1 )
+      if ( previousQuestion ) {
+        previousQuestion.nextId = question.id
+        question.previousId = question.id
+      }
+      previousQuestion = question
+    } )
   }
-}
-
-export function updateSettings( game: Game, settings: Settings ): Game {
-  return {
-    ...game,
-    settings: settings,
-  }
-}
-
-export function updateSettingsNbQuestion( game: Game, nbQuestion: number ): Game {
-  console.log( `[updateSettingsNbQuestion] nbQuestion = ${nbQuestion}` )
-  return {
-    ...game,
-    settings: updateNbQuestion( game.settings, nbQuestion ),
-  }
-}
-
-export function updateSettingsNbPlayer( game: Game, nbPlayer: number ): Game {
-  console.log( `[updateSettingsNbPlayer] nbPlayer = ${nbPlayer}` )
-  return {
-    ...game,
-    settings: updateNbPlayer( game.settings, nbPlayer ),
-  }
-}
-
-export function updatePlayers( game: Game, players: Player[] ): Game {
-  return {
-    ...game,
-    players: players,
-  }
-}
-
-export function updatePlayer( game: Game, player: Player ): Game {
-  return updatePlayers( game, game.players.map( other => other.id == player.id ? player : other ) )
-}
-
-export function updatePlayername( game: Game, player: Player ): Game {
-  return updatePlayers( game, game.players.map( other => other.id == player.id ? player : other ) )
-}
-
-export function updateQuestions( game: Game, questions: Question[] ): Game {
-  return {
-    ...game,
-    questions: questions.map( ( question, index ) => { return { ...question, id: ( index + 1 ) } } ),
-  }
-}
-
-export function updateQuestion( game: Game, question: Question ): Game {
-  return updateQuestions( game, game.questions.map( other => other.id == question.id ? question : other ) )
+  return questions
 }
 
 // //////////////////////////////////////////////////
 // store
 
+const GAMES = 'games'
+
+export function clearGames() {
+  console.log(`[clear]`)
+  localStorage.removeItem( GAMES )
+}
+
 export function storeGames( games: Game[] ) {
   console.log(`[store] ${games.length} game(s)`)
   games.forEach( g => console.log( `[store] game ${g.id} - nbQuestion ${g.settings.nbQuestion}` ) )
-  localStorage.setItem( 'games', JSON.stringify( games ) )
+  localStorage.setItem( GAMES, JSON.stringify( games ) )
 }
 
 export function loadGames(): Game[] {
-  const games: Game[] = JSON.parse( localStorage.getItem( 'games' ) || '' ) || []
+  const games: Game[] = JSON.parse( localStorage.getItem( GAMES ) || '[]' ) || []
   console.log(`[load] ${games.length} game(s)`)
   games.forEach( g => console.log( `[load] game ${g.id} - nbQuestion ${g.settings.nbQuestion}` ) )
   return games
 }
 
+// //////////////////////////////////////////////////
+// select
+
 export function selectGame( games: Game[], gameId: string | undefined ): Game | undefined {
-  const game = loadGames().find( g => g.id == gameId )
+  const game = gameId ? loadGames().find( g => g.id == gameId ) : undefined
   console.log(`[select] game #${gameId}`)
   return game
 }
 
+export function selectQuestion( game: Game, questionId: string | undefined ): Question | undefined {
+  const question = game.questions && questionId ? game.questions.find( question => question.id == questionId ) : undefined
+  console.log(`[select] question #${questionId}`)
+  return question
+}
+
 // //////////////////////////////////////////////////
-// status
+// state
+
+export function OnStep( gameStep: GameStep ): GameUpdater {
+  return ( game: Game ): Game => {
+      console.log( `[on-step] ${game.id} - ${gameStep}` )
+      
+      //
+      // move to new step
+      //
+    
+      game.step = gameStep
+    
+      return game
+  }
+}
 
 export function onSetUp( game: Game ): Game {
+  console.log( `[on-set-up] ${game.id}` )
 
   //
   // create default players
   //
 
   const nbPlayer = game.settings.nbPlayer
-  game = updatePlayers( game, newPlayers( nbPlayer ) )
+  const players = range( nbPlayer ).map( index => newPlayer( DefaultCards[index] ) )
+  game.players = sanitizePlayers( players )
+  
+  //
+  // finally move to players step
+  //
+
+  game.step = GameStep.PLAYERS
+
+  return game
+}
+
+export function onStartGame( game: Game ): Game {
+  console.log( `[on-start-game] ${game.id}` )
 
   //
   // create dummy questions
@@ -193,24 +224,60 @@ export function onSetUp( game: Game ): Game {
     const question = newQuestion( "Style", media, ( i % 2 == 0 ) ? [goodAnswer, wrongAnswer] : [wrongAnswer, goodAnswer] )
     return question
   } )
+  game.questions = sanitizeQuestions( questions )
 
-  game = updateQuestions( game, questions )
-  
-  game = updateSetUp( game, true )
-  game = updateStep( game, GameStep.PLAYERS )
+  //
+  // flag game as started
+  //
+
+  game.started = true
+
+  //
+  // select first question
+  //
+
+  game.questionId = game.questions[0].id
+
+  //
+  // prepare game stats
+  //
+
+  game.stats = newGameStats( game.settings.nbQuestion )
 
   return game
 }
 
-export function onStart( game: Game ): Game {
-  return updateStarted( updateQuestionId( game, 1 ), true )
+export function onQuestion( questionId: QuestionId ): GameUpdater {
+  return ( game: Game ): Game => {
+    console.log( `[on-question] ${game.id} - ${questionId}` )
+
+    if ( !game.questions ) {
+      throw Error( "missing questions!" )
+    }
+    const question = game.questions.find( question => question.id === questionId )
+    if ( !question ) {
+      throw Error( "unknwon question!" )
+    }
+
+    //
+    // move to next question
+    //
+
+    game.questionId = question.id
+
+    return game
+  }
 }
 
-export function onNextQuestion( game: Game ): Game {
-  return updateQuestionId( game, game.questionId + 1 )
-}
+export function onEndGame( game: Game ): Game {
+  console.log( `[on-end-game] ${game.id}` )
 
-export function onEnd( game: Game ): Game {
-  return updateEnded( game, true )
+  //
+  // flag game as ended
+  //
+
+  game.ended = true
+
+  return game
 }
 

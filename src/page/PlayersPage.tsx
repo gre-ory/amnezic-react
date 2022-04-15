@@ -5,13 +5,12 @@ import Grid from '@mui/material/Grid';
 
 import GamePage from '../component/GamePage'
 import PlayerCard from '../component/PlayerCard'
-import NextButton from '../component/NextButton'
 
-import { Game, GameStep, selectGame } from '../data/Game'
+import { Game, GameStep, OnGameUpdate, selectGame, OnStep } from '../data/Game'
 
 interface Props {
     games: Game[]
-    updateGame: ( game: Game ) => void
+    updateGame: OnGameUpdate
 }
 
 const PlayersPage = ( props: Props ) => {
@@ -19,18 +18,18 @@ const PlayersPage = ( props: Props ) => {
 
     const { gameId } = useParams()
     const game = selectGame( games, gameId )
-    if ( !game ) {
+    if ( !game || !game.players ) {
         return null
     }
     
-    const onNextStep = () => {
-        game.started = true        
-        game.step = GameStep.QUIZZ
-        updateGame( game )
+    // update helpers
+
+    const onNext = () => {    
+        updateGame( game.id, OnStep( GameStep.QUIZZ ) )
     }
 
     return (
-        <GamePage gameStep={GameStep.PLAYERS} game={game} updateGame={updateGame}>
+        <GamePage gameStep={GameStep.PLAYERS} game={game} updateGame={updateGame} onNext={onNext}>
             
             <h3>Players</h3>
 
@@ -53,10 +52,6 @@ const PlayersPage = ( props: Props ) => {
                         </>
                     )
                 }
-
-                <Grid item xs={12} textAlign="right" style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
-                    <NextButton title="Set-up Players"  onClick={onNextStep} />
-                </Grid>
 
             </Grid>
 

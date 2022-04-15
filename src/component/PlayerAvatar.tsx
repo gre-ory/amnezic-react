@@ -1,7 +1,9 @@
 import React from 'react'
 
+import { PlayerId } from '../data/Player'
+
 interface Props {
-    id: number
+    number: number
     size: AvatarSize
 }
 
@@ -13,10 +15,10 @@ export type AvatarSize =
   | 'XL'
 
 const PlayerAvatar = ( props: Props ) => {
-    const { id, size } = props
+    const { number, size } = props
 
     return (
-        <span className={`avatar avatar-${size} avatar-${id}`}></span>
+        <span className={`avatar avatar-${size} avatar-${number}`}></span>
     )
 }
 

@@ -6,6 +6,8 @@ export interface Settings {
   nbPlayer: number
 }
 
+export type SettingsUpdater = ( settings: Settings ) => Settings
+
 // //////////////////////////////////////////////////
 // create
 

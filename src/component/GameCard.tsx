@@ -4,7 +4,6 @@ import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -21,61 +20,60 @@ import PersonIcon from '@mui/icons-material/Person';
 import { Game } from '../data/Game'
 import { toDateTimeString } from '../data/Util'
 
-import NextButton from './NextButton'
 import DoneIcon from './DoneIcon'
 
 interface Props {
     game: Game
-    startGame: ( game: Game ) => void
+    resumeGame: ( game: Game ) => void
     deleteGame: ( game: Game ) => void
 }
 
 const GameCard = ( props: Props ) => {
-    const { game, startGame, deleteGame } = props
+    const { game, resumeGame, deleteGame } = props
 
-    const progress = game.started && game.questions.length > 0 ? game.questionId * 100 / game.questions.length : 0
+    if ( !game ) {
+        return null
+    }
+
+    // user events
+
+    const onResume = ( event: any ) => {
+        resumeGame( game )
+        event.preventDefault()
+    }
+
+    const onDelete = ( event: any ) => {
+        deleteGame( game )
+        event.preventDefault()
+    }
 
     return (
-        <Card variant="outlined" className="selectable" onClick={() => startGame( game )}>
-            <CardContent>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Game {game.id}</span>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><PersonIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbPlayer} players</span>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MusicNoteIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbQuestion} questions</span>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{game.questionId} / {game.questions.length} question(s)</span>
-                    </Grid>
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CalendarTodayIcon style={{ marginRight: '10px' }} color="primary"/> {toDateTimeString(game.date)}</span>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>set-up: <DoneIcon done={game.setUp} /></span>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>started: <DoneIcon done={game.started} /></span>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>progress: {progress}%</span>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>ended: <DoneIcon done={game.ended} /></span>
-                    </Grid>
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        <LinearProgress variant="determinate" value={progress} />
-                    </Grid>
-                </Grid>
-
-            </CardContent>
-            <CardActions>
-
-                <Grid container spacing={2}>
-                    
-                    <Grid item xs={6} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        <IconButton className="first-game" aria-label="Delete" onClick={() => deleteGame( game )}>
-                            <DeleteIcon />
-                        </IconButton>
+        <div title="Resume Game" className="selectable" onClick={onResume}>
+            <Card variant="outlined">
+                <CardContent>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Game {game.id}</span>
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><PersonIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbPlayer} players</span>
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MusicNoteIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbQuestion} questions</span>
+                            <IconButton className="first-game" aria-label="Delete" onClick={onDelete}>
+                                <CloseIcon />
+                            </IconButton>
+                        </Grid>
+                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CalendarTodayIcon style={{ marginRight: '10px' }} color="primary"/> {toDateTimeString(game.created)}</span>
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>started: <DoneIcon done={game.started} /></span>
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>progress: {game.stats ? game.stats.progress : '-'}%</span>
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>ended: <DoneIcon done={game.ended} /></span>
+                        </Grid>
+                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
+                            <LinearProgress variant="determinate" value={game.stats ? game.stats.progress : 0} />
+                        </Grid>
                     </Grid>
 
-                    <Grid item xs={6} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
-                        <NextButton title={game.started ? 'Resume Game' : 'Start Game'} onClick={() => startGame( game )} />
-                    </Grid>
-
-                </Grid>
-
-            </CardActions>
-        </Card>
+                </CardContent>
+            </Card>
+        </div>
     )
 }
 

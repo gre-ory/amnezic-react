@@ -10,12 +10,13 @@ import Footer from './Footer'
 interface Props {
     gameStep: GameStep
     game: Game
-    updateGame: ( game: Game ) => void
+    updateGame: ( gameId: string, update: ( game: Game ) => Game ) => void
+    onNext?: () => void
     children: any
 }
 
 const GamePage = ( props: Props ) => {
-    const { gameStep, game, updateGame, children } = props
+    const { gameStep, game, updateGame, onNext, children } = props
 
     const navigate = useNavigate()
     
@@ -27,11 +28,19 @@ const GamePage = ( props: Props ) => {
     }, [ game ] )
     
     return (
-        <div className={`page step-${gameStep.toLowerCase()}`}>
-            <Header gameStep={gameStep} game={game} updateGame={updateGame} />
-            {children}
-            <Footer />
-        </div>
+        <>
+            <div className={`page step-${gameStep.toLowerCase()}`}>
+                <Header gameStep={gameStep} game={game} updateGame={updateGame} onNext={onNext}/>
+                {children}
+                <Footer />
+            </div>
+            <pre style={{ border: '1px solid #999', background: '#eee', paddingTop: '20px' }}>
+                {JSON.stringify({
+                    ...game,
+                    questions: []
+                },undefined,4)}
+            </pre>
+        </>
     )
 }
 

@@ -3,12 +3,12 @@ import { useParams } from "react-router"
 
 import GamePage from '../component/GamePage'
 
-import { Game, GameStep, selectGame } from '../data/Game'
+import { Game, GameStep, OnGameUpdate, onStartGame, selectGame } from '../data/Game'
 import NextButton from '../component/NextButton'
 
 interface Props {
     games: Game[]
-    updateGame: ( game: Game ) => void
+    updateGame: OnGameUpdate
 }
 
 const QuizzPage = ( props: Props ) => {
@@ -20,15 +20,14 @@ const QuizzPage = ( props: Props ) => {
         return null
     }
 
-    const onNextStep = () => {
-        game.questionId = game.questions[0].id
-        updateGame( game )
+    const onNext = () => {
+        updateGame( game.id, onStartGame )
     }
 
     return (
-        <GamePage gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame}>
+        <GamePage gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onNext={onNext}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px' }}>
-                <NextButton title="Start Game" onClick={onNextStep}/>
+                <NextButton title="Start Game" onNext={onNext}/>
             </div>
         </GamePage>                
     )

@@ -1,5 +1,8 @@
 
-import { Card, DefaultCards } from './Card'
+import { customAlphabet } from 'nanoid'
+
+import { Card } from './Card'
+import { PlayerStats, newPlayerStats } from './PlayerStats'
 
 // //////////////////////////////////////////////////
 // status
@@ -11,51 +14,30 @@ export type PlayerStatus =
 // //////////////////////////////////////////////////
 // model
 
+// export const newPlayerId = customAlphabet( 'ABCDEFGHIJKLMNPQRSTUVWXYZ', 3 )
+export const newPlayerId = customAlphabet( '0123456789', 3 )
+
+export type PlayerId = string
+
 export interface Player {
-  id: number
+  id: PlayerId
   status: PlayerStatus
-  name: string
   card: Card
-  score: number
+  stats: PlayerStats
+  number?: number
+  name?: string
 }
+
+export type PlayerUpdater = ( player: Player ) => Player
 
 // //////////////////////////////////////////////////
 // create
 
-export function newPlayer( id: number, card: Card ): Player {
+export function newPlayer( card: Card ): Player {
   return {
-    id: id,
+    id: `P-${newPlayerId()}`, 
     status: 'active',
-    name: `Player #${id}`,
     card: card,
-    score: 0,
-  }
-}
-
-export function newPlayers( nbPlayer: number ): Player[] {
-  return Array.from( { length: nbPlayer }, ( _, index ) => newPlayer( index + 1, DefaultCards[index] ) )
-}
-
-// //////////////////////////////////////////////////
-// update
-
-export function updateName( prev: Player, name: string ): Player {
-  return {
-    ...prev,
-    name: name,
-  }
-}
-
-export function updateScore( prev: Player, score: number ): Player {
-  return {
-    ...prev,
-    score: score,
-  }
-}
-
-export function updateCard( prev: Player, card: Card ): Player {
-  return {
-    ...prev,
-    card: card,
+    stats: newPlayerStats(),
   }
 }

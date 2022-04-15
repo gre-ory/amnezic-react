@@ -5,12 +5,19 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 
 interface Props {
     title?: string
-    onClick: () => void
+    onNext: () => void
 }
 
 const NextButton = ( props: Props ) => {
-    const { title, onClick } = props
-    const description = title && title != '' ? title : 'Next'    
+    const { title, onNext } = props
+    const description = title && title != '' ? title : 'Next'   
+    
+    // user events
+
+    const onClick = ( event: any ) => {
+        onNext()
+        event.preventDefault()
+    }
 
     return (
         <IconButton color="secondary" title={description} aria-label={description} onClick={onClick}>

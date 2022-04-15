@@ -5,12 +5,12 @@ import { useNavigate } from 'react-router-dom'
 import GamePage from '../component/GamePage'
 import ReplayButton from '../component/ReplayButton'
 
-import { Game, GameStep, selectGame, newGame } from '../data/Game'
+import { Game, GameStep, OnGameUpdate, selectGame, newGame } from '../data/Game'
 import { toGamePage } from '../data/Navigate'
 
 interface Props {
     games: Game[]
-    updateGame: ( game: Game ) => void
+    updateGame: OnGameUpdate
     addGame: ( game: Game ) => void
 }
 

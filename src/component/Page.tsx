@@ -9,14 +9,15 @@ import Footer from './Footer'
 
 interface Props {
     children: any
+    onNext?: () => void
 }
 
 const Page = ( props: Props ) => {
-    const { children } = props
+    const { children, onNext } = props
     
     return (
         <div className={`page`}>
-            <Header/>
+            <Header onNext={onNext}/>
             {children}
             <Footer />
         </div>

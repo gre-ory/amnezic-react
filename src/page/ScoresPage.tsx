@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom'
 
 import GamePage from '../component/GamePage'
 
-import { Game, GameStep, selectGame } from '../data/Game'
+import { Game, GameStep, OnGameUpdate, selectGame } from '../data/Game'
 
 interface Props {
     games: Game[]
-    updateGame: ( game: Game ) => void
+    updateGame: OnGameUpdate
 }
 
 const ScoresPage = ( props: Props ) => {

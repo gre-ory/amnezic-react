@@ -1,40 +1,23 @@
 import React from 'react'
 
-import IconButton from '@mui/material/IconButton';
-import AddIcon from '@mui/icons-material/Add';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import LinearProgress from '@mui/material/LinearProgress';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import PersonIcon from '@mui/icons-material/Person';
-import TextField from '@mui/material/TextField';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Grid from '@mui/material/Grid'
+import TextField from '@mui/material/TextField'
 
-import { Game, updatePlayer } from '../data/Game'
+import { Game, OnGameUpdate, updatePlayer } from '../data/Game'
 import { Card as DataCard, CardSymbol, CardColor, CardSize } from '../data/Card'
-import { Player, updateCard } from '../data/Player'
-import { toDecimalString } from '../data/Util'
+import { Player } from '../data/Player'
 
-import NextButton from './NextButton'
 import PlayingCard from './PlayingCard'
 import PlayingCardIcon from './PlayingCardIcon'
-import SpadeIcon from './icon/SpadeIcon'
 import PlayerAvatar from './PlayerAvatar';
 
 interface Props {
     game: Game
     player: Player    
-    updateGame?: ( game: Game ) => void
+    updateGame: OnGameUpdate
 }
 
 const PlayerCard = ( props: Props ) => {
@@ -42,38 +25,52 @@ const PlayerCard = ( props: Props ) => {
 
     const [ name, setName ] = React.useState( player.name )
 
-    const onNameChange = (e: any) => {
-        setName(e.target.value)
+    if ( !player.number ) {
+        return null
+    }
+
+    //
+    // update helpers
+    //
+
+    const updatePlayerName = ( name?: string ) => {
+        updateGame( game.id, updatePlayer( player.id, ( player: Player ): Player => {
+            player.name = name
+            return player
+        } ) )
+    }
+    
+    const updatePlayerCard = ( card: DataCard ) => {
+        updateGame( game.id, updatePlayer( player.id, ( player: Player ): Player => {
+            player.card = card
+            return player
+        } ) )
+    }
+
+    //
+    // user events
+    //
+
+    const onNameChange = ( e: any ) => {
+        setName( e.target.value )
     }
 
     const onNameBlur = () => {
-        game && updateGame && updateGame( updatePlayer( game, {
-            ...player,
-            name: name
-        } ) )
-    }
-
-    const onCardChange = (card: DataCard) => {
-        game && updateGame && updateGame( updatePlayer( game, {
-            ...player,
-            card: card
-        } ) )
+        updatePlayerName( name )
     }
 
     const onSymbolChange = (symbol: CardSymbol) => {
-        console.log(`[onSymbolChange] symbol = ${symbol}`)
-        onCardChange({
+        updatePlayerCard( {
             ...player.card,
             symbol: symbol
-        })
+        } )
     }
 
     const onColorChange = (color: CardColor) => {
-        console.log(`[onColorChange] color = ${color}`)
-        onCardChange({
+        updatePlayerCard( {
             ...player.card,
             color: color
-        })
+        } )
     }
 
     return (
@@ -84,7 +81,7 @@ const PlayerCard = ( props: Props ) => {
 
                 <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
                     <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-                        <PlayerAvatar id={player.id} size="L"/>
+                        <PlayerAvatar number={player.number} size="L"/>
                         <TextField id="standard-basic" style={{ marginLeft: '10px' }} label="Name" variant="standard" value={name} onChange={onNameChange} onBlur={onNameBlur} />
                     </Box>                    
                 </Grid>
@@ -92,7 +89,7 @@ const PlayerCard = ( props: Props ) => {
                 <Grid item xs={3} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
                     <PlayingCard card={{
                             ...player.card,
-                            value: `${player.id}`,
+                            value: `${player.number % 10}`,
                             size: CardSize.L,
                         }} 
                         onClick={() => {}} 
@@ -159,23 +156,6 @@ const PlayerCard = ( props: Props ) => {
             </Grid>
 
             </CardContent>
-            <CardActions>
-
-                <Grid container spacing={2}>
-                    
-                    {/* <Grid item xs={6} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                        <IconButton className="first-game" aria-label="Delete" onClick={() => deleteGame( game )}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Grid>
-
-                    <Grid item xs={6} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
-                        <NextButton title={game.started ? 'Resume Game' : 'Start Game'} onClick={() => startGame( game )} />
-                    </Grid> */}
-
-                </Grid>
-
-            </CardActions>
         </Card>
     )
 }
