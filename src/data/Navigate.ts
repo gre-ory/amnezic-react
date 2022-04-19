@@ -16,9 +16,10 @@ export function toPlayersPage( game: Game ): string {
 }
 
 export function toQuizzPage( game: Game ): string {
-  if ( game.questionId === undefined ) {
-      return `/game/${game.id}/quizz`    
-  }
+    return `/game/${game.id}/quizz`    
+}
+
+export function toQuestionPage( game: Game ): string {
   return `/game/${game.id}/quizz/${game.questionId}`
 }
 
@@ -39,7 +40,9 @@ export function toGamePage( game: Game | undefined ): string {
         return toPlayersPage( game )
       case GameStep.QUIZZ:
         return toQuizzPage( game )
-      case GameStep.SCORES:
+        case GameStep.QUESTION:
+          return toQuestionPage( game )
+        case GameStep.SCORES:
         return toScoresPage( game )
       case GameStep.END:
         return toEndPage( game )

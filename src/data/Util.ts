@@ -16,6 +16,10 @@ export function toDecimalString( value: number ): string {
     return `${value}`
 }
 
+export function toZeroPadString( value: number, padSize: number ): string {
+    return `${value}`.padStart( padSize, '0' )
+}
+
 export function toDateString( value: number ): string {
     if ( value <= 0 ) {
         return '-'

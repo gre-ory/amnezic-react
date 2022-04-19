@@ -33,7 +33,7 @@ const PlayerCard = ( props: Props ) => {
     // update helpers
     //
 
-    const updatePlayerName = ( name?: string ) => {
+    const updatePlayerName = ( name: string ) => {
         updateGame( game.id, updatePlayer( player.id, ( player: Player ): Player => {
             player.name = name
             return player

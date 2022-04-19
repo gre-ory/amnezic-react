@@ -31,10 +31,14 @@ const QuestionPage = ( props: Props ) => {
         return null
     }
 
+    console.log( game )
+
     const question = selectQuestion( game, questionId )
     if ( !question ) {
         return null
     }
+
+    console.log( question )
 
     const progress = 25;
 
@@ -67,8 +71,8 @@ const QuestionPage = ( props: Props ) => {
     }
 
     return (
-        <GamePage gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onNext={onNext}>
-            <h3>question ${question}</h3>
+        <GamePage gameStep={GameStep.QUESTION} game={game} updateGame={updateGame} onNext={onNext}>
+            <h3>question ${question.title}</h3>
 
             <Card sx={{ display: 'flex' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -94,9 +98,15 @@ const QuestionPage = ( props: Props ) => {
                 </Box>
                 <CardMedia
                     component="img"
-                    sx={{ width: 151 }}
-                    image="/static/images/cards/live-from-space.jpg"
-                    alt="Live from space album cover"
+                    sx={{ width: 56, height: 56 }}
+                    image={question.media.album.picture}
+                    alt={question.media.album.title}
+                />
+                <CardMedia
+                    component="img"
+                    sx={{ width: 56, height: 56 }}
+                    image={question.media.artist.picture}
+                    alt={question.media.artist.name}
                 />
             </Card>
 

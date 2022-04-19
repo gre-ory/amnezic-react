@@ -1,15 +1,15 @@
 import { customAlphabet } from 'nanoid'
 
 import { newSettings, Settings, SettingsUpdater } from './Settings'
-import { newPlayer, Player, PlayerId, PlayerUpdater } from './Player'
-import { newQuestion, Question, QuestionId, QuestionUpdater } from './Question'
-import { newAnswer } from './Answer'
+import { Player, PlayerId, PlayerUpdater } from './Player'
+import { addAnswer, Question, QuestionId, QuestionUpdater } from './Question'
 import { newArtist } from './Artist'
 import { newAlbum } from './Album'
-import { range } from './Util'
-import { newMedia } from './Media'
+import { range, toZeroPadString } from './Util'
+import { Media, newMedia } from './Media'
 import { GameStats, newGameStats } from './GameStats'
-import { DefaultCards } from './Card'
+import { Card, DefaultCards } from './Card'
+import { newPlayerStats } from './PlayerStats'
 
 // //////////////////////////////////////////////////
 // model
@@ -22,6 +22,7 @@ export enum GameStep {
   SETTINGS = 'SETTINGS',
   PLAYERS = 'PLAYERS',
   QUIZZ = 'QUIZZ',
+  QUESTION = 'QUESTION',
   SCORES = 'SCORES',
   END = 'END',
 }
@@ -35,8 +36,8 @@ export interface Game {
   readonly updated: number
   step: GameStep
   settings: Settings
-  players?: Player[]
-  questions?: Question[]
+  players: Player[]
+  questions: Question[]
   started: boolean
   questionId?: QuestionId
   ended: boolean
@@ -51,7 +52,7 @@ export type OnPlayerUpdate = ( gameId: GameId, playerId: PlayerId, gameUpdater: 
 // //////////////////////////////////////////////////
 // create
 
-export function newGame( nbQuestion: number = 10, nbPlayer: number = 2 ): Game {
+export function newGame( nbQuestion: number = 2 /* GREG 10 */, nbPlayer: number = 2 ): Game {
   return {
     id: `G-${newGameId()}`,  
     code: newGameCode(),  
@@ -59,9 +60,49 @@ export function newGame( nbQuestion: number = 10, nbPlayer: number = 2 ): Game {
     updated: Date.now(),
     step: GameStep.SETTINGS,
     settings: newSettings( nbQuestion, nbPlayer ),
+    players: [],
+    questions: [],
     started: false,
     ended: false,
   }
+}
+
+// //////////////////////////////////////////////////
+// add
+
+export function addPlayer( game: Game, card: Card ): Player {
+  const number = game.players.length + 1
+  const id: string = toZeroPadString( number, 2 ) // max: 10 players,
+  const current: Player = {
+    id: id, 
+    number: number,
+    name: `Player ${id}`,
+    status: 'active',
+    card: card,
+    stats: newPlayerStats(),
+  }
+  game.players.push( current )
+  return current
+}
+
+export function addQuestion( game: Game, title: string, media: Media ): Question {
+  const number = game.questions.length + 1
+  const id: string = toZeroPadString( number, 3 ) // max: 100 answers,
+  const current: Question = {
+    id: id,
+    number: number, 
+    status: 'start',
+    title: title,
+    media: media,
+    answers: [],
+  }
+  if ( game.questions.length > 0 ) {
+    const previous: Question = game.questions[ game.questions.length - 1 ]
+    previous.nextId = current.id
+    current.previousId = previous.id
+  }
+  game.questions.push( current )
+  return current
 }
 
 // //////////////////////////////////////////////////
@@ -98,36 +139,6 @@ export function updateQuestion( questionId: QuestionId, update: QuestionUpdater 
       questions: game.questions.map( question => question.id == questionId ? update( question ) : question ),
     }
   }
-}
-
-// //////////////////////////////////////////////////
-// sanitize
-
-export function sanitizePlayers( players: Player[] ): Player[] {
-  if ( players.length > 0 ) {
-    players.forEach( ( player, index ) => {
-      player.number = ( index + 1 )
-      if ( player.name === undefined ) {
-        player.name = `Player ${player.number}`
-      }
-    } )
-  }
-  return players
-}
-
-export function sanitizeQuestions( questions: Question[] ): Question[] {
-  if ( questions.length > 0 ) {
-    let previousQuestion: Question
-    questions.forEach( ( question, index ) => {
-      question.number = ( index + 1 )
-      if ( previousQuestion ) {
-        previousQuestion.nextId = question.id
-        question.previousId = question.id
-      }
-      previousQuestion = question
-    } )
-  }
-  return questions
 }
 
 // //////////////////////////////////////////////////
@@ -171,6 +182,38 @@ export function selectQuestion( game: Game, questionId: string | undefined ): Qu
 // //////////////////////////////////////////////////
 // state
 
+export function hasPlayers( game: Game ): boolean {
+  return ( game !== undefined && game.players !== undefined && game.players.length > 0 )
+}
+
+export function hasQuestions( game: Game ): boolean {
+  return ( game !== undefined && game.questions !== undefined && game.questions.length > 0 )
+}
+
+export function isSetUp( game: Game ): boolean {
+  return hasPlayers( game ) && hasQuestions( game )
+}
+
+export function isSettingsPageDisabled( game: Game ): boolean {
+  return ( game === undefined ) || game.ended || isSetUp( game ) 
+}
+
+export function isPlayersPageDisabled( game: Game ): boolean {
+  return ( game === undefined ) || game.ended || !isSetUp( game ) 
+}
+
+export function isQuizzPageDisabled( game: Game ): boolean {
+  return ( game === undefined ) || game.ended || !isSetUp( game ) 
+}
+
+export function isScoresPageDisabled( game: Game ): boolean {
+  return ( game === undefined ) || !game.started || !isSetUp( game )
+}
+
+export function isEndPageDisabled( game: Game ): boolean {
+  return ( game === undefined ) || !game.started || !isSetUp( game )
+}
+
 export function OnStep( gameStep: GameStep ): GameUpdater {
   return ( game: Game ): Game => {
       console.log( `[on-step] ${game.id} - ${gameStep}` )
@@ -189,12 +232,32 @@ export function onSetUp( game: Game ): Game {
   console.log( `[on-set-up] ${game.id}` )
 
   //
+  // load game
+  //
+
+  const nbQuestion = game.settings.nbQuestion
+  range( nbQuestion ).map( i => i+1 ).forEach( i => {
+    // "https://api.deezer.com/artist/27/image"
+    const artist = newArtist( "Daft Punk", "https://e-cdns-images.dzcdn.net/images/artist/f2bc007e9133c946ac3c3907ddc5d2ea/56x56-000000-80-0-0.jpg" )
+    // "https://api.deezer.com/album/302127/image"
+    const album = newAlbum( "Discovery", "https://e-cdns-images.dzcdn.net/images/cover/2e018122cb56986277102d2041a592c8/56x56-000000-80-0-0.jpg" )
+    const media = newMedia( "Harder, Better, Faster, Stronger", "https://cdns-preview-d.dzcdn.net/stream/c-deda7fa9316d9e9e880d2c6207e92260-8.mp3", artist, album )
+    const question: Question = addQuestion( game, "Genre", media )
+    if ( i % 2 == 0 ) {
+      addAnswer( question, media.title, artist.name, true )
+      addAnswer( question, "xxx", "xxx", false )
+    } else {
+      addAnswer( question, "yyy", "yyy", false )
+      addAnswer( question, media.title, artist.name, true )
+    }
+  } )
+
+  //
   // create default players
   //
 
   const nbPlayer = game.settings.nbPlayer
-  const players = range( nbPlayer ).map( index => newPlayer( DefaultCards[index] ) )
-  game.players = sanitizePlayers( players )
+  range( nbPlayer ).forEach( index => addPlayer( game, DefaultCards[index] ) )  
   
   //
   // finally move to players step
@@ -208,23 +271,9 @@ export function onSetUp( game: Game ): Game {
 export function onStartGame( game: Game ): Game {
   console.log( `[on-start-game] ${game.id}` )
 
-  //
-  // create dummy questions
-  //
-
-  const nbQuestion = game.settings.nbQuestion
-  const questions = range( nbQuestion ).map( i => i+1 ).map( i => {
-    // "https://api.deezer.com/artist/27/image"
-    const artist = newArtist( "Daft Punk", "https://e-cdns-images.dzcdn.net/images/artist/f2bc007e9133c946ac3c3907ddc5d2ea/56x56-000000-80-0-0.jpg" )
-    // "https://api.deezer.com/album/302127/image"
-    const album = newAlbum( "Discovery", "https://e-cdns-images.dzcdn.net/images/cover/2e018122cb56986277102d2041a592c8/56x56-000000-80-0-0.jpg" )
-    const media = newMedia( "Harder, Better, Faster, Stronger", "https://cdns-preview-d.dzcdn.net/stream/c-deda7fa9316d9e9e880d2c6207e92260-8.mp3", artist, album )
-    const goodAnswer = newAnswer( media.title, artist.name, true )
-    const wrongAnswer = newAnswer( "Xxx", "Xxx", false )
-    const question = newQuestion( "Style", media, ( i % 2 == 0 ) ? [goodAnswer, wrongAnswer] : [wrongAnswer, goodAnswer] )
-    return question
-  } )
-  game.questions = sanitizeQuestions( questions )
+  if ( !game.questions || game.questions.length == 0 ) {
+    return game
+  }
 
   //
   // flag game as started
@@ -242,7 +291,13 @@ export function onStartGame( game: Game ): Game {
   // prepare game stats
   //
 
-  game.stats = newGameStats( game.settings.nbQuestion )
+  game.stats = newGameStats( game.settings.nbQuestion ) 
+  
+  //
+  // finally move to questions step
+  //
+
+  game.step = GameStep.QUESTION
 
   return game
 }

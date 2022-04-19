@@ -29,14 +29,14 @@ const SettingsPage = ( props: Props ) => {
 
     const settings = game.settings
     const nbQuestion = settings.nbQuestion
-    const nbQuestionIncrement = 10
-    const lessQuestionDisabled = nbQuestion <= 10
-    const moreQuestionDisabled = nbQuestion >= 200
+    const nbQuestionIncrement = 1 // 10
+    const lessQuestionDisabled = nbQuestion <= 2 // 10
+    const moreQuestionDisabled = nbQuestion >= 3 // 200
 
     const nbPlayer = settings.nbPlayer
     const nbPlayerIncrement = 1
     const lessPlayerDisabled = nbPlayer <= 2
-    const morePlayerDisabled = nbPlayer >= 10
+    const morePlayerDisabled = nbPlayer >= 3 // 10
 
     // update helpers
 

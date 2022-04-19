@@ -34,12 +34,7 @@ const GamePage = ( props: Props ) => {
                 {children}
                 <Footer />
             </div>
-            <pre style={{ border: '1px solid #999', background: '#eee', paddingTop: '20px' }}>
-                {JSON.stringify({
-                    ...game,
-                    questions: []
-                },undefined,4)}
-            </pre>
+            <pre style={{ border: '1px solid #999', background: '#eee', padding: '20px' }}>{JSON.stringify(game,undefined,4)}</pre>
         </>
     )
 }

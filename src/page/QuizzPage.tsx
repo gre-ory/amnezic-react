@@ -12,13 +12,13 @@ interface Props {
 }
 
 const QuizzPage = ( props: Props ) => {
-    const { games, updateGame } = props
-
+    const { games, updateGame } = props 
+    
     const { gameId } = useParams()
     const game = selectGame( games, gameId )
     if ( !game ) {
         return null
-    }
+    }    
 
     const onNext = () => {
         updateGame( game.id, onStartGame )

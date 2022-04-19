@@ -21,23 +21,11 @@ export type PlayerId = string
 
 export interface Player {
   id: PlayerId
+  number: number,
+  name: string
   status: PlayerStatus
   card: Card
-  stats: PlayerStats
-  number?: number
-  name?: string
+  stats: PlayerStats  
 }
 
 export type PlayerUpdater = ( player: Player ) => Player
-
-// //////////////////////////////////////////////////
-// create
-
-export function newPlayer( card: Card ): Player {
-  return {
-    id: `P-${newPlayerId()}`, 
-    status: 'active',
-    card: card,
-    stats: newPlayerStats(),
-  }
-}
