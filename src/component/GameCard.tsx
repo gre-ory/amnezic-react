@@ -18,7 +18,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PersonIcon from '@mui/icons-material/Person';
 
 import { Game } from '../data/Game'
-import { toDateTimeString } from '../data/Util'
+import { onUserEvent, toDateTimeString } from '../data/Util'
 
 import DoneIcon from './DoneIcon'
 
@@ -37,15 +37,8 @@ const GameCard = ( props: Props ) => {
 
     // user events
 
-    const onResume = ( event: any ) => {
-        resumeGame( game )
-        event.preventDefault()
-    }
-
-    const onDelete = ( event: any ) => {
-        deleteGame( game )
-        event.preventDefault()
-    }
+    const onResume = onUserEvent( () => resumeGame( game ) )
+    const onDelete = onUserEvent( () => deleteGame( game ) )
 
     return (
         <div title="Resume Game" className="selectable" onClick={onResume}>

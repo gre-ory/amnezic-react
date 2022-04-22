@@ -1,21 +1,33 @@
 import React from 'react'
-import { useParams } from "react-router";
+import { useParams } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 
-import LinearProgress from '@mui/material/LinearProgress';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
+import LinearProgress from '@mui/material/LinearProgress'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import SkipNextIcon from '@mui/icons-material/SkipNext'
+import NextButton from '../component/NextButton'
+
+import Timeline from '@mui/lab/Timeline';
+import TimelineItem from '@mui/lab/TimelineItem';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineContent from '@mui/lab/TimelineContent';
+import TimelineDot from '@mui/lab/TimelineDot';
 
 import GamePage from '../component/GamePage'
+import QuestionCard from '../component/QuestionCard'
 
 import { Game, GameStep, OnGameUpdate, selectGame, selectQuestion, onQuestion } from '../data/Game'
 import { QuestionId } from '../data/Question'
+import { toHomePage, toGamePage } from '../data/Navigate'
+import { onUserEvent } from '../data/Util'
 
 interface Props {
     games: Game[]
@@ -25,13 +37,33 @@ interface Props {
 const QuestionPage = ( props: Props ) => {
     const { games, updateGame } = props
 
+    const navigate = useNavigate()
+
     const { gameId, questionId } = useParams()
     const game = selectGame( games, gameId )
+    
+    React.useEffect( () => { 
+        if ( !game ) {
+            console.log(`[effect] MISSING game! >>> NAVIGATE to home`)
+            navigate( toHomePage() )    
+        } else if ( game.questionId != questionId ) {
+            console.log(`[effect] NEW question! >>> NAVIGATE to question ${game.questionId}`)
+            navigate( toGamePage( game ) )    
+        } else if ( !question ) {
+            console.log(`[effect] UNKNOWN question! >>> NAVIGATE to home`)
+            navigate( toHomePage() )     
+        } 
+    }, [ game ] )
+    
     if ( !game ) {
         return null
     }
 
-    console.log( game )
+    // update helpers
+
+    const updateQuestionId = ( questionId: QuestionId ) => {
+        updateGame( game.id, onQuestion( questionId ) )
+    }
 
     const question = selectQuestion( game, questionId )
     if ( !question ) {
@@ -42,75 +74,40 @@ const QuestionPage = ( props: Props ) => {
 
     const progress = 25;
 
-    // update helpers
-
-    const updateQuestionId = ( questionId: QuestionId ) => {
-        updateGame( game.id, onQuestion( questionId ) )
-    }
-
     // user events
 
-    const onPreviousQuestion = ( event: any ) => {
-        if ( question.previousId ) {
-            updateQuestionId( question.previousId )
-        }
-        event.stopPropagation()
-    }
+    const onPreviousQuestion = onUserEvent( () => question.previousId && updateQuestionId( question.previousId ) )
+    const onNextQuestion = onUserEvent( () => question.nextId && updateQuestionId( question.nextId ) )
 
-    const onNextQuestion = ( event: any ) => {
-        if ( question.nextId ) {
-            updateQuestionId( question.nextId )
-        }
-        event.stopPropagation()
-    }
-
-    const onNext = () => {
-        if ( question.nextId ) {
-            updateQuestionId( question.nextId )
-        }
-    }
+    const onNext = () => question.nextId && updateQuestionId( question.nextId )
 
     return (
-        <GamePage gameStep={GameStep.QUESTION} game={game} updateGame={updateGame} onNext={onNext}>
-            <h3>question ${question.title}</h3>
+        <GamePage gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onNext={onNext}>
+            <QuestionCard game={game} question={question} updateGame={updateGame}/>
 
-            <Card sx={{ display: 'flex' }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                    <CardContent sx={{ flex: '1 0 auto' }}>
-                    <Typography component="div" variant="h5">
-                        Live From Space
-                    </Typography>
-                    <Typography variant="subtitle1" color="text.secondary" component="div">
-                        Mac Miller
-                    </Typography>
-                    </CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
-                    <IconButton aria-label="previous" disabled={question.previousId === undefined} onClick={onPreviousQuestion}>
-                        <SkipPreviousIcon />
-                    </IconButton>
-                    <IconButton aria-label="play/pause">
-                        <PlayArrowIcon sx={{ height: 38, width: 38 }} />
-                    </IconButton>
-                    <IconButton aria-label="next" disabled={question.nextId === undefined} onClick={onNextQuestion}>
-                        <SkipNextIcon />
-                    </IconButton>
-                    </Box>
-                </Box>
-                <CardMedia
-                    component="img"
-                    sx={{ width: 56, height: 56 }}
-                    image={question.media.album.picture}
-                    alt={question.media.album.title}
-                />
-                <CardMedia
-                    component="img"
-                    sx={{ width: 56, height: 56 }}
-                    image={question.media.artist.picture}
-                    alt={question.media.artist.name}
-                />
-            </Card>
+            <Timeline>
+      <TimelineItem>
+        <TimelineSeparator>
+          <TimelineDot />
+          <TimelineConnector />
+        </TimelineSeparator>
+        <TimelineContent>Eat</TimelineContent>
+      </TimelineItem>
+      <TimelineItem>
+        <TimelineSeparator>
+          <TimelineDot />
+          <TimelineConnector />
+        </TimelineSeparator>
+        <TimelineContent>Code</TimelineContent>
+      </TimelineItem>
+      <TimelineItem>
+        <TimelineSeparator>
+          <TimelineDot />
+        </TimelineSeparator>
+        <TimelineContent>Sleep</TimelineContent>
+      </TimelineItem>
+    </Timeline>
 
-            <LinearProgress variant="determinate" value={progress} />
         </GamePage>
     )
 }

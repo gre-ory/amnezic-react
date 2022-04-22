@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
 import HomePage from './page/HomePage'
 import SettingsPage from './page/SettingsPage'
 import PlayersPage from './page/PlayersPage'
-import QuizzPage from './page/QuizzPage'
+import StartPage from './page/StartPage'
 import QuestionPage from './page/QuestionPage'
 import ScoresPage from './page/ScoresPage'
 import EndPage from './page/EndPage'
@@ -59,7 +59,7 @@ function App() {
     } )
   }
 
-  console.log( '[render] app' )
+  // GREG console.log( '[render] app' )
 
   return (
     <div className="app app-amnezic">
@@ -69,8 +69,8 @@ function App() {
           <Route path="/" element={<HomePage games={games} addGame={addGame} deleteGame={deleteGame} deleteGames={deleteGames}/>} />
           <Route path="/game/:gameId/settings" element={<SettingsPage games={games} updateGame={updateGame} />} />        
           <Route path="/game/:gameId/players" element={<PlayersPage games={games} updateGame={updateGame} />} />
-          <Route path="/game/:gameId/quizz" element={<QuizzPage games={games} updateGame={updateGame} />} />
-          <Route path="/game/:gameId/quizz/:questionId" element={<QuestionPage games={games} updateGame={updateGame} />} />
+          <Route path="/game/:gameId/start" element={<StartPage games={games} updateGame={updateGame} />} />
+          <Route path="/game/:gameId/question/:questionId" element={<QuestionPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/scores" element={<ScoresPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/end" element={<EndPage games={games} updateGame={updateGame} addGame={addGame} />} />
           <Route path="/avatars" element={<AvatarsPage />} />

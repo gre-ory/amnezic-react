@@ -23,35 +23,38 @@ const PlayingCard = ( props: Props ) => {
         return null
     }
 
-    let classNames = `card`
+    let cardClassNames = `card`
     if ( card.size ) {
-        classNames = `${classNames} size-${card.size}`
+        cardClassNames = `${cardClassNames} size-${card.size}`
     }
+    let selectClassNames = `card--inside`
     if ( selected ) {
-        classNames = `${classNames} selected`
+        selectClassNames = `${selectClassNames} selected`
     }
     if ( onClick ) {
-        classNames = `${classNames} selectable`
+        selectClassNames = `${selectClassNames} selectable`
     }
 
     return (
-        <div className={classNames} onClick={onClick}>
-            <div className="card--header">
-                <div className="card--symbol">
-                    <PlayingCardIcon symbol={card.symbol} color={card.color}/>
-                </div>                
-            </div>
-            <div className="card--content">
-                <div className="card--value">
-                    {card.value}
+        <div className={cardClassNames} onClick={onClick}>
+            <div className={selectClassNames}>
+                <div className="card--header">
+                    <div className="card--symbol">
+                        <PlayingCardIcon symbol={card.symbol} color={card.color}/>
+                    </div>                
                 </div>
-                <div className="card--symbol">
-                    <PlayingCardIcon symbol={card.symbol} color={card.color}/>
+                <div className="card--content">
+                    <div className="card--value">
+                        {card.value}
+                    </div>
+                    <div className="card--symbol">
+                        <PlayingCardIcon symbol={card.symbol} color={card.color}/>
+                    </div>
                 </div>
-            </div>
-            <div className="card--footer">
-                <div className="card--symbol">
-                    <PlayingCardIcon symbol={card.symbol} color={card.color}/>
+                <div className="card--footer">
+                    <div className="card--symbol">
+                        <PlayingCardIcon symbol={card.symbol} color={card.color}/>
+                    </div>
                 </div>
             </div>
         </div>

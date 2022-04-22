@@ -16,6 +16,7 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 
 import { Game, GameStep, OnGameUpdate, OnStep } from '../data/Game'
 import { toHomePage } from '../data/Navigate'
+import { onUserEvent } from '../data/Util'
 
 interface Props {
     gameStep?: GameStep
@@ -47,42 +48,13 @@ const Header = ( props: Props ) => {
 
     // user events
 
-    const onHomePage = ( event: any ) => {
-        navigate( toHomePage() )
-        event.stopPropagation()
-    }
-
-    const onSettingsPage = ( event: any ) => {
-        updateGameStep( GameStep.SETTINGS )
-        event.stopPropagation()
-    }
-
-    const onPlayersPage = ( event: any ) => {
-        updateGameStep( GameStep.PLAYERS )
-        event.stopPropagation()
-    }
-
-    const onQuizzPage = ( event: any ) => {
-        updateGameStep( GameStep.QUIZZ )
-        event.stopPropagation()
-    }
-
-    const onScoresPage = ( event: any ) => {
-        updateGameStep( GameStep.SCORES )
-        event.stopPropagation()
-    }
-
-    const onEndPage = ( event: any ) => {
-        updateGameStep( GameStep.END )
-        event.stopPropagation()
-    }
-
-    const onNextPage = ( event: any ) => {
-        if ( onNext ) {
-            onNext()
-        }
-        event.stopPropagation()
-    }
+    const onHomePage = onUserEvent( () => navigate( toHomePage() ) )
+    const onSettingsPage = onUserEvent( () => updateGameStep( GameStep.SETTINGS ) )
+    const onPlayersPage = onUserEvent( () => updateGameStep( GameStep.PLAYERS ) )
+    const onQuizzPage = onUserEvent( () => updateGameStep( GameStep.QUIZZ ) )
+    const onScoresPage = onUserEvent( () => updateGameStep( GameStep.SCORES ) )
+    const onEndPage = onUserEvent( () => updateGameStep( GameStep.END ) )
+    const onNextPage = onUserEvent( () => onNext && onNext() )
 
     return (
         <Box className="header" sx={{ flexGrow: 1 }}>

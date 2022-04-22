@@ -14,15 +14,14 @@ import { newPlayerStats } from './PlayerStats'
 // //////////////////////////////////////////////////
 // model
 
-// export const newGameId = customAlphabet( 'ABCDEFGHIJKLMNPQRSTUVWXYZ', 3 )
-export const newGameId = customAlphabet( '0123456789', 3 )
+export const newGameId = customAlphabet( 'ABCDEFGHIJKLMNPQRSTUVWXYZ', 4 )
+// export const newGameId = customAlphabet( '0123456789', 3 )
 export const newGameCode = customAlphabet( '0123456789', 4 )
 
 export enum GameStep {
   SETTINGS = 'SETTINGS',
   PLAYERS = 'PLAYERS',
   QUIZZ = 'QUIZZ',
-  QUESTION = 'QUESTION',
   SCORES = 'SCORES',
   END = 'END',
 }
@@ -52,14 +51,14 @@ export type OnPlayerUpdate = ( gameId: GameId, playerId: PlayerId, gameUpdater: 
 // //////////////////////////////////////////////////
 // create
 
-export function newGame( nbQuestion: number = 2 /* GREG 10 */, nbPlayer: number = 2 ): Game {
+export function newGame( nbQuestion: number = 4, nbPlayer: number = 2, nbAnswer: number = 3 ): Game {
   return {
-    id: `G-${newGameId()}`,  
+    id: newGameId(),  
     code: newGameCode(),  
     created: Date.now(),  
     updated: Date.now(),
     step: GameStep.SETTINGS,
-    settings: newSettings( nbQuestion, nbPlayer ),
+    settings: newSettings( nbPlayer, nbQuestion, nbAnswer ),
     players: [],
     questions: [],
     started: false,
@@ -159,7 +158,7 @@ export function storeGames( games: Game[] ) {
 
 export function loadGames(): Game[] {
   const games: Game[] = JSON.parse( localStorage.getItem( GAMES ) || '[]' ) || []
-  console.log(`[load] ${games.length} game(s)`)
+  // console.log(`[load] ${games.length} game(s)`)
   games.forEach( g => console.log( `[load] game ${g.id} - nbQuestion ${g.settings.nbQuestion}` ) )
   return games
 }
@@ -236,6 +235,7 @@ export function onSetUp( game: Game ): Game {
   //
 
   const nbQuestion = game.settings.nbQuestion
+  const nbAnswer = game.settings.nbAnswer
   range( nbQuestion ).map( i => i+1 ).forEach( i => {
     // "https://api.deezer.com/artist/27/image"
     const artist = newArtist( "Daft Punk", "https://e-cdns-images.dzcdn.net/images/artist/f2bc007e9133c946ac3c3907ddc5d2ea/56x56-000000-80-0-0.jpg" )
@@ -243,12 +243,13 @@ export function onSetUp( game: Game ): Game {
     const album = newAlbum( "Discovery", "https://e-cdns-images.dzcdn.net/images/cover/2e018122cb56986277102d2041a592c8/56x56-000000-80-0-0.jpg" )
     const media = newMedia( "Harder, Better, Faster, Stronger", "https://cdns-preview-d.dzcdn.net/stream/c-deda7fa9316d9e9e880d2c6207e92260-8.mp3", artist, album )
     const question: Question = addQuestion( game, "Genre", media )
-    if ( i % 2 == 0 ) {
-      addAnswer( question, media.title, artist.name, true )
-      addAnswer( question, "xxx", "xxx", false )
-    } else {
-      addAnswer( question, "yyy", "yyy", false )
-      addAnswer( question, media.title, artist.name, true )
+
+    for ( let j = 0 ; j < nbAnswer ; j++ ) {
+      if ( i % nbAnswer == j ) {
+        addAnswer( question, media.title, artist.name, true )
+      } else {
+        addAnswer( question, `title ${j+1}`, `artist ${j+1}`, false )
+      }
     }
   } )
 
@@ -294,10 +295,10 @@ export function onStartGame( game: Game ): Game {
   game.stats = newGameStats( game.settings.nbQuestion ) 
   
   //
-  // finally move to questions step
+  // finally move to quizz step
   //
 
-  game.step = GameStep.QUESTION
+  game.step = GameStep.QUIZZ
 
   return game
 }

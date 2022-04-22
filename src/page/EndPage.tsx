@@ -1,12 +1,12 @@
 import React from 'react'
-import { useParams } from "react-router"
+import { useParams } from 'react-router'
 import { useNavigate } from 'react-router-dom'
 
 import GamePage from '../component/GamePage'
 import ReplayButton from '../component/ReplayButton'
 
 import { Game, GameStep, OnGameUpdate, selectGame, newGame } from '../data/Game'
-import { toGamePage } from '../data/Navigate'
+import { toHomePage, toGamePage } from '../data/Navigate'
 
 interface Props {
     games: Game[]
@@ -21,6 +21,14 @@ const EndPage = ( props: Props ) => {
 
     const { gameId } = useParams()
     const game = selectGame( games, gameId )
+    
+    React.useEffect( () => { 
+        if ( !game ) {
+            console.log(`[effect] MISSING game! >>> NAVIGATE home`)
+            navigate( toHomePage() )    
+        }
+    }, [ game ] )
+    
     if ( !game ) {
         return null
     }
