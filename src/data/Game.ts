@@ -89,7 +89,7 @@ export function addQuestion( game: Game, title: string, media: Media ): Question
   const current: Question = {
     id: id,
     number: number, 
-    status: 'start',
+    status: 'not-ready',
     title: title,
     media: media,
     answers: [],

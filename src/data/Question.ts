@@ -1,4 +1,5 @@
 import { Answer } from './Answer'
+import { GameId } from './Game'
 import { Media } from './Media'
 import { toZeroPadString } from './Util'
 
@@ -6,12 +7,12 @@ import { toZeroPadString } from './Util'
 // status
 
 export type QuestionStatus = 
-  | 'start'
+  | 'not-ready' 
+  | 'ready'
   | 'playing'
   | 'paused'
   | 'played'
   | 'answered'
-  | 'end'
 
 // //////////////////////////////////////////////////
 // model
@@ -30,6 +31,7 @@ export interface Question {
 }
 
 export type QuestionUpdater = ( question: Question ) => Question
+export type OnQuestionUpdate = ( gameId: GameId, questionId: QuestionId, questionUpdater: QuestionUpdater ) => void
 
 // //////////////////////////////////////////////////
 // add
@@ -46,4 +48,47 @@ export function addAnswer( question: Question, answer: string, hint: string = ""
   }
   question.answers.push( current )
   return current
+}
+
+// //////////////////////////////////////////////////
+// state
+
+export function onReady( question: Question ): Question {
+  console.log( `[on-ready] question: ${question.id}` )
+
+  question.status = 'ready'
+  
+  return question
+}
+
+export function onPlayMusic( question: Question ): Question {
+  console.log( `[on-play-music] question: ${question.id}` )
+
+  question.status = 'playing'
+  
+  return question
+}
+
+export function onPauseMusic( question: Question ): Question {
+  console.log( `[on-pause-music] question: ${question.id}` )
+
+  question.status = 'paused'
+  
+  return question
+}
+
+export function onEndMusic( question: Question ): Question {
+  console.log( `[on-end-music] question: ${question.id}` )
+
+  question.status = 'played'
+  
+  return question
+}
+
+export function onAnswers( question: Question ): Question {
+  console.log( `[on-answers] question: ${question.id}` )
+
+  question.status = 'answered'
+  
+  return question
 }

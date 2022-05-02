@@ -14,6 +14,7 @@ import { Game, GameUpdater, newGame, loadGames, storeGames, clearGames } from '.
 
 import './App.css';
 import PlayingCardsPage from './page/PlayingCardsPage';
+import { QuestionUpdater } from './data/Question'
 
 function App() {
 
@@ -58,6 +59,21 @@ function App() {
     } )
   }
 
+  function updateQuestion( gameId: string, questionId: string, update: QuestionUpdater ) {
+    console.log( `[update-question] ${gameId} - ${questionId}` )
+    setGames( prev => {
+      const newGames = prev.map( game => {
+        if ( game.id != gameId ) {
+          return game
+        }
+        game.questions = game.questions.map( question => question.id === questionId ? update( question ) : question )
+        return game        
+      } )
+      storeGames( newGames )
+      return newGames      
+    } )
+  }
+
   // GREG console.log( '[render] app' )
 
   return (
@@ -69,7 +85,7 @@ function App() {
           <Route path="/game/:gameId/settings" element={<SettingsPage games={games} updateGame={updateGame} />} />        
           <Route path="/game/:gameId/players" element={<PlayersPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/start" element={<StartPage games={games} updateGame={updateGame} />} />
-          <Route path="/game/:gameId/question/:questionId" element={<QuestionPage games={games} updateGame={updateGame} />} />
+          <Route path="/game/:gameId/question/:questionId" element={<QuestionPage games={games} updateGame={updateGame} updateQuestion={updateQuestion}/>} />
           <Route path="/game/:gameId/scores" element={<ScoresPage games={games} updateGame={updateGame} addGame={addGame} />} />
           <Route path="/avatars" element={<AvatarsPage />} />
           <Route path="/cards" element={<PlayingCardsPage />} />

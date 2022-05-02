@@ -25,17 +25,18 @@ import GamePage from '../component/GamePage'
 import QuestionCard from '../component/QuestionCard'
 
 import { Game, GameStep, OnGameUpdate, selectGame, selectQuestion, onQuestion, onEndGame } from '../data/Game'
-import { QuestionId } from '../data/Question'
+import { QuestionId, OnQuestionUpdate } from '../data/Question'
 import { toHomePage, toGamePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 
 interface Props {
     games: Game[]
     updateGame: OnGameUpdate
+    updateQuestion: OnQuestionUpdate
 }
 
 const QuestionPage = ( props: Props ) => {
-    const { games, updateGame } = props
+    const { games, updateGame, updateQuestion } = props
 
     const navigate = useNavigate()
 
@@ -76,14 +77,11 @@ const QuestionPage = ( props: Props ) => {
 
     // user events
 
-    const onPreviousQuestion = onUserEvent( () => question.previousId && updateQuestionId( question.previousId ) )
-    const onNextQuestion = onUserEvent( () => question.nextId && updateQuestionId( question.nextId ) )
-
     const onNext = () => question.nextId ? updateQuestionId( question.nextId ) : endGame()
 
     return (
         <GamePage gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onNext={onNext}>
-            <QuestionCard game={game} question={question} updateGame={updateGame}/>
+            <QuestionCard game={game} question={question} updateGame={updateGame} updateQuestion={updateQuestion}/>
         </GamePage>
     )
 }
