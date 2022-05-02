@@ -1,20 +1,20 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
+import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
+import Toolbar from '@mui/material/Toolbar'
+import IconButton from '@mui/material/IconButton'
 
-import SettingsIcon from '@mui/icons-material/Settings';
-import HomeIcon from '@mui/icons-material/Home';
-import GroupIcon from '@mui/icons-material/Group';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
-import FlagIcon from '@mui/icons-material/Flag';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
+import SettingsIcon from '@mui/icons-material/Settings'
+import HomeIcon from '@mui/icons-material/Home'
+import GroupIcon from '@mui/icons-material/Group'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import MilitaryTechIcon from '@mui/icons-material/MilitaryTech'
+import SkipNextIcon from '@mui/icons-material/SkipNext'
 
 import { Game, GameStep, OnGameUpdate, OnStep } from '../data/Game'
+import { isSettingsPageDisabled, isPlayersPageDisabled, isQuizzPageDisabled, isScoresPageDisabled } from '../data/Game'
 import { toHomePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 
@@ -30,12 +30,11 @@ const Header = ( props: Props ) => {
 
     const navigate = useNavigate()
 
-    const isHomePageDisabled = false
-    const isSettingsPageDisabled = ( game === undefined ) || ( game.players !== undefined )
-    const isPlayersPageDisabled = ( game === undefined ) || game.ended || ( game.players === undefined )
-    const isQuizzPageDisabled = ( game === undefined ) || game.ended || ( game.questions === undefined )
-    const isScoresPageDisabled = ( game === undefined ) || !game.started
-    const isEndPageDisabled = ( game === undefined ) || !game.started
+    const isHomeDisabled = false
+    const isSettingsDisabled = isSettingsPageDisabled( game )
+    const isPlayersDisabled = isPlayersPageDisabled( game )
+    const isQuizzDisabled = isQuizzPageDisabled( game )
+    const isScoresDisabled = isScoresPageDisabled( game )
     const isNextDisabled = ( onNext === undefined )
 
     // update helpers
@@ -53,7 +52,6 @@ const Header = ( props: Props ) => {
     const onPlayersPage = onUserEvent( () => updateGameStep( GameStep.PLAYERS ) )
     const onQuizzPage = onUserEvent( () => updateGameStep( GameStep.QUIZZ ) )
     const onScoresPage = onUserEvent( () => updateGameStep( GameStep.SCORES ) )
-    const onEndPage = onUserEvent( () => updateGameStep( GameStep.END ) )
     const onNextPage = onUserEvent( () => onNext && onNext() )
 
     return (
@@ -68,7 +66,7 @@ const Header = ( props: Props ) => {
                             aria-label="home" 
                             size="large"
                             color={gameStep === undefined ? 'secondary' : 'default'} 
-                            disabled={isHomePageDisabled} 
+                            disabled={isHomeDisabled} 
                             onClick={onHomePage}
                         >
                             <HomeIcon />
@@ -80,7 +78,7 @@ const Header = ( props: Props ) => {
                             aria-label="Settings" 
                             size="large" 
                             color={ gameStep == GameStep.SETTINGS ? 'secondary' : 'default' } 
-                            disabled={isSettingsPageDisabled} 
+                            disabled={isSettingsDisabled} 
                             onClick={onSettingsPage}
                         >
                             <SettingsIcon />
@@ -92,7 +90,7 @@ const Header = ( props: Props ) => {
                             aria-label="Players" 
                             size="large" 
                             color={ gameStep == GameStep.PLAYERS ? 'secondary' : 'default' } 
-                            disabled={isPlayersPageDisabled} 
+                            disabled={isPlayersDisabled} 
                             onClick={onPlayersPage}
                         >
                             <GroupIcon />
@@ -104,7 +102,7 @@ const Header = ( props: Props ) => {
                             aria-label="Quizz" 
                             size="large" 
                             color={ gameStep == GameStep.QUIZZ ? 'secondary' : 'default' } 
-                            disabled={isQuizzPageDisabled} 
+                            disabled={isQuizzDisabled} 
                             onClick={onQuizzPage}
                         >
                             <MusicNoteIcon />
@@ -116,22 +114,10 @@ const Header = ( props: Props ) => {
                             aria-label="Scores" 
                             size="large" 
                             color={ gameStep == GameStep.SCORES ? 'secondary' : 'default' } 
-                            disabled={isScoresPageDisabled} 
+                            disabled={isScoresDisabled} 
                             onClick={onScoresPage}
                         >
                             <MilitaryTechIcon />
-                        </IconButton>
-
-                        {/* End */}
-
-                        <IconButton 
-                            aria-label="End" 
-                            size="large"
-                            color={ gameStep == GameStep.END ? 'secondary' : 'default' } 
-                            disabled={isEndPageDisabled} 
-                            onClick={onEndPage}
-                        >
-                            <FlagIcon />
                         </IconButton>
 
                         {/* Next */}

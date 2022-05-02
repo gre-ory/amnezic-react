@@ -23,7 +23,6 @@ export enum GameStep {
   PLAYERS = 'PLAYERS',
   QUIZZ = 'QUIZZ',
   SCORES = 'SCORES',
-  END = 'END',
 }
 
 export type GameId = string
@@ -193,23 +192,19 @@ export function isSetUp( game: Game ): boolean {
   return hasPlayers( game ) && hasQuestions( game )
 }
 
-export function isSettingsPageDisabled( game: Game ): boolean {
+export function isSettingsPageDisabled( game: Game | undefined ): boolean {
   return ( game === undefined ) || game.ended || isSetUp( game ) 
 }
 
-export function isPlayersPageDisabled( game: Game ): boolean {
+export function isPlayersPageDisabled( game: Game | undefined ): boolean {
   return ( game === undefined ) || game.ended || !isSetUp( game ) 
 }
 
-export function isQuizzPageDisabled( game: Game ): boolean {
+export function isQuizzPageDisabled( game: Game | undefined ): boolean {
   return ( game === undefined ) || game.ended || !isSetUp( game ) 
 }
 
-export function isScoresPageDisabled( game: Game ): boolean {
-  return ( game === undefined ) || !game.started || !isSetUp( game )
-}
-
-export function isEndPageDisabled( game: Game ): boolean {
+export function isScoresPageDisabled( game: Game | undefined ): boolean {
   return ( game === undefined ) || !game.started || !isSetUp( game )
 }
 
@@ -333,6 +328,12 @@ export function onEndGame( game: Game ): Game {
   //
 
   game.ended = true
+  
+  //
+  // finally move to scores step
+  //
+
+  game.step = GameStep.SCORES
 
   return game
 }

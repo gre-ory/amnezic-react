@@ -80,7 +80,7 @@ const PlayerCard = ( props: Props ) => {
         } )
     }
 
-    const onCardChange = (card: Card) => {
+    const onCardChange = (card: DataCard) => {
         updatePlayerCard( {
             ...player.card,
             color: card.color,

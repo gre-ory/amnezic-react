@@ -8,7 +8,6 @@ import PlayersPage from './page/PlayersPage'
 import StartPage from './page/StartPage'
 import QuestionPage from './page/QuestionPage'
 import ScoresPage from './page/ScoresPage'
-import EndPage from './page/EndPage'
 import AvatarsPage from './page/AvatarsPage'
 
 import { Game, GameUpdater, newGame, loadGames, storeGames, clearGames } from './data/Game'
@@ -71,8 +70,7 @@ function App() {
           <Route path="/game/:gameId/players" element={<PlayersPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/start" element={<StartPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/question/:questionId" element={<QuestionPage games={games} updateGame={updateGame} />} />
-          <Route path="/game/:gameId/scores" element={<ScoresPage games={games} updateGame={updateGame} />} />
-          <Route path="/game/:gameId/end" element={<EndPage games={games} updateGame={updateGame} addGame={addGame} />} />
+          <Route path="/game/:gameId/scores" element={<ScoresPage games={games} updateGame={updateGame} addGame={addGame} />} />
           <Route path="/avatars" element={<AvatarsPage />} />
           <Route path="/cards" element={<PlayingCardsPage />} />
         </Routes>

@@ -24,7 +24,7 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import GamePage from '../component/GamePage'
 import QuestionCard from '../component/QuestionCard'
 
-import { Game, GameStep, OnGameUpdate, selectGame, selectQuestion, onQuestion } from '../data/Game'
+import { Game, GameStep, OnGameUpdate, selectGame, selectQuestion, onQuestion, onEndGame } from '../data/Game'
 import { QuestionId } from '../data/Question'
 import { toHomePage, toGamePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
@@ -65,49 +65,25 @@ const QuestionPage = ( props: Props ) => {
         updateGame( game.id, onQuestion( questionId ) )
     }
 
+    const endGame = () => {
+        updateGame( game.id, onEndGame )
+    }
+
     const question = selectQuestion( game, questionId )
     if ( !question ) {
         return null
     }
-
-    console.log( question )
-
-    const progress = 25;
 
     // user events
 
     const onPreviousQuestion = onUserEvent( () => question.previousId && updateQuestionId( question.previousId ) )
     const onNextQuestion = onUserEvent( () => question.nextId && updateQuestionId( question.nextId ) )
 
-    const onNext = () => question.nextId && updateQuestionId( question.nextId )
+    const onNext = () => question.nextId ? updateQuestionId( question.nextId ) : endGame()
 
     return (
         <GamePage gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onNext={onNext}>
             <QuestionCard game={game} question={question} updateGame={updateGame}/>
-
-            <Timeline>
-      <TimelineItem>
-        <TimelineSeparator>
-          <TimelineDot />
-          <TimelineConnector />
-        </TimelineSeparator>
-        <TimelineContent>Eat</TimelineContent>
-      </TimelineItem>
-      <TimelineItem>
-        <TimelineSeparator>
-          <TimelineDot />
-          <TimelineConnector />
-        </TimelineSeparator>
-        <TimelineContent>Code</TimelineContent>
-      </TimelineItem>
-      <TimelineItem>
-        <TimelineSeparator>
-          <TimelineDot />
-        </TimelineSeparator>
-        <TimelineContent>Sleep</TimelineContent>
-      </TimelineItem>
-    </Timeline>
-
         </GamePage>
     )
 }

@@ -26,10 +26,6 @@ export function toScoresPage( game: Game ): string {
   return `/game/${game.id}/scores`
 }
 
-export function toEndPage( game: Game ): string {
-  return `/game/${game.id}/end`
-}
-
 export function toGamePage( game: Game | undefined ): string {
   if ( game ) {
     switch ( game.step ) {
@@ -41,8 +37,6 @@ export function toGamePage( game: Game | undefined ): string {
         return toQuizzPage( game )
       case GameStep.SCORES:
         return toScoresPage( game )
-      case GameStep.END:
-        return toEndPage( game )
     }  
   }
   return toHomePage()

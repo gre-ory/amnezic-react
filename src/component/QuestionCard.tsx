@@ -18,6 +18,7 @@ import Slide from '@mui/material/Slide';
 import { Game, OnGameUpdate, onQuestion } from '../data/Game'
 import { Question, QuestionId } from '../data/Question'
 import { onUserEvent } from '../data/Util'
+import { Avatar } from '@mui/material'
 
 interface Props {
     game: Game
@@ -53,30 +54,16 @@ const QuestionCard = ( props: Props ) => {
             {
                 question.answers.map( answer => {
                     return (
-                        <Slide direction="left" in={true} mountOnEnter unmountOnExit timeout={answer.number*1000}>
-                        <Paper key={answer.number} className="answer" elevation={3}>
-                            <Grid container spacing={2}>
-
-                                <Grid item xs={3} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                                    <h1>{answer.number}</h1>
-                                </Grid>
-
-                                <Grid item xs={9} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                                            <h3>{answer.answer}</h3>
-                                        </Grid>
-                                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                                        <h4>{answer.hint}</h4>
-                                        </Grid>
-                                    </Grid>
-                                
-                                </Grid>
-
-                            </Grid>
-                            
-                        </Paper>
+                        <Slide direction="left" in={true} mountOnEnter unmountOnExit timeout={2000} style={{ transitionDelay: `${answer.number*1000}ms` }}>
+                            <Paper key={answer.number} className="answer" elevation={3} style={{ margin: '2px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
+                                    <Avatar style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
+                                    <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
+                                        <Typography variant='h5'>{answer.answer}</Typography>
+                                        <Typography variant='subtitle1'>{answer.hint}</Typography>
+                                    </div>
+                                </div>                                
+                            </Paper>
                         </Slide>
                     )
                 })
