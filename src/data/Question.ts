@@ -9,10 +9,8 @@ import { toZeroPadString } from './Util'
 export type QuestionStatus = 
   | 'not-ready' 
   | 'ready'
-  | 'playing'
-  | 'paused'
   | 'played'
-  | 'answered'
+  | 'completed'
 
 // //////////////////////////////////////////////////
 // model
@@ -53,42 +51,26 @@ export function addAnswer( question: Question, answer: string, hint: string = ""
 // //////////////////////////////////////////////////
 // state
 
-export function onReady( question: Question ): Question {
-  console.log( `[on-ready] question: ${question.id}` )
+export function onQuestionReady( question: Question ): Question {
+  console.log( `[on-question-ready] question: ${question.id}` )
 
   question.status = 'ready'
   
   return question
 }
 
-export function onPlayMusic( question: Question ): Question {
-  console.log( `[on-play-music] question: ${question.id}` )
-
-  question.status = 'playing'
-  
-  return question
-}
-
-export function onPauseMusic( question: Question ): Question {
-  console.log( `[on-pause-music] question: ${question.id}` )
-
-  question.status = 'paused'
-  
-  return question
-}
-
-export function onEndMusic( question: Question ): Question {
-  console.log( `[on-end-music] question: ${question.id}` )
+export function onQuestionPlayed( question: Question ): Question {
+  console.log( `[on-question-played] question: ${question.id}` )
 
   question.status = 'played'
   
   return question
 }
 
-export function onAnswers( question: Question ): Question {
-  console.log( `[on-answers] question: ${question.id}` )
+export function onQuestionCompleted( question: Question ): Question {
+  console.log( `[on-question-completed] question: ${question.id}` )
 
-  question.status = 'answered'
+  question.status = 'completed'
   
   return question
 }

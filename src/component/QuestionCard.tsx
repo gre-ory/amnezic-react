@@ -17,10 +17,10 @@ import NextButton from '../component/NextButton'
 import Slide from '@mui/material/Slide';
 
 import { Game, OnGameUpdate, onQuestion } from '../data/Game'
-import { Question, QuestionId, OnQuestionUpdate, onPauseMusic, onPlayMusic, onEndMusic, onAnswers, onReady } from '../data/Question'
+import { Question, QuestionId, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted } from '../data/Question'
 import { onUserEvent } from '../data/Util'
 import { Avatar } from '@mui/material'
-import { ControlPointDuplicateSharp } from '@mui/icons-material'
+import { ConstructionOutlined, ControlPointDuplicateSharp } from '@mui/icons-material'
 import { isConstructorDeclaration } from 'typescript'
 
 interface Props {
@@ -34,11 +34,27 @@ const QuestionCard = ( props: Props ) => {
     const { game, question, updateGame, updateQuestion } = props
 
     const [ questionId, setQuestionId ] = React.useState( game.questionId )
-    const [ audio, setAudio ] = React.useState( question ? new Audio( question.media.music ) : null )
 
-    if ( !game || !question || !audio ) {
+    if ( !game || !question ) {
         return null
     }
+        
+    const audioRef = React.useRef( new Audio( question.media.music ) )
+    const isReady = React.useRef( false );
+
+    const [ isPlaying, setIsPlaying ] = React.useState( false )
+    const [ duration, setDuration ] = React.useState( 0 )
+    const [ currentTime, setCurrentTime ] = React.useState( 0 )
+
+    const musicPlayed = question.status == 'played' || question.status == 'completed'
+
+    let currentPercentage = 0
+    if ( musicPlayed ) {
+        currentPercentage = 100
+    } else if ( question.status == 'ready' && duration ) {
+        currentPercentage = Math.ceil( ( currentTime / duration ) * 100 )
+    }
+    const trackStyling = `-webkit-gradient(linear, 0% 0%, 100% 0%, color-stop(${currentPercentage}%, #fff), color-stop(${currentPercentage}%, #777))`
 
     // update helpers
 
@@ -58,67 +74,112 @@ const QuestionCard = ( props: Props ) => {
 
     const musicReady = () => {
         if ( question.status == 'not-ready' ) {
-            updateQuestion( game.id, question.id, onReady )
+            updateQuestion( game.id, question.id, onQuestionReady )
+        }
+    }
+
+    const musicEnded = () => {
+        if ( question.status == 'ready' ) {
+            updateQuestion( game.id, question.id, onQuestionPlayed )
+        }
+    }
+
+    const musicAnswered = () => {
+        if ( question.status == 'played' ) {
+            updateQuestion( game.id, question.id, onQuestionCompleted )
         }
     }
 
     const playMusic = () => {        
-        if ( question.status != 'playing' ) {
-            updateQuestion( game.id, question.id, onPlayMusic )
-        }
+        audioRef.current.play()
+        setIsPlaying( true )
     }
 
-    const pauseMusic = () => {      
-        if ( question.status != 'paused' ) {
-            updateQuestion( game.id, question.id, onPauseMusic )
-        }
+    const pauseMusic = () => {        
+        audioRef.current.pause()
+        setIsPlaying( false )
     }
 
-    const endMusic = () => {
-        if ( question.status != 'played' && question.status != 'answered' ) {
-            updateQuestion( game.id, question.id, onEndMusic )
-        }
-    }
-
-    const validateAnswers = () => {
-        if ( question.status != 'answered' ) {
-            updateQuestion( game.id, question.id, onAnswers )
-        }
-    }
-
-    // audio helpers
+    //
+    // switch audio track
+    //
 
     React.useEffect( () => {
-        if ( question.status == 'not-ready' ) {
-            audio.addEventListener( 'loadeddata', musicReady )
-            audio.load();
-            return () => {
-                audio.removeEventListener( 'loadeddata', musicReady )
-            }
+
+        audioRef.current.pause();
+    
+        audioRef.current = new Audio( question.media.music )
+        setDuration( 0 )
+        setCurrentTime( 0 )
+    
+        if ( isReady.current ) {
+          // TODO audioRef.current.play();
+          // TODO setIsPlaying(true);
+          // TODO startTimer();
+        } else {
+          // Set the isReady ref as true for the next pass
+          // TODO isReady.current = true;
         }
-    } )    
+
+    }, [ questionId ] );
+
+    //
+    // audio events
+    //
+
     React.useEffect( () => {
-        if ( question.status == 'playing' ) {
-            audio.addEventListener( 'ended', endMusic )
-            return () => {
-                audio.removeEventListener( 'ended', endMusic )
-            }
+        const audio = audioRef.current;
+    
+        const onAudioLoad = () => {
+            console.log( `onAudioLoad >>> setCurrentTime( ${audio.currentTime} ) + setDuration( ${audio.duration} )` )
+            setCurrentTime( audio.currentTime )
+            setDuration( audio.duration )
         }
-    } )
+        const onAudioReady = () => {            
+            console.log( 'onAudioReady >>> musicReady' )
+            musicReady()
+        }
+        const onAudioUpdate = () => {  
+            console.log( `onAudioUpdate >>> setCurrentTime( ${audio.currentTime} )` )
+            setCurrentTime( audio.currentTime )
+        }
+        const onAudioEnd = () => {
+            console.log( 'onAudioEnd >>> musicEnded()' )
+            musicEnded()
+        }
+    
+        // listeners
+
+        audio.addEventListener( 'loadeddata', onAudioLoad )    
+        audio.addEventListener( 'canplaythrough', onAudioReady )
+        audio.addEventListener( 'timeupdate', onAudioUpdate )
+        audio.addEventListener( 'ended', onAudioEnd )
+
+        console.log( audio )
+    
+        // React state listeners: update DOM on React state changes
+        // TODO playing ? audio.play() : audio.pause();
+    
+        // effect cleanup
+        return () => {
+            audio.removeEventListener( 'loadeddata', onAudioLoad )    
+            audio.removeEventListener( 'canplaythrough', onAudioReady )
+            audio.removeEventListener( 'timeupdate', onAudioUpdate )
+            audio.removeEventListener( 'ended', onAudioEnd )
+        }
+    }, [] );
 
     console.log("render...")
-
-    const progress = 25;
 
     const onPreviousQuestion = onUserEvent( previousQuestion )
     const onNextQuestion = onUserEvent( nextQuestion )
 
-    const pauseShown = question.status == 'playing'
-    const pauseDisabled = false
+    const pauseShown = isPlaying
+    const pauseDisabled = question.status != 'ready'
     const onPause = onUserEvent( () => pauseMusic() )
 
     const playShown = !pauseShown
-    const playDisabled = question.status == 'ready' || question.status == 'paused'
+    const playDisabled = question.status != 'ready'
     const onPlay = onUserEvent( () => playMusic() )
 
     const previousDisabled = question.previousId === undefined
@@ -126,7 +187,7 @@ const QuestionCard = ( props: Props ) => {
       previousQuestion()  
     } )
 
-    const nextDisabled = question.status == 'answered' && question.nextId === undefined
+    const nextDisabled = question.status == 'not-ready'
     const onNext = onUserEvent( () => {
         switch ( question.status ) {
             case 'not-ready':
@@ -134,22 +195,42 @@ const QuestionCard = ( props: Props ) => {
             case 'ready':
                 playMusic()
                 break
-            case 'playing':
-                endMusic()
-                break
-            case 'paused':
-                playMusic()
-                break
             case 'played':
-                validateAnswers()
+                musicAnswered()
                 break
-            case 'answered':
+            case 'completed':
                 nextQuestion()
                 break
         }
     } )
 
-    const showAnswer = question.status === 'answered'
+    const showAnswer = question.status === 'completed'
+
+    //
+    // keyboard shortcuts
+    // 
+
+    const handleKeyPress = React.useCallback( ( event ) => {        
+        switch ( event.key ) {
+            case 'Space':
+                if ( question.status == 'ready' ) {
+                    if ( isPlaying ) {
+                        console.log( `key "${event.key}" >>> pauseMusic()`);
+                        pauseMusic();
+                    } else {
+                        console.log( `key "${event.key}" >>> playMusic()`);
+                        playMusic();
+                    }
+                }
+                break;
+        }
+    }, [] );
+    React.useEffect( () => {
+        document.addEventListener( 'keydown', handleKeyPress );
+        return () => {
+            document.removeEventListener( 'keydown', handleKeyPress );
+        };
+    }, [ handleKeyPress ] );
 
     return (
         <>
@@ -160,7 +241,7 @@ const QuestionCard = ( props: Props ) => {
             {
                 question.answers.map( answer => {
                     return (
-                        <Slide key={answer.number} direction="left" in={true} mountOnEnter unmountOnExit timeout={2000} style={{ transitionDelay: `${answer.number*1000}ms` }}>
+                        <Slide key={answer.number} direction="left" in={true} mountOnEnter unmountOnExit timeout={musicPlayed ? 0 : 2000} style={{ transitionDelay: `${musicPlayed ? 0 : answer.number*1000}ms` }}>
                             <Paper key={answer.number} className="answer" elevation={3} style={{ margin: '2px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
                                     <Avatar style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
@@ -178,6 +259,11 @@ const QuestionCard = ( props: Props ) => {
 
             <Card sx={{ display: 'flex' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+
+                    <audio id="audio">
+                        <source src={question.media.music} />
+                        Your browser does not support the <code>audio</code> element.
+                    </audio>
                     
                     <Typography variant="h5" color="text.primary" component="div" style={{ margin: '5px 10px', opacity: showAnswer ? '1' : '0' }}>
                         {question.media.title}
@@ -253,7 +339,7 @@ const QuestionCard = ( props: Props ) => {
                 </Box>
             </Card>
 
-            <LinearProgress variant="determinate" value={progress} />
+            <LinearProgress variant="determinate" value={currentPercentage} />
             </>
     )
 }

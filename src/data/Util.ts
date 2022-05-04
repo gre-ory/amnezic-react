@@ -53,3 +53,17 @@ export function onUserEvent( callback: Callback ): EventCallback {
         event.stopPropagation()
     }
 }
+
+// //////////////////////////////////////////////////
+// key event
+
+export type KeyCallback = ( key: string ) => boolean
+export type KeyEventCallback = ( event: any ) => void
+
+export function onKeyEvent( keyCallback: KeyCallback ): EventCallback {
+    return ( event: any ) => {
+        if ( keyCallback( event.key ) ) {
+            event.stopPropagation()
+        }
+    }
+}

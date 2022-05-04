@@ -54,6 +54,27 @@ const Header = ( props: Props ) => {
     const onScoresPage = onUserEvent( () => updateGameStep( GameStep.SCORES ) )
     const onNextPage = onUserEvent( () => onNext && onNext() )
 
+    // keyboard shortcuts
+
+    const handleKeyPress = React.useCallback( ( event ) => {        
+        switch ( event.key ) {
+            case 'n':
+            case 'Enter':
+            case 'ArrowRight':
+                if ( onNext ) {
+                    console.log( `key "${event.key}" >>> onNext()`);
+                    onNext();
+                }
+                break;
+        }
+    }, [] );
+    React.useEffect( () => {
+        document.addEventListener( 'keydown', handleKeyPress );
+        return () => {
+            document.removeEventListener( 'keydown', handleKeyPress );
+        };
+    }, [ handleKeyPress ] );
+
     return (
         <Box className="header" sx={{ flexGrow: 1 }}>
             <AppBar position="static" color="transparent">
