@@ -21,14 +21,14 @@ export type QuestionId = number
 
 export interface Question {
   id: QuestionId
-  questionNumber: number
+  number: number
   status: QuestionStatus
   title: string
   media: Media
   answers: Answer[] 
   playerAnswers: PlayerAnswer[] 
-  previousId?: QuestionId
-  nextId?: QuestionId
+  previousNumber?: number
+  nextNumber?: number
 }
 
 export type QuestionUpdater = ( question: Question ) => Question
@@ -41,7 +41,7 @@ export function addAnswer( question: Question, answer: string, hint: string = ""
   const number = question.answers.length + 1
   const current: Answer = {
     id: question.id + number, 
-    cardNumber: number,
+    number: number,
     answer: answer,
     hint: hint,
     correct: correct,

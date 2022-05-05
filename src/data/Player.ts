@@ -18,7 +18,7 @@ export type PlayerId = number
 
 export interface Player {
   id: PlayerId
-  playerNumber: number,
+  number: number,
   name: string
   status: PlayerStatus
   card: Card

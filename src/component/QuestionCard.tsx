@@ -16,7 +16,7 @@ import SkipNextIcon from '@mui/icons-material/SkipNext'
 import NextButton from '../component/NextButton'
 import Slide from '@mui/material/Slide';
 
-import { Game, OnGameUpdate, onQuestion } from '../data/Game'
+import { Game, OnGameUpdate, onQuestionNumber } from '../data/Game'
 import { Player, PlayerId } from '../data/Player'
 import { Question, QuestionId, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
 import { onUserEvent } from '../data/Util'
@@ -37,7 +37,7 @@ interface Props {
 const QuestionCard = ( props: Props ) => {
     const { game, question, updateGame, updateQuestion } = props
 
-    const [ questionId, setQuestionId ] = React.useState( game.questionId )
+    const [ questionNumber, setQuestionNumber ] = React.useState( game.questionNumber )
 
     if ( !game || !question ) {
         return null
@@ -65,16 +65,16 @@ const QuestionCard = ( props: Props ) => {
     // update helpers
 
     const previousQuestion = () => {
-        if ( question.previousId ) {
-            updateGame( game.id, onQuestion( question.previousId ) )
-            setQuestionId( question.previousId )
+        if ( question.previousNumber ) {
+            updateGame( game.id, onQuestionNumber( question.previousNumber ) )
+            setQuestionNumber( question.previousNumber )
         }
     }
 
     const nextQuestion = () => {
-        if ( question.nextId ) {
-            updateGame( game.id, onQuestion( question.nextId ) )
-            setQuestionId( question.nextId )
+        if ( question.nextNumber ) {
+            updateGame( game.id, onQuestionNumber( question.nextNumber ) )
+            setQuestionNumber( question.nextNumber )
         }
     }
 
@@ -139,7 +139,7 @@ const QuestionCard = ( props: Props ) => {
           // TODO isReady.current = true;
         }
 
-    }, [ questionId ] );
+    }, [ questionNumber ] );
 
     //
     // audio events
@@ -200,7 +200,7 @@ const QuestionCard = ( props: Props ) => {
     const playDisabled = question.status != 'ready'
     const onPlay = onUserEvent( () => playMusic() )
 
-    const previousDisabled = question.previousId === undefined
+    const previousDisabled = question.previousNumber === undefined
     const onPrevious = onUserEvent( () => {
       previousQuestion()  
     } )
@@ -254,7 +254,7 @@ const QuestionCard = ( props: Props ) => {
     return (
         <>
             <Paper className="title" elevation={3}>
-                <h1>#{question.questionNumber} - {question.title} - {question.status}</h1>
+                <h1>#{question.number} - {question.title} - {question.status}</h1>
             </Paper>
 
             {
@@ -266,7 +266,7 @@ const QuestionCard = ( props: Props ) => {
                         <Slide key={answer.id} direction="left" in={true} mountOnEnter unmountOnExit timeout={timeout} style={{ transitionDelay: `${delay}ms` }}>
                             <Paper key={answer.id} className="answer" elevation={3} style={{ margin: '2px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
-                                    <Avatar style={{ margin: '10px', padding: '5px' }}>{answer.cardNumber}</Avatar>
+                                    <Avatar style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
                                     <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
                                         <Typography variant='h5'>{answer.answer}</Typography>
                                         <Typography variant='subtitle1'>{answer.hint}</Typography>
@@ -280,7 +280,7 @@ const QuestionCard = ( props: Props ) => {
                                                     key={`${player.id}-${answer.id}`} 
                                                     card={{
                                                         ...player.card,
-                                                        value: `${answer.cardNumber}`,
+                                                        number: answer.number,
                                                         size: CardSize.XS,
                                                     }}
                                                     disabled={disabled} 
@@ -315,7 +315,7 @@ const QuestionCard = ( props: Props ) => {
                                     key={`${player.id}-${answer.id}`} 
                                     card={{
                                         ...player.card,
-                                        value: `${answer.cardNumber}`,
+                                        number: answer.number,
                                         size: CardSize.XS,
                                     }} 
                                     onClick={onClick} 

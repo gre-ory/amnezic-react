@@ -16,10 +16,10 @@ export function toPlayersPage( game: Game ): string {
 }
 
 export function toQuizzPage( game: Game ): string {
-  if ( !game.questionId ) {
+  if ( !game.questionNumber ) {
     return `/game/${game.id}/start`    
   }
-  return `/game/${game.id}/question/${game.questionId}`
+  return `/game/${game.id}/question/${game.questionNumber}`
 }
 
 export function toScoresPage( game: Game ): string {

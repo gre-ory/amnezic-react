@@ -24,7 +24,7 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import GamePage from '../component/GamePage'
 import QuestionCard from '../component/QuestionCard'
 
-import { Game, GameStep, OnGameUpdate, selectGame, selectQuestion, onQuestion, onEndGame } from '../data/Game'
+import { Game, GameStep, OnGameUpdate, selectGame, selectQuestion, onQuestionNumber, onEndGame } from '../data/Game'
 import { QuestionId, OnQuestionUpdate } from '../data/Question'
 import { toHomePage, toGamePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
@@ -40,44 +40,48 @@ const QuestionPage = ( props: Props ) => {
 
     const navigate = useNavigate()
 
-    const { gameId, questionId } = useParams()
+    const { gameId, questionNumber } = useParams()
+    
+    console.log( gameId )
+    console.log( questionNumber )
     const game = selectGame( games, gameId )
+    const question = selectQuestion( game, questionNumber )
     
     React.useEffect( () => { 
         if ( !game ) {
             console.log(`[effect] MISSING game! >>> NAVIGATE to home`)
             navigate( toHomePage() )    
-        } else if ( game.questionId != questionId ) {
-            console.log(`[effect] NEW question! >>> NAVIGATE to question ${game.questionId}`)
-            navigate( toGamePage( game ) )    
         } else if ( !question ) {
             console.log(`[effect] UNKNOWN question! >>> NAVIGATE to home`)
             navigate( toHomePage() )     
-        } 
+        } else if ( game.questionNumber != question.number ) {
+            console.log(`[effect] NEW question! >>> NAVIGATE to question ${game.questionNumber}`)
+            navigate( toGamePage( game ) )    
+        }  
     }, [ game ] )
     
     if ( !game ) {
         return null
     }
 
+    
+    if ( !question ) {
+        return null
+    }
+
     // update helpers
 
-    const updateQuestionId = ( questionId: QuestionId ) => {
-        updateGame( game.id, onQuestion( questionId ) )
+    const updateQuestionNumber = ( questionNumber: number ) => {
+        updateGame( game.id, onQuestionNumber( questionNumber ) )
     }
 
     const endGame = () => {
         updateGame( game.id, onEndGame )
     }
 
-    const question = selectQuestion( game, questionId )
-    if ( !question ) {
-        return null
-    }
-
     // user events
 
-    const onNext = () => question.nextId ? updateQuestionId( question.nextId ) : endGame()
+    const onNext = () => question.nextNumber ? updateQuestionNumber( question.nextNumber ) : endGame()
 
     return (
         <GamePage gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onNext={onNext}>

@@ -14,6 +14,7 @@ import { Settings } from '../data/Settings'
 import { Game, GameStep, OnGameUpdate, selectGame, updateSettings, onSetUp } from '../data/Game'
 import { toHomePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
+import { INCREMENT_NB_ANSWER_PER_QUESTION, INCREMENT_NB_PLAYER, INCREMENT_NB_QUESTION, MAX_NB_ANSWER_PER_QUESTION, MAX_NB_PLAYER, MAX_NB_QUESTION, MIN_NB_ANSWER_PER_QUESTION, MIN_NB_PLAYER, MIN_NB_QUESTION } from '../data/Constants'
 
 interface Props {
     games: Game[]
@@ -44,19 +45,19 @@ const SettingsPage = ( props: Props ) => {
     const settings = game.settings
 
     const nbPlayer = settings.nbPlayer
-    const nbPlayerIncrement = 1
-    const lessPlayerDisabled = nbPlayer <= 2
-    const morePlayerDisabled = nbPlayer >= 4 // 10
+    const nbPlayerIncrement = INCREMENT_NB_PLAYER
+    const lessPlayerDisabled = nbPlayer <= MIN_NB_PLAYER
+    const morePlayerDisabled = nbPlayer >= MAX_NB_PLAYER
 
     const nbQuestion = settings.nbQuestion
-    const nbQuestionIncrement = 1 // 10
-    const lessQuestionDisabled = nbQuestion <= 2 // 10
-    const moreQuestionDisabled = nbQuestion >= 4 // 200
+    const nbQuestionIncrement = INCREMENT_NB_QUESTION
+    const lessQuestionDisabled = nbQuestion <= MIN_NB_QUESTION
+    const moreQuestionDisabled = nbQuestion >= MAX_NB_QUESTION
 
     const nbAnswer = settings.nbAnswer
-    const nbAnswerIncrement = 1 // 10
-    const lessAnswerDisabled = nbAnswer <= 2
-    const moreAnswerDisabled = nbAnswer >= 6
+    const nbAnswerIncrement = INCREMENT_NB_ANSWER_PER_QUESTION
+    const lessAnswerDisabled = nbAnswer <= MIN_NB_ANSWER_PER_QUESTION
+    const moreAnswerDisabled = nbAnswer >= MAX_NB_ANSWER_PER_QUESTION
 
     // update helpers
 
@@ -87,14 +88,14 @@ const SettingsPage = ( props: Props ) => {
 
     // user events )
 
-    const lessPlayer = onUserEvent( () => updateNbPlayer( game.settings.nbPlayer - nbPlayerIncrement ) )
-    const morePlayer = onUserEvent( () => updateNbPlayer( game.settings.nbPlayer + nbPlayerIncrement ) )
+    const lessPlayer = lessPlayerDisabled ? undefined : onUserEvent( () => updateNbPlayer( game.settings.nbPlayer - nbPlayerIncrement ) )
+    const morePlayer = morePlayerDisabled ? undefined : onUserEvent( () => updateNbPlayer( game.settings.nbPlayer + nbPlayerIncrement ) )
 
-    const lessQuestion = onUserEvent( () => updateNbQuestion( game.settings.nbQuestion - nbQuestionIncrement ) )
-    const moreQuestion = onUserEvent( () => updateNbQuestion( game.settings.nbQuestion + nbQuestionIncrement ) )
+    const lessQuestion = lessQuestionDisabled ? undefined : onUserEvent( () => updateNbQuestion( game.settings.nbQuestion - nbQuestionIncrement ) )
+    const moreQuestion = moreQuestionDisabled ? undefined : onUserEvent( () => updateNbQuestion( game.settings.nbQuestion + nbQuestionIncrement ) )
 
-    const lessAnswer = onUserEvent( () => updateNbAnswer( game.settings.nbAnswer - nbAnswerIncrement ) )
-    const moreAnswer = onUserEvent( () => updateNbAnswer( game.settings.nbAnswer + nbAnswerIncrement ) )
+    const lessAnswer = lessAnswerDisabled ? undefined : onUserEvent( () => updateNbAnswer( game.settings.nbAnswer - nbAnswerIncrement ) )
+    const moreAnswer = moreAnswerDisabled ? undefined : onUserEvent( () => updateNbAnswer( game.settings.nbAnswer + nbAnswerIncrement ) )
 
     return (
         <GamePage gameStep={GameStep.SETTINGS} game={game} updateGame={updateGame} onNext={onNext}>

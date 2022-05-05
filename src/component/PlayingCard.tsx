@@ -49,7 +49,7 @@ const PlayingCard = ( props: Props ) => {
                 </div>
                 <div className="card--content">
                     <div className="card--value">
-                        {card.value}
+                        {card.number ? `${card.number % 10}` : card.value}
                     </div>
                     <div className="card--symbol">
                         <PlayingCardIcon symbol={card.symbol} color={card.color}/>

@@ -10,6 +10,7 @@ import { Media, newMedia } from './Media'
 import { GameStats, newGameStats } from './GameStats'
 import { Card, DefaultCards } from './Card'
 import { newPlayerStats } from './PlayerStats'
+import { ANSWER_ID_SUFFIX, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
 
 // //////////////////////////////////////////////////
 // model
@@ -36,7 +37,7 @@ export interface Game {
   players: Player[]
   questions: Question[]
   started: boolean
-  questionId?: QuestionId
+  questionNumber?: number
   ended: boolean
   stats?: GameStats
 }
@@ -49,7 +50,7 @@ export type OnPlayerUpdate = ( gameId: GameId, playerId: PlayerId, gameUpdater: 
 // //////////////////////////////////////////////////
 // create
 
-export function newGame( nbQuestion: number = 4, nbPlayer: number = 2, nbAnswer: number = 3 ): Game {
+export function newGame( nbPlayer: number = DEFAULT_NB_PLAYER, nbQuestion: number = DEFAULT_NB_QUESTION, nbAnswer: number = DEFAULT_NB_ANSWER_PER_QUESTION ): Game {
   return {
     id: newGameId(),  
     code: newGameCode(),  
@@ -68,24 +69,25 @@ export function newGame( nbQuestion: number = 4, nbPlayer: number = 2, nbAnswer:
 // add
 
 export function addPlayer( game: Game, card: Card ): Player {
-  const playerNumber = game.players.length + 1
+  const number = game.players.length + 1
   const current: Player = {
-    id: 1000000 + playerNumber, 
-    playerNumber: playerNumber,
-    name: `Player ${toZeroPadString( playerNumber, 2 )}`,
+    id: PLAYER_ID_SUFFIX + number, 
+    number: number,
+    name: `Player ${toZeroPadString( number, 2 )}`,
     status: 'active',
     card: card,
     stats: newPlayerStats(),
   }
   game.players.push( current )
+  console.log( current )
   return current
 }
 
 export function addQuestion( game: Game, title: string, media: Media ): Question {
-  const questionNumber = game.questions.length + 1
+  const number = game.questions.length + 1
   const current: Question = {
-    id: 2000000 + questionNumber * 100,
-    questionNumber: questionNumber, 
+    id: ( QUESTION_ID_SUFFIX + number ) * ANSWER_ID_SUFFIX,
+    number: number, 
     status: 'not-ready',
     title: title,
     media: media,
@@ -94,9 +96,10 @@ export function addQuestion( game: Game, title: string, media: Media ): Question
   }
   if ( game.questions.length > 0 ) {
     const previous: Question = game.questions[ game.questions.length - 1 ]
-    previous.nextId = current.id
-    current.previousId = previous.id
+    previous.nextNumber = current.number
+    current.previousNumber = previous.number
   }
+  console.log( current )
   game.questions.push( current )
   return current
 }
@@ -163,15 +166,22 @@ export function loadGames(): Game[] {
 // //////////////////////////////////////////////////
 // select
 
-export function selectGame( games: Game[], gameId: GameId | undefined ): Game | undefined {
+export function selectGame( games: Game[], gameId: string | undefined ): Game | undefined {
+  if ( !gameId ) {
+    return undefined
+  }
   const game = gameId ? loadGames().find( g => g.id == gameId ) : undefined
-  console.log(`[select] game #${gameId}`)
+  console.log(`[select] game #${gameId} : ${ game !== undefined ? 'OK' : 'KO' }`)
   return game
 }
 
-export function selectQuestion( game: Game, questionId: QuestionId | undefined ): Question | undefined {
-  const question = game.questions && questionId ? game.questions.find( question => question.id == questionId ) : undefined
-  console.log(`[select] question #${questionId}`)
+export function selectQuestion( game: Game | undefined, questionParam: string | undefined ): Question | undefined {
+  if ( !game || !questionParam ) {
+    return undefined
+  }
+  const questionNumber: number = parseInt( questionParam )
+  const question = game.questions && questionNumber ? game.questions.find( question => question.number == questionNumber ) : undefined
+  console.log(`[select] question #${questionNumber} : ${ question !== undefined ? 'OK' : 'KO' }`)
   return question
 }
 
@@ -251,7 +261,7 @@ export function onSetUp( game: Game ): Game {
   //
 
   const nbPlayer = game.settings.nbPlayer
-  range( nbPlayer ).forEach( index => addPlayer( game, DefaultCards[index] ) )  
+  range( nbPlayer ).forEach( index => addPlayer( game, DefaultCards[ index % DefaultCards.length ] ) )  
   
   //
   // finally move to players step
@@ -279,7 +289,7 @@ export function onStartGame( game: Game ): Game {
   // select first question
   //
 
-  game.questionId = game.questions[0].id
+  game.questionNumber = game.questions[0].number
 
   //
   // prepare game stats
@@ -296,14 +306,14 @@ export function onStartGame( game: Game ): Game {
   return game
 }
 
-export function onQuestion( questionId: QuestionId ): GameUpdater {
+export function onQuestionNumber( questionNumber: number ): GameUpdater {
   return ( game: Game ): Game => {
-    console.log( `[on-question] ${game.id} - ${questionId}` )
+    console.log( `[on-question] ${game.id} - ${questionNumber}` )
 
     if ( !game.questions ) {
       throw Error( "missing questions!" )
     }
-    const question = game.questions.find( question => question.id === questionId )
+    const question = game.questions.find( question => question.number === questionNumber )
     if ( !question ) {
       throw Error( "unknwon question!" )
     }
@@ -312,7 +322,7 @@ export function onQuestion( questionId: QuestionId ): GameUpdater {
     // move to next question
     //
 
-    game.questionId = question.id
+    game.questionNumber = question.number
 
     return game
   }

@@ -30,7 +30,7 @@ const PlayingCardsPage = ( props: Props ) => {
                                                     symbol: symbol as CardSymbol,
                                                     color: CardColor.BLACK,
                                                     size: size as CardSize,
-                                                    value: '2',
+                                                    number: 2,
                                                 }} 
                                                 onClick={() => {}} 
                                             />
@@ -38,7 +38,7 @@ const PlayingCardsPage = ( props: Props ) => {
                                                     symbol: symbol as CardSymbol,
                                                     color: CardColor.RED,
                                                     size: size as CardSize,
-                                                    value: '2',
+                                                    number: 2,
                                                 }} 
                                                 onClick={() => {}} 
                                             />

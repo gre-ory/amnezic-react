@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import GamePage from '../component/GamePage'
 
-import { Game, GameStep, OnGameUpdate, onStartGame, onQuestion, selectGame } from '../data/Game'
-import { QuestionId } from '../data/Question'
+import { Game, GameStep, OnGameUpdate, onStartGame, selectGame } from '../data/Game'
 import { toHomePage, toGamePage } from '../data/Navigate'
 import NextButton from '../component/NextButton'
 
@@ -26,8 +25,8 @@ const StartPage = ( props: Props ) => {
         if ( !game ) {
             console.log(`[effect] MISSING game! >>> NAVIGATE home`)
             navigate( toHomePage() )    
-        } else if ( game.questionId ) {
-            console.log(`[effect] NAVIGATE to question ${game.questionId}`)
+        } else if ( game.questionNumber ) {
+            console.log(`[effect] NAVIGATE to question #${game.questionNumber}`)
             navigate( toGamePage( game ) )    
         }
     }, [ game ] ) 

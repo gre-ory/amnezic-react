@@ -6,7 +6,7 @@ export type AnswerId = number
 
 export interface Answer {
   id: AnswerId
-  cardNumber: number
+  number: number
   answer: string
   hint: string
   correct: boolean

@@ -36,6 +36,7 @@ export interface Card {
   readonly symbol: CardSymbol
   readonly color: CardColor
   size?: CardSize
+  number?: number
   value?: string
 }
 
@@ -53,4 +54,13 @@ export const BlueCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColo
 export const PinkCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.PINK }
 export const BrownCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.BROWN }
 
-export const DefaultCards: Card[] = [ ClubCard, DiamondCard, HeartCard, SpadeCard, BlueCircleCard, GreenCircleCard, YellowCircleCard, RedCircleCard ]
+export const DefaultCards: Card[] = [ 
+  ClubCard, 
+  DiamondCard, 
+  HeartCard, 
+  SpadeCard, 
+  BlueCircleCard, 
+  GreenCircleCard, 
+  YellowCircleCard, 
+  RedCircleCard 
+]

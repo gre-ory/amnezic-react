@@ -10,11 +10,11 @@ import QuestionPage from './page/QuestionPage'
 import ScoresPage from './page/ScoresPage'
 import AvatarsPage from './page/AvatarsPage'
 
-import { Game, GameUpdater, newGame, loadGames, storeGames, clearGames } from './data/Game'
+import { Game, GameUpdater, loadGames, storeGames, clearGames, GameId } from './data/Game'
 
 import './App.css';
 import PlayingCardsPage from './page/PlayingCardsPage';
-import { QuestionUpdater } from './data/Question'
+import { QuestionId, QuestionUpdater } from './data/Question'
 
 function App() {
 
@@ -50,7 +50,7 @@ function App() {
       } )
   }
 
-  function updateGame( gameId: string, update: GameUpdater ) {
+  function updateGame( gameId: GameId, update: GameUpdater ) {
     console.log( `[update-game] ${gameId}` )
     setGames( prev => {
       const newGames = prev.map( game => game.id === gameId ? update( game ) : game )
@@ -59,7 +59,7 @@ function App() {
     } )
   }
 
-  function updateQuestion( gameId: string, questionId: string, update: QuestionUpdater ) {
+  function updateQuestion( gameId: GameId, questionId: QuestionId, update: QuestionUpdater ) {
     console.log( `[update-question] ${gameId} - ${questionId}` )
     setGames( prev => {
       const newGames = prev.map( game => {
@@ -85,7 +85,7 @@ function App() {
           <Route path="/game/:gameId/settings" element={<SettingsPage games={games} updateGame={updateGame} />} />        
           <Route path="/game/:gameId/players" element={<PlayersPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/start" element={<StartPage games={games} updateGame={updateGame} />} />
-          <Route path="/game/:gameId/question/:questionId" element={<QuestionPage games={games} updateGame={updateGame} updateQuestion={updateQuestion}/>} />
+          <Route path="/game/:gameId/question/:questionNumber" element={<QuestionPage games={games} updateGame={updateGame} updateQuestion={updateQuestion}/>} />
           <Route path="/game/:gameId/scores" element={<ScoresPage games={games} updateGame={updateGame} addGame={addGame} />} />
           <Route path="/avatars" element={<AvatarsPage />} />
           <Route path="/cards" element={<PlayingCardsPage />} />
