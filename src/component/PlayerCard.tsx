@@ -32,7 +32,7 @@ const PlayerCard = ( props: Props ) => {
     const openModal = () => setOpen(true)
     const closeModal = () => setOpen(false)
 
-    if ( !player.number ) {
+    if ( !player.playerNumber ) {
         return null
     }
 
@@ -108,12 +108,12 @@ const PlayerCard = ( props: Props ) => {
 
                 <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
                     <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-                        <PlayerAvatar number={player.number} size="L"/>
+                        <PlayerAvatar number={player.playerNumber} size="L"/>
                         <TextField id="standard-basic" style={{ marginLeft: '10px' }} label="Name" variant="standard" value={name} onChange={onNameChange} onBlur={onNameBlur} />
                     </Box> 
                     <PlayingCard card={{
                             ...player.card,
-                            value: `${player.number % 10}`,
+                            value: `${player.playerNumber % 10}`,
                             size: CardSize.M,
                         }} 
                         onClick={openModal} 
@@ -141,7 +141,7 @@ const PlayerCard = ( props: Props ) => {
                             
                                 <PlayingCard card={{
                                         ...player.card,
-                                        value: `${player.number % 10}`,
+                                        value: `${player.playerNumber % 10}`,
                                         size: CardSize.XL,
                                     }} 
                                 />
@@ -225,7 +225,7 @@ const PlayerCard = ( props: Props ) => {
                                         return (
                                             <PlayingCard card={{
                                                     ...defaultCard,
-                                                    value: `${player.number % 10}`,
+                                                    value: `${player.playerNumber % 10}`,
                                                     size: CardSize.S,
                                                 }}
                                                 onClick={() => onCardChange(defaultCard)} 

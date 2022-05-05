@@ -17,11 +17,15 @@ import NextButton from '../component/NextButton'
 import Slide from '@mui/material/Slide';
 
 import { Game, OnGameUpdate, onQuestion } from '../data/Game'
-import { Question, QuestionId, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted } from '../data/Question'
+import { Player, PlayerId } from '../data/Player'
+import { Question, QuestionId, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
 import { onUserEvent } from '../data/Util'
 import { Avatar } from '@mui/material'
 import { ConstructionOutlined, ControlPointDuplicateSharp } from '@mui/icons-material'
 import { isConstructorDeclaration } from 'typescript'
+import PlayingCard from './PlayingCard'
+import { CardSize } from '../data/Card'
+import { AnswerId } from '../data/Answer'
 
 interface Props {
     game: Game
@@ -42,6 +46,8 @@ const QuestionCard = ( props: Props ) => {
     const audioRef = React.useRef( new Audio( question.media.music ) )
     const isReady = React.useRef( false );
 
+    // const [ isPlaying, setIsPlaying ] = React.useState( false )
+    // const [ isPlaying, setIsPlaying ] = React.useState( false )
     const [ isPlaying, setIsPlaying ] = React.useState( false )
     const [ duration, setDuration ] = React.useState( 0 )
     const [ currentTime, setCurrentTime ] = React.useState( 0 )
@@ -98,6 +104,18 @@ const QuestionCard = ( props: Props ) => {
     const pauseMusic = () => {        
         audioRef.current.pause()
         setIsPlaying( false )
+    }
+
+    const hasAnswer = ( playerId: PlayerId, answerId: AnswerId ): boolean => {
+        return hasPlayerAnswer( question, playerId, answerId )
+    }
+
+    const addAnswer = ( playerId: PlayerId, answerId: AnswerId ) => {
+        updateQuestion( game.id, question.id, ( question: Question ) => addPlayerAnswer( question, playerId, answerId ) )    
+    }
+
+    const removeAnswer = ( playerId: PlayerId, answerId: AnswerId ) => {
+        updateQuestion( game.id, question.id, ( question: Question ) => removePlayerAnswer( question, playerId, answerId ) )        
     }
 
     //
@@ -193,7 +211,8 @@ const QuestionCard = ( props: Props ) => {
             case 'not-ready':
                 break
             case 'ready':
-                playMusic()
+                pauseMusic()
+                musicEnded()
                 break
             case 'played':
                 musicAnswered()
@@ -235,35 +254,81 @@ const QuestionCard = ( props: Props ) => {
     return (
         <>
             <Paper className="title" elevation={3}>
-                <h1>#{question.id} - {question.title} - {question.status}</h1>
+                <h1>#{question.questionNumber} - {question.title} - {question.status}</h1>
             </Paper>
 
             {
                 question.answers.map( answer => {
+                    const timeout = musicPlayed ? 0 : 1000
+                    const answerNumber = answer.id % 100 
+                    const delay = musicPlayed ? 0 : answerNumber * 1000
                     return (
-                        <Slide key={answer.number} direction="left" in={true} mountOnEnter unmountOnExit timeout={musicPlayed ? 0 : 2000} style={{ transitionDelay: `${musicPlayed ? 0 : answer.number*1000}ms` }}>
-                            <Paper key={answer.number} className="answer" elevation={3} style={{ margin: '2px' }}>
+                        <Slide key={answer.id} direction="left" in={true} mountOnEnter unmountOnExit timeout={timeout} style={{ transitionDelay: `${delay}ms` }}>
+                            <Paper key={answer.id} className="answer" elevation={3} style={{ margin: '2px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
-                                    <Avatar style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
+                                    <Avatar style={{ margin: '10px', padding: '5px' }}>{answer.cardNumber}</Avatar>
                                     <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
                                         <Typography variant='h5'>{answer.answer}</Typography>
                                         <Typography variant='subtitle1'>{answer.hint}</Typography>
                                     </div>
+                                    { ( question.status == 'played' ) && (
+                                        game.players.map( ( player: Player ) => {
+                                            const disabled = hasAnswer( player.id, answer.id )
+                                            const onClick = disabled ? undefined : () => addAnswer( player.id, answer.id )
+                                            return (
+                                                <PlayingCard
+                                                    key={`${player.id}-${answer.id}`} 
+                                                    card={{
+                                                        ...player.card,
+                                                        value: `${answer.cardNumber}`,
+                                                        size: CardSize.XS,
+                                                    }}
+                                                    disabled={disabled} 
+                                                    onClick={onClick} 
+                                                />
+                                            )
+                                        } )
+                                    ) }
                                 </div>                                
                             </Paper>
                         </Slide>
                     )
                 })
-            }        
+            }   
+
+            {
+                question.playerAnswers.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start' }}>
+                        { question.playerAnswers.map( playerAnswer => {
+                            const player = game.players.find( player => player.id === playerAnswer.playerId )
+                            if ( !player ) {
+                                return null
+                            }
+                            const answer = question.answers.find( answer => answer.id === playerAnswer.answerId )
+                            if ( !answer ) {
+                                return null
+                            }
+                            const correct = question.status == 'completed' ? answer.correct : undefined
+                            const onClick = question.status == 'played' ? () => removeAnswer( player.id, answer.id ) : undefined
+                            return (
+                                <PlayingCard
+                                    key={`${player.id}-${answer.id}`} 
+                                    card={{
+                                        ...player.card,
+                                        value: `${answer.cardNumber}`,
+                                        size: CardSize.XS,
+                                    }} 
+                                    onClick={onClick} 
+                                />
+                            )
+                        } ) }   
+                    </div>
+                )
+            }     
             
 
             <Card sx={{ display: 'flex' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-
-                    <audio id="audio">
-                        <source src={question.media.music} />
-                        Your browser does not support the <code>audio</code> element.
-                    </audio>
                     
                     <Typography variant="h5" color="text.primary" component="div" style={{ margin: '5px 10px', opacity: showAnswer ? '1' : '0' }}>
                         {question.media.title}

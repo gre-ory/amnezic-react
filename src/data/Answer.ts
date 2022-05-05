@@ -2,11 +2,11 @@
 // //////////////////////////////////////////////////
 // create
 
-export type AnswerId = string
+export type AnswerId = number
 
 export interface Answer {
   id: AnswerId
-  number: number
+  cardNumber: number
   answer: string
   hint: string
   correct: boolean

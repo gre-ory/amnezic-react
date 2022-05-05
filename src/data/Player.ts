@@ -14,14 +14,11 @@ export type PlayerStatus =
 // //////////////////////////////////////////////////
 // model
 
-// export const newPlayerId = customAlphabet( 'ABCDEFGHIJKLMNPQRSTUVWXYZ', 3 )
-export const newPlayerId = customAlphabet( '0123456789', 3 )
-
-export type PlayerId = string
+export type PlayerId = number
 
 export interface Player {
   id: PlayerId
-  number: number,
+  playerNumber: number,
   name: string
   status: PlayerStatus
   card: Card

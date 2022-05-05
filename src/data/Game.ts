@@ -15,7 +15,6 @@ import { newPlayerStats } from './PlayerStats'
 // model
 
 export const newGameId = customAlphabet( 'ABCDEFGHIJKLMNPQRSTUVWXYZ', 4 )
-// export const newGameId = customAlphabet( '0123456789', 3 )
 export const newGameCode = customAlphabet( '0123456789', 4 )
 
 export enum GameStep {
@@ -69,12 +68,11 @@ export function newGame( nbQuestion: number = 4, nbPlayer: number = 2, nbAnswer:
 // add
 
 export function addPlayer( game: Game, card: Card ): Player {
-  const number = game.players.length + 1
-  const id: string = toZeroPadString( number, 2 ) // max: 10 players,
+  const playerNumber = game.players.length + 1
   const current: Player = {
-    id: id, 
-    number: number,
-    name: `Player ${id}`,
+    id: 1000000 + playerNumber, 
+    playerNumber: playerNumber,
+    name: `Player ${toZeroPadString( playerNumber, 2 )}`,
     status: 'active',
     card: card,
     stats: newPlayerStats(),
@@ -84,15 +82,15 @@ export function addPlayer( game: Game, card: Card ): Player {
 }
 
 export function addQuestion( game: Game, title: string, media: Media ): Question {
-  const number = game.questions.length + 1
-  const id: string = toZeroPadString( number, 3 ) // max: 100 answers,
+  const questionNumber = game.questions.length + 1
   const current: Question = {
-    id: id,
-    number: number, 
+    id: 2000000 + questionNumber * 100,
+    questionNumber: questionNumber, 
     status: 'not-ready',
     title: title,
     media: media,
     answers: [],
+    playerAnswers: [],
   }
   if ( game.questions.length > 0 ) {
     const previous: Question = game.questions[ game.questions.length - 1 ]
@@ -165,13 +163,13 @@ export function loadGames(): Game[] {
 // //////////////////////////////////////////////////
 // select
 
-export function selectGame( games: Game[], gameId: string | undefined ): Game | undefined {
+export function selectGame( games: Game[], gameId: GameId | undefined ): Game | undefined {
   const game = gameId ? loadGames().find( g => g.id == gameId ) : undefined
   console.log(`[select] game #${gameId}`)
   return game
 }
 
-export function selectQuestion( game: Game, questionId: string | undefined ): Question | undefined {
+export function selectQuestion( game: Game, questionId: QuestionId | undefined ): Question | undefined {
   const question = game.questions && questionId ? game.questions.find( question => question.id == questionId ) : undefined
   console.log(`[select] question #${questionId}`)
   return question

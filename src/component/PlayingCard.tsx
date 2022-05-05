@@ -13,11 +13,12 @@ import PlayingCardIcon from './PlayingCardIcon';
 interface Props {
     card: Card
     selected?: boolean
+    disabled?: boolean
     onClick?: () => void    
 }
 
 const PlayingCard = ( props: Props ) => {
-    const { card, selected, onClick } = props
+    const { card, selected, disabled, onClick } = props
 
     if ( card == undefined ) {
         return null
@@ -26,6 +27,9 @@ const PlayingCard = ( props: Props ) => {
     let cardClassNames = `card`
     if ( card.size ) {
         cardClassNames = `${cardClassNames} size-${card.size}`
+    }
+    if ( disabled ) {
+        cardClassNames = `${cardClassNames} disabled`
     }
     let selectClassNames = `card--inside`
     if ( selected ) {
