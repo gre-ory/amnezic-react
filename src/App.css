@@ -291,6 +291,7 @@ svg.icon {
 .avatar {
   background-image: url(static/avatars-dhigital.webp);
   /* border: 1px solid red; */
+  display: inline-block;
 }
 
 .avatar-XS {

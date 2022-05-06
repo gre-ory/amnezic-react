@@ -2,7 +2,7 @@ import { customAlphabet } from 'nanoid'
 
 import { newSettings, Settings, SettingsUpdater } from './Settings'
 import { Player, PlayerId, PlayerUpdater } from './Player'
-import { addAnswer, Question, QuestionId, QuestionUpdater } from './Question'
+import { addAnswer, isCorrect, Question, QuestionId, QuestionUpdater } from './Question'
 import { newArtist } from './Artist'
 import { newAlbum } from './Album'
 import { range, toZeroPadString } from './Util'
@@ -304,6 +304,47 @@ export function onStartGame( game: Game ): Game {
   game.step = GameStep.QUIZZ
 
   return game
+}
+
+export function onAnswers( game: Game, question: Question ): GameUpdater {
+  return ( game: Game ): Game => {
+    console.log( `[on-answers] ${game.id} - ${question.number}` )
+
+    const nbPlayers = game.players.length
+    let nbPoint = nbPlayers
+
+    for ( const playerAnswer of question.playerAnswers ) {
+      const player = game.players.find( player => player.id === playerAnswer.playerId )
+      if ( player ) {
+        const correct = isCorrect( question, playerAnswer )
+        if ( correct ) {
+          player.stats.score += nbPoint
+          player.stats.nbSuccess++
+        } else {
+          player.stats.score -= nbPoint
+          player.stats.nbFailure++
+        }
+      }
+      if ( nbPoint > 1 ) {
+        nbPoint--
+      }
+    }
+
+    for ( let player of game.players ) {
+      let miss = true
+      for ( const playerAnswer of question.playerAnswers ) {
+        if ( player.id === playerAnswer.playerId ) {
+          miss = false
+          break
+        }
+      }
+      if ( miss ) {
+        player.stats.nbMiss++
+      }
+    }
+
+    return game
+  }
 }
 
 export function onQuestionNumber( questionNumber: number ): GameUpdater {

@@ -16,7 +16,7 @@ import SkipNextIcon from '@mui/icons-material/SkipNext'
 import NextButton from '../component/NextButton'
 import Slide from '@mui/material/Slide';
 
-import { Game, OnGameUpdate, onQuestionNumber } from '../data/Game'
+import { Game, onAnswers, OnGameUpdate, onQuestionNumber, validateAnswers } from '../data/Game'
 import { Player, PlayerId } from '../data/Player'
 import { Question, QuestionId, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
 import { onUserEvent } from '../data/Util'
@@ -26,6 +26,7 @@ import { isConstructorDeclaration } from 'typescript'
 import PlayingCard from './PlayingCard'
 import { CardSize } from '../data/Card'
 import { AnswerId } from '../data/Answer'
+import PlayerAvatar from './PlayerAvatar'
 
 interface Props {
     game: Game
@@ -92,6 +93,7 @@ const QuestionCard = ( props: Props ) => {
 
     const musicAnswered = () => {
         if ( question.status == 'played' ) {
+            updateGame( game.id, onAnswers( game, question ) )
             updateQuestion( game.id, question.id, onQuestionCompleted )
         }
     }
@@ -123,12 +125,6 @@ const QuestionCard = ( props: Props ) => {
     //
 
     React.useEffect( () => {
-
-        audioRef.current.pause();
-    
-        audioRef.current = new Audio( question.media.music )
-        setDuration( 0 )
-        setCurrentTime( 0 )
     
         if ( isReady.current ) {
           // TODO audioRef.current.play();
@@ -146,6 +142,13 @@ const QuestionCard = ( props: Props ) => {
     //
 
     React.useEffect( () => {
+
+        audioRef.current.pause();
+    
+        audioRef.current = new Audio( question.media.music )
+        setDuration( 0 )
+        setCurrentTime( 0 )
+
         const audio = audioRef.current;
     
         const onAudioLoad = () => {
@@ -185,7 +188,7 @@ const QuestionCard = ( props: Props ) => {
             audio.removeEventListener( 'timeupdate', onAudioUpdate )
             audio.removeEventListener( 'ended', onAudioEnd )
         }
-    }, [] );
+    }, [ questionNumber ] );
 
     console.log("render...")
 
@@ -250,6 +253,14 @@ const QuestionCard = ( props: Props ) => {
             document.removeEventListener( 'keydown', handleKeyPress );
         };
     }, [ handleKeyPress ] );
+
+    //
+    // sort players by score
+    //
+
+    game.players.sort( ( left: Player, right: Player ): number => {
+        return left.stats.score - right.stats.score
+    } )
 
     return (
         <>
@@ -324,7 +335,23 @@ const QuestionCard = ( props: Props ) => {
                         } ) }   
                     </div>
                 )
+            }
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start' }}>
+            {
+                game.players.map( player => {
+                    return (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start', marginRight: '10px' }}>
+                            <PlayerAvatar key={player.id} number={player.number} size="L"/>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left', justifyItems: 'flex-start' }}>
+                                <span>{player.name}</span>
+                                <span>{player.stats.score} / {player.stats.nbSuccess} / {player.stats.nbFailure} / {player.stats.nbMiss}</span>
+                            </div>
+                        </div>
+                    )
+                } )
             }     
+            </div>
             
 
             <Card sx={{ display: 'flex' }}>

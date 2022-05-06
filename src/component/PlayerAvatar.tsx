@@ -18,7 +18,7 @@ const PlayerAvatar = ( props: Props ) => {
     const { number, size } = props
 
     return (
-        <span className={`avatar avatar-${size} avatar-${number}`}></span>
+        <div className={`avatar avatar-${size} avatar-${number}`}></div>
     )
 }
 
