@@ -20,7 +20,7 @@ import { Game, onAnswers, OnGameUpdate, onQuestionNumber } from '../data/Game'
 import { Player, PlayerId } from '../data/Player'
 import { Question, QuestionId, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
 import { onUserEvent } from '../data/Util'
-import { Avatar, Badge } from '@mui/material'
+import { Avatar, Badge, Tooltip } from '@mui/material'
 import { ConstructionOutlined, ControlPointDuplicateSharp } from '@mui/icons-material'
 import { isConstructorDeclaration } from 'typescript'
 import PlayingCard from './PlayingCard'
@@ -293,30 +293,36 @@ const QuestionCard = ( props: Props ) => {
                     return (
                         <Slide key={answer.id} direction="left" in={true} mountOnEnter unmountOnExit timeout={timeout} style={{ transitionDelay: `${delay}ms` }}>
                             <Paper key={answer.id} className="answer" elevation={3} style={{ margin: '2px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
-                                    <Avatar sx={{ bgcolor: color }} style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
-                                    <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
-                                        <Typography variant='h5'>{answer.answer}</Typography>
-                                        <Typography variant='subtitle1'>{answer.hint}</Typography>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
+                                        <Avatar sx={{ bgcolor: color }} style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
+                                        <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
+                                            <Typography variant='h5'>{answer.answer}</Typography>
+                                            <Typography variant='subtitle1'>{answer.hint}</Typography>
+                                        </div>
                                     </div>
-                                    { ( question.status == 'played' ) && (
-                                        game.players.map( ( player: Player ) => {
-                                            const disabled = hasAnswer( player.id, answer.id )
-                                            const onClick = disabled ? undefined : () => addAnswer( player.id, answer.id )
-                                            return (
-                                                <PlayingCard
-                                                    key={`${player.id}-${answer.id}`} 
-                                                    card={{
-                                                        ...player.card,
-                                                        number: answer.number,
-                                                        size: CardSize.XS,
-                                                    }}
-                                                    disabled={disabled} 
-                                                    onClick={onClick} 
-                                                />
-                                            )
-                                        } )
-                                    ) }
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
+                                        { ( question.status == 'played' || question.status == 'completed' ) && (
+                                            game.players.map( ( player: Player ) => {
+                                                const disabled = hasAnswer( player.id, answer.id )
+                                                const onClick = disabled ? undefined : () => addAnswer( player.id, answer.id )
+                                                return (
+                                                    <div style={{ margin: '0 10px' }}>
+                                                        <PlayingCard
+                                                            key={`${player.id}-${answer.id}`} 
+                                                            card={{
+                                                                ...player.card,
+                                                                number: answer.number,
+                                                                size: CardSize.XS,
+                                                            }}
+                                                            disabled={disabled} 
+                                                            onClick={onClick} 
+                                                        />
+                                                    </div>
+                                                )
+                                            } )
+                                        ) }
+                                    </div>
                                 </div>                                
                             </Paper>
                         </Slide>
@@ -340,7 +346,8 @@ const QuestionCard = ( props: Props ) => {
                             const answerStats = getQuestionAnswerStats( player.stats, question.id, playerAnswer.answerId )
                             const score = question.status == 'completed' && answerStats ? answerStats.score : undefined
                             const onClick = question.status == 'played' ? () => removeAnswer( player.id, answer.id ) : undefined                            
-                            return (                                
+                            return ( 
+                                <div style={{ transition: 'transform 1000ms cubic-bezier(0, 0, 0.2, 1) 1000ms' }}>                               
                                 <Badge badgeContent={badgeValue(score)} color={badgeColor(score)} style={{ margin: '20px 10px', width:'auto' }}>                                    
                                     <PlayingCard
                                         key={`${player.id}-${answer.id}`} 
@@ -352,6 +359,7 @@ const QuestionCard = ( props: Props ) => {
                                         onClick={onClick} 
                                     />
                                 </Badge>
+                                </div>
                             )
                         } ) }   
                     </div>
@@ -365,12 +373,13 @@ const QuestionCard = ( props: Props ) => {
                     const score = question.status == 'completed' && questionStats ? questionStats.score : undefined
                     return (
                         <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start', marginRight: '10px' }}>
-                            <Badge badgeContent={badgeValue(score)} color={badgeColor(score)} style={{ margin: '20px 10px', width:'auto' }}>                                    
-                                <PlayerAvatar key={player.id} number={player.number} size="L"/>
-                            </Badge>
+                            <Tooltip title={player.name}>
+                                <Badge badgeContent={badgeValue(score)} color={badgeColor(score)} style={{ margin: '20px 10px', width:'auto' }}>                                    
+                                    <PlayerAvatar key={player.id} number={player.number} size="S"/>
+                                </Badge>                            
+                            </Tooltip>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left', justifyItems: 'flex-start' }}>
-                                <span>{player.name}</span>
-                                <span>{player.stats.score} / {player.stats.nbSuccess} / {player.stats.nbFailure} / {player.stats.nbMiss}</span>
+                                <span>{player.stats.score}</span>
                             </div>
                         </div>
                     )
