@@ -16,17 +16,18 @@ import SkipNextIcon from '@mui/icons-material/SkipNext'
 import NextButton from '../component/NextButton'
 import Slide from '@mui/material/Slide';
 
-import { Game, onAnswers, OnGameUpdate, onQuestionNumber, validateAnswers } from '../data/Game'
+import { Game, onAnswers, OnGameUpdate, onQuestionNumber } from '../data/Game'
 import { Player, PlayerId } from '../data/Player'
 import { Question, QuestionId, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
 import { onUserEvent } from '../data/Util'
-import { Avatar } from '@mui/material'
+import { Avatar, Badge } from '@mui/material'
 import { ConstructionOutlined, ControlPointDuplicateSharp } from '@mui/icons-material'
 import { isConstructorDeclaration } from 'typescript'
 import PlayingCard from './PlayingCard'
 import { CardSize } from '../data/Card'
 import { AnswerId } from '../data/Answer'
 import PlayerAvatar from './PlayerAvatar'
+import { getQuestionAnswerStats, getQuestionStats } from '../data/PlayerStats'
 
 interface Props {
     game: Game
@@ -80,22 +81,22 @@ const QuestionCard = ( props: Props ) => {
     }
 
     const musicReady = () => {
-        if ( question.status == 'not-ready' ) {
+        // if ( question.status == 'not-ready' ) {
             updateQuestion( game.id, question.id, onQuestionReady )
-        }
+        // }
     }
 
     const musicEnded = () => {
-        if ( question.status == 'ready' ) {
+        // if ( question.status == 'ready' ) {
             updateQuestion( game.id, question.id, onQuestionPlayed )
-        }
+        // }
     }
 
     const musicAnswered = () => {
-        if ( question.status == 'played' ) {
+        // if ( question.status == 'played' ) {
             updateGame( game.id, onAnswers( game, question ) )
             updateQuestion( game.id, question.id, onQuestionCompleted )
-        }
+        // }
     }
 
     const playMusic = () => {        
@@ -121,30 +122,15 @@ const QuestionCard = ( props: Props ) => {
     }
 
     //
-    // switch audio track
-    //
-
-    React.useEffect( () => {
-    
-        if ( isReady.current ) {
-          // TODO audioRef.current.play();
-          // TODO setIsPlaying(true);
-          // TODO startTimer();
-        } else {
-          // Set the isReady ref as true for the next pass
-          // TODO isReady.current = true;
-        }
-
-    }, [ questionNumber ] );
-
-    //
     // audio events
     //
 
     React.useEffect( () => {
 
+        console.log("pause...")
         audioRef.current.pause();
     
+        console.log("new...")
         audioRef.current = new Audio( question.media.music )
         setDuration( 0 )
         setCurrentTime( 0 )
@@ -171,18 +157,18 @@ const QuestionCard = ( props: Props ) => {
     
         // listeners
 
+        console.log("add listener...")
         audio.addEventListener( 'loadeddata', onAudioLoad )    
         audio.addEventListener( 'canplaythrough', onAudioReady )
         audio.addEventListener( 'timeupdate', onAudioUpdate )
         audio.addEventListener( 'ended', onAudioEnd )
 
-        console.log( audio )
-    
         // React state listeners: update DOM on React state changes
         // TODO playing ? audio.play() : audio.pause();
     
         // effect cleanup
         return () => {
+            console.log("remove listener...")
             audio.removeEventListener( 'loadeddata', onAudioLoad )    
             audio.removeEventListener( 'canplaythrough', onAudioReady )
             audio.removeEventListener( 'timeupdate', onAudioUpdate )
@@ -257,10 +243,40 @@ const QuestionCard = ( props: Props ) => {
     //
     // sort players by score
     //
-
-    game.players.sort( ( left: Player, right: Player ): number => {
-        return left.stats.score - right.stats.score
+     
+    const sortedPlayers = [ ...game.players ].sort( ( left: Player, right: Player ): number => {
+        return right.stats.score - left.stats.score
     } )
+
+    //
+    // badge
+    //
+
+    const badgeValue = ( value: number | undefined ): string | undefined => {
+        if ( value ) {
+            if ( value === 0 ) {
+                return `-`
+            } else if ( value > 0 ) {
+                return `+${value}`
+            } else {
+                return `${value}`
+            }
+        }
+        return undefined
+    }
+
+    const badgeColor = ( value: number | undefined ): 'info' | 'success' | 'warning' | undefined => {
+        if ( value ) {
+            if ( value === 0 ) {
+                return `info`
+            } else if ( value > 0 ) {
+                return `success`
+            } else {
+                return `warning`
+            }
+        }
+        return undefined
+    }
 
     return (
         <>
@@ -273,11 +289,12 @@ const QuestionCard = ( props: Props ) => {
                     const timeout = musicPlayed ? 0 : 1000
                     const answerNumber = answer.id % 100 
                     const delay = musicPlayed ? 0 : answerNumber * 1000
+                    const color = question.status == 'completed' ? answer.correct ? 'green' : 'orange' : 'grey'
                     return (
                         <Slide key={answer.id} direction="left" in={true} mountOnEnter unmountOnExit timeout={timeout} style={{ transitionDelay: `${delay}ms` }}>
                             <Paper key={answer.id} className="answer" elevation={3} style={{ margin: '2px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
-                                    <Avatar style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
+                                    <Avatar sx={{ bgcolor: color }} style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
                                     <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
                                         <Typography variant='h5'>{answer.answer}</Typography>
                                         <Typography variant='subtitle1'>{answer.hint}</Typography>
@@ -320,17 +337,21 @@ const QuestionCard = ( props: Props ) => {
                                 return null
                             }
                             const correct = question.status == 'completed' ? answer.correct : undefined
-                            const onClick = question.status == 'played' ? () => removeAnswer( player.id, answer.id ) : undefined
-                            return (
-                                <PlayingCard
-                                    key={`${player.id}-${answer.id}`} 
-                                    card={{
-                                        ...player.card,
-                                        number: answer.number,
-                                        size: CardSize.XS,
-                                    }} 
-                                    onClick={onClick} 
-                                />
+                            const answerStats = getQuestionAnswerStats( player.stats, question.id, playerAnswer.answerId )
+                            const score = question.status == 'completed' && answerStats ? answerStats.score : undefined
+                            const onClick = question.status == 'played' ? () => removeAnswer( player.id, answer.id ) : undefined                            
+                            return (                                
+                                <Badge badgeContent={badgeValue(score)} color={badgeColor(score)} style={{ margin: '20px 10px', width:'auto' }}>                                    
+                                    <PlayingCard
+                                        key={`${player.id}-${answer.id}`} 
+                                        card={{
+                                            ...player.card,
+                                            number: answer.number,
+                                            size: CardSize.XS,
+                                        }} 
+                                        onClick={onClick} 
+                                    />
+                                </Badge>
                             )
                         } ) }   
                     </div>
@@ -339,10 +360,14 @@ const QuestionCard = ( props: Props ) => {
 
             <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start' }}>
             {
-                game.players.map( player => {
+                sortedPlayers.map( player => {
+                    const questionStats = getQuestionStats( player.stats, question.id )
+                    const score = question.status == 'completed' && questionStats ? questionStats.score : undefined
                     return (
                         <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start', marginRight: '10px' }}>
-                            <PlayerAvatar key={player.id} number={player.number} size="L"/>
+                            <Badge badgeContent={badgeValue(score)} color={badgeColor(score)} style={{ margin: '20px 10px', width:'auto' }}>                                    
+                                <PlayerAvatar key={player.id} number={player.number} size="L"/>
+                            </Badge>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left', justifyItems: 'flex-start' }}>
                                 <span>{player.name}</span>
                                 <span>{player.stats.score} / {player.stats.nbSuccess} / {player.stats.nbFailure} / {player.stats.nbMiss}</span>

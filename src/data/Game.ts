@@ -9,7 +9,7 @@ import { range, toZeroPadString } from './Util'
 import { Media, newMedia } from './Media'
 import { GameStats, newGameStats } from './GameStats'
 import { Card, DefaultCards } from './Card'
-import { newPlayerStats } from './PlayerStats'
+import { flagAnswerAsCorrect, flagAnswerAsIncorrect, flagQuestionAsMiss, newPlayerStats } from './PlayerStats'
 import { ANSWER_ID_SUFFIX, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
 
 // //////////////////////////////////////////////////
@@ -318,11 +318,9 @@ export function onAnswers( game: Game, question: Question ): GameUpdater {
       if ( player ) {
         const correct = isCorrect( question, playerAnswer )
         if ( correct ) {
-          player.stats.score += nbPoint
-          player.stats.nbSuccess++
+          flagAnswerAsCorrect( player.stats, question.id, playerAnswer.answerId, nbPoint )
         } else {
-          player.stats.score -= nbPoint
-          player.stats.nbFailure++
+          flagAnswerAsIncorrect( player.stats, question.id, playerAnswer.answerId, -nbPoint )
         }
       }
       if ( nbPoint > 1 ) {
@@ -339,7 +337,7 @@ export function onAnswers( game: Game, question: Question ): GameUpdater {
         }
       }
       if ( miss ) {
-        player.stats.nbMiss++
+        flagQuestionAsMiss( player.stats, question.id )
       }
     }
 
@@ -357,6 +355,15 @@ export function onQuestionNumber( questionNumber: number ): GameUpdater {
     const question = game.questions.find( question => question.number === questionNumber )
     if ( !question ) {
       throw Error( "unknwon question!" )
+    }
+
+    //
+    // update stats
+    //
+
+    if ( game.stats ) {
+      game.stats.nbCompleted++
+      game.stats.progress = Math.ceil( game.stats.nbCompleted * 100 / game.stats.nbQuestion )
     }
 
     //

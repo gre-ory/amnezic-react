@@ -42,8 +42,6 @@ const QuestionPage = ( props: Props ) => {
 
     const { gameId, questionNumber } = useParams()
     
-    console.log( gameId )
-    console.log( questionNumber )
     const game = selectGame( games, gameId )
     const question = selectQuestion( game, questionNumber )
     

@@ -2,7 +2,7 @@
 import { customAlphabet } from 'nanoid'
 
 import { Card } from './Card'
-import { PlayerStats, newPlayerStats } from './PlayerStats'
+import { PlayerStats } from './PlayerStats'
 
 // //////////////////////////////////////////////////
 // status
