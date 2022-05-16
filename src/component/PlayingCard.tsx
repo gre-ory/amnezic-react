@@ -31,17 +31,23 @@ const PlayingCard = ( props: Props ) => {
     if ( disabled ) {
         cardClassNames = `${cardClassNames} disabled`
     }
-    let selectClassNames = `card--inside`
     if ( selected ) {
-        selectClassNames = `${selectClassNames} selected`
+        cardClassNames = `${cardClassNames} selected`
     }
     if ( onClick ) {
-        selectClassNames = `${selectClassNames} selectable`
+        cardClassNames = `${cardClassNames} selectable`
     }
+    // let selectClassNames = `card--inside`
+    // if ( selected ) {
+    //     selectClassNames = `${selectClassNames} selected`
+    // }
+    // if ( onClick ) {
+    //     selectClassNames = `${selectClassNames} selectable`
+    // }
 
     return (
         <div className={cardClassNames} onClick={onClick}>
-            <div className={selectClassNames}>
+            {/* <div className={selectClassNames}> */}
                 <div className="card--header">
                     <div className="card--symbol">
                         <PlayingCardIcon symbol={card.symbol} color={card.color}/>
@@ -60,7 +66,7 @@ const PlayingCard = ( props: Props ) => {
                         <PlayingCardIcon symbol={card.symbol} color={card.color}/>
                     </div>
                 </div>
-            </div>
+            {/* </div> */}
         </div>
     )
 }

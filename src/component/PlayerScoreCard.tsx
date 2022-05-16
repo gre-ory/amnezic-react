@@ -32,12 +32,12 @@ const PlayerScoreCard = ( props: Props ) => {
         return null
     }
 
-    const prettyValue = ( value: number ): string => {
+    const prettyPoints = ( value: number ): string => {
         value = value < 10 ? Math.ceil( 10 * value ) / 10 : Math.ceil( value )
         if ( value > 0 ) {
-            return `+${value}`
+            return `+ ${value} pts`
         } else if ( value < 0 ) {
-            return `-${-value}`
+            return `- ${-value} pts`
         } else {
             return `-`
         }
@@ -46,9 +46,9 @@ const PlayerScoreCard = ( props: Props ) => {
     const prettyPercent = ( value: number ): string => {
         value = value < 10 ? Math.ceil( 10 * value ) / 10 : Math.ceil( value )
         if ( value > 0 ) {
-            return `${value}%`
+            return `${value} %`
         } else if ( value < 0 ) {
-            return `-${-value}%`
+            return `-${-value} %`
         } else {
             return `-`
         }
@@ -61,15 +61,24 @@ const PlayerScoreCard = ( props: Props ) => {
 
     const color = position == 1 ? 'gold' : position == 2 ? 'grey' : position == 3 ? 'brown' : 'transparent'
 
-    let sumByAnswer = 0
-    let nbAnswer = 0
+    let sumBySuccessAnswer = 0
+    let sumByFailureAnswer = 0
+    let nbSuccessAnswer = 0
+    let nbFailureAnswer = 0
     for ( const question of player.stats.questions ) {
         for ( const answer of question.answers ) {
-            nbAnswer++
-            sumByAnswer += answer.score
+            if ( answer.success ) {
+                nbSuccessAnswer++
+                sumBySuccessAnswer += answer.score
+            } else {
+                nbFailureAnswer++
+                sumByFailureAnswer += answer.score
+            }
         } 
-    }
-    const avgDelta = nbAnswer > 0 ? sumByAnswer / nbAnswer : 0    
+    }    
+    const avgSuccessDelta = nbSuccessAnswer > 0 ? sumBySuccessAnswer / nbSuccessAnswer : 0    
+    const avgFailureDelta = nbFailureAnswer > 0 ? sumByFailureAnswer / nbFailureAnswer : 0
+    const avgDelta = ( nbSuccessAnswer + nbFailureAnswer ) > 0 ? ( sumBySuccessAnswer + sumByFailureAnswer ) / ( nbSuccessAnswer + nbFailureAnswer ) : 0    
 
     return (
         <Card variant="outlined">
@@ -94,32 +103,37 @@ const PlayerScoreCard = ( props: Props ) => {
                 </Grid>
 
                 <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
-                    <Typography>score: {player.stats.score}</Typography>
-                    <Typography>average gain: {prettyValue(avgDelta)}</Typography>
-                </Grid>
-
-                <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
                     <TableContainer component={Paper}>
                         <Table aria-label="simple table" size="small">
                             <TableHead>
-                                <TableRow>
-                                    <TableCell>stats</TableCell>
+                                <TableRow sx={{ backgroundColor: '#e3d5ca' }}>
+                                    <TableCell>score: {player.stats.score}</TableCell>
+                                    <TableCell align="right">gain</TableCell>
                                     <TableCell align="right">nb</TableCell>
                                     <TableCell align="right">%</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                <TableCell component="th" scope="row">success</TableCell>
+                                <TableCell component="th" scope="row">answers:</TableCell>
+                                <TableCell align="right">{prettyPoints(avgDelta)}</TableCell>
+                                <TableCell align="right">{player.stats.nbSuccess+player.stats.nbFailure}</TableCell>
+                                <TableCell align="right">{prettyPercent(successPercent+failurePercent)}</TableCell>
+                            </TableBody>
+                            <TableBody>
+                                <TableCell component="th" scope="row"> - succeed</TableCell>
+                                <TableCell align="right">{prettyPoints(avgSuccessDelta)}</TableCell>
                                 <TableCell align="right">{player.stats.nbSuccess}</TableCell>
                                 <TableCell align="right">{prettyPercent(successPercent)}</TableCell>
                             </TableBody>
                             <TableBody>
-                                <TableCell component="th" scope="row">failure</TableCell>
+                                <TableCell component="th" scope="row"> - failed</TableCell>
+                                <TableCell align="right">{prettyPoints(avgFailureDelta)}</TableCell>
                                 <TableCell align="right">{player.stats.nbFailure}</TableCell>
                                 <TableCell align="right">{prettyPercent(failurePercent)}</TableCell>
                             </TableBody>
                             <TableBody>
-                                <TableCell component="th" scope="row">miss</TableCell>
+                                <TableCell component="th" scope="row">missed</TableCell>
+                                <TableCell align="right">{prettyPoints(0)}</TableCell>
                                 <TableCell align="right">{player.stats.nbMiss}</TableCell>
                                 <TableCell align="right">{prettyPercent(missPercent)}</TableCell>
                             </TableBody>

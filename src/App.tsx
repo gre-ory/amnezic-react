@@ -42,11 +42,21 @@ function App() {
       } )
   }
 
-  function deleteGames() {
+  function deleteGames( gameIds: GameId[] ) {
       console.log( `[delete-games]` )
       setGames( prev => {
-        clearGames()
-        return []      
+        for ( const gameId of gameIds ) {
+          console.log( `[todo] ${gameId}` )
+        }
+        for ( const game of prev ) {
+          console.log( `[before] ${game.id}` )
+        }
+        const newGames = prev.filter( game => gameIds.indexOf( game.id ) === -1 )
+        for ( const game of newGames ) {
+          console.log( `[after] ${game.id}` )
+        }
+        storeGames( newGames )
+        return newGames   
       } )
   }
 
@@ -81,7 +91,7 @@ function App() {
 
       <Router>
         <Routes>
-          <Route path="/" element={<HomePage games={games} addGame={addGame} deleteGame={deleteGame} deleteGames={deleteGames}/>} />
+          <Route path="/" element={<HomePage games={games} addGame={addGame} updateGame={updateGame} deleteGames={deleteGames}/>} />
           <Route path="/game/:gameId/settings" element={<SettingsPage games={games} updateGame={updateGame} />} />        
           <Route path="/game/:gameId/players" element={<PlayersPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/start" element={<StartPage games={games} updateGame={updateGame} />} />

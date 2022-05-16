@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { makeStyles, Theme } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
@@ -22,6 +23,36 @@ import { onUserEvent, toDateTimeString } from '../data/Util'
 
 import DoneIcon from './DoneIcon'
 
+const useStyles = makeStyles( (theme: Theme) => ( {
+    gameCard: {
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        padding: '10px',
+        borderRadius: '10px',
+        border: '2px solid #ddd',        
+        "&:hover": {
+            border: '2px solid gold',        
+            backgroundColor: '#ffd70029'
+        }
+    },
+    gameLine: {
+        width: '100%', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between'
+    },
+    gameItem: {
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center'
+    },
+    icon: {
+        marginRight: '10px'
+    },
+} ) );
+
 interface Props {
     game: Game
     resumeGame: ( game: Game ) => void
@@ -30,6 +61,7 @@ interface Props {
 
 const GameCard = ( props: Props ) => {
     const { game, resumeGame, deleteGame } = props
+    const classes = useStyles()
 
     if ( !game ) {
         return null
@@ -40,32 +72,31 @@ const GameCard = ( props: Props ) => {
     const onResume = onUserEvent( () => resumeGame( game ) )
     const onDelete = onUserEvent( () => deleteGame( game ) )
 
-    return (
-        <div title="Resume Game" className="selectable" onClick={onResume}>
-            <Card variant="outlined">
-                <CardContent>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
-                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Game {game.id}</span>
-                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><PersonIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbPlayer} players</span>
-                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MusicNoteIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbQuestion} questions</span>
-                            <IconButton className="first-game" aria-label="Delete" onClick={onDelete}>
-                                <CloseIcon />
-                            </IconButton>
-                        </Grid>
-                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
-                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CalendarTodayIcon style={{ marginRight: '10px' }} color="primary"/> {toDateTimeString(game.created)}</span>
-                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>started: <DoneIcon done={game.started} /></span>
-                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>progress: {game.stats ? game.stats.progress : '-'}%</span>
-                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>ended: <DoneIcon done={game.ended} /></span>
-                        </Grid>
-                        <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
-                            <LinearProgress variant="determinate" value={game.stats ? game.stats.progress : 0} />
-                        </Grid>
-                    </Grid>
+    const progress = game.ended ? 100 : game.stats ? game.stats.progress : 0
+    const state = game.ended ? 'ended' : game.stats ? `${Math.round(game.stats.progress)}%` : 'not started'
 
-                </CardContent>
-            </Card>
+    return (        
+        <div title="Resume Game" className={`${classes.gameCard} selectable`} onClick={onResume}>
+            <div className={classes.gameLine}> 
+                <div className={classes.gameItem}>Game {game.id}</div>
+                <div className={classes.gameItem}><PersonIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbPlayer} players</div>
+                <div className={classes.gameItem}><MusicNoteIcon style={{ marginRight: '10px' }} color="primary"/> {game.settings.nbQuestion} questions</div>
+                <IconButton className={classes.icon} aria-label="Delete" onClick={onDelete}>
+                    <CloseIcon />
+                </IconButton>
+            </div>
+            <div className={classes.gameLine}> 
+                <div className={classes.gameItem}><CalendarTodayIcon className={classes.icon} color="primary"/> {toDateTimeString(game.updated)}</div>                
+            </div>
+            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ width: '100%', mr: 1 }}>
+                    <LinearProgress variant="determinate" value={progress} valueBuffer={100}/>
+                </Box>
+                <Box sx={{ minWidth: '70px' }}>
+                    <Typography variant="body2" color="text.secondary">{state}</Typography>
+                </Box>
+            </Box>
+
         </div>
     )
 }

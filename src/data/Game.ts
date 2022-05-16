@@ -31,7 +31,7 @@ export interface Game {
   readonly id: string
   readonly code: string
   readonly created: number
-  readonly updated: number
+  updated: number
   step: GameStep
   settings: Settings
   players: Player[]

@@ -31,7 +31,8 @@ export function toTimeString( value: number ): string {
     const date = new Date( value )
     const hours = toZeroPadString( date.getHours(), 2 )
     const minutes = toZeroPadString( date.getMinutes(), 2 )
-    return `${hours}h${minutes}`
+    const seconds = toZeroPadString( date.getSeconds(), 2 )
+    return `${hours}:${minutes}:${seconds}`
 }
 
 export function toDateTimeString( value: number ): string {
