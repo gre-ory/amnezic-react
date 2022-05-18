@@ -8,6 +8,7 @@ import Header from './Header'
 import Footer from './Footer'
 
 interface Props {
+    title?: string
     gameStep: GameStep
     game: Game
     updateGame: ( gameId: string, update: ( game: Game ) => Game ) => void
@@ -16,7 +17,7 @@ interface Props {
 }
 
 const GamePage = ( props: Props ) => {
-    const { gameStep, game, updateGame, onNext, children } = props
+    const { title, gameStep, game, updateGame, onNext, children } = props
 
     const navigate = useNavigate()
     
@@ -30,7 +31,7 @@ const GamePage = ( props: Props ) => {
     return (
         <>
             <div className={`page step-${gameStep.toLowerCase()}`}>
-                <Header gameStep={gameStep} game={game} updateGame={updateGame} onNext={onNext}/>
+                <Header title={title} gameStep={gameStep} game={game} updateGame={updateGame} onNext={onNext}/>
                 {children}
                 <Footer />
             </div>

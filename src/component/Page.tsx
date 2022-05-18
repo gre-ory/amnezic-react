@@ -8,16 +8,17 @@ import Header from './Header'
 import Footer from './Footer'
 
 interface Props {
+    title?: string
     children: any
     onNext?: () => void
 }
 
 const Page = ( props: Props ) => {
-    const { children, onNext } = props
+    const { title, children, onNext } = props
     
     return (
         <div className={`page`}>
-            <Header onNext={onNext}/>
+            <Header title={title} onNext={onNext}/>
             {children}
             <Footer />
         </div>

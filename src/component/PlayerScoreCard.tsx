@@ -114,28 +114,30 @@ const PlayerScoreCard = ( props: Props ) => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                <TableCell component="th" scope="row">answers:</TableCell>
-                                <TableCell align="right">{prettyPoints(avgDelta)}</TableCell>
-                                <TableCell align="right">{player.stats.nbSuccess+player.stats.nbFailure}</TableCell>
-                                <TableCell align="right">{prettyPercent(successPercent+failurePercent)}</TableCell>
-                            </TableBody>
-                            <TableBody>
-                                <TableCell component="th" scope="row"> - succeed</TableCell>
-                                <TableCell align="right">{prettyPoints(avgSuccessDelta)}</TableCell>
-                                <TableCell align="right">{player.stats.nbSuccess}</TableCell>
-                                <TableCell align="right">{prettyPercent(successPercent)}</TableCell>
-                            </TableBody>
-                            <TableBody>
-                                <TableCell component="th" scope="row"> - failed</TableCell>
-                                <TableCell align="right">{prettyPoints(avgFailureDelta)}</TableCell>
-                                <TableCell align="right">{player.stats.nbFailure}</TableCell>
-                                <TableCell align="right">{prettyPercent(failurePercent)}</TableCell>
-                            </TableBody>
-                            <TableBody>
-                                <TableCell component="th" scope="row">missed</TableCell>
-                                <TableCell align="right">{prettyPoints(0)}</TableCell>
-                                <TableCell align="right">{player.stats.nbMiss}</TableCell>
-                                <TableCell align="right">{prettyPercent(missPercent)}</TableCell>
+                                <TableRow>
+                                    <TableCell component="th" scope="row">answers:</TableCell>
+                                    <TableCell align="right">{prettyPoints(avgDelta)}</TableCell>
+                                    <TableCell align="right">{player.stats.nbSuccess+player.stats.nbFailure}</TableCell>
+                                    <TableCell align="right">{prettyPercent(successPercent+failurePercent)}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell component="th" scope="row"> - succeed</TableCell>
+                                    <TableCell align="right">{prettyPoints(avgSuccessDelta)}</TableCell>
+                                    <TableCell align="right">{player.stats.nbSuccess}</TableCell>
+                                    <TableCell align="right">{prettyPercent(successPercent)}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell component="th" scope="row"> - failed</TableCell>
+                                    <TableCell align="right">{prettyPoints(avgFailureDelta)}</TableCell>
+                                    <TableCell align="right">{player.stats.nbFailure}</TableCell>
+                                    <TableCell align="right">{prettyPercent(failurePercent)}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell component="th" scope="row">missed</TableCell>
+                                    <TableCell align="right">{prettyPoints(0)}</TableCell>
+                                    <TableCell align="right">{player.stats.nbMiss}</TableCell>
+                                    <TableCell align="right">{prettyPercent(missPercent)}</TableCell>
+                                </TableRow>
                             </TableBody>
                         </Table>
                     </TableContainer>

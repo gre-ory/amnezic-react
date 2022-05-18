@@ -14,7 +14,7 @@ const Footer = ( props: Props ) => {
 
     return (
         <>
-            <Box className="footer" sx={{ marginTop: '20px', flexGrow: 1 }}>
+            {/* <Box className="footer" sx={{ marginTop: '20px', flexGrow: 1 }}>
                 <AppBar position="static" color="transparent">
                     <Toolbar style={{ width: '100%', textAlign: 'center' }}>
                         <Typography variant="caption" display="block" color="GrayText" gutterBottom>
@@ -22,7 +22,7 @@ const Footer = ( props: Props ) => {
                         </Typography>
                     </Toolbar>
                 </AppBar>
-            </Box>
+            </Box> */}
         </>
     )
 }

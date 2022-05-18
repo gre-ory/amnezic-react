@@ -19,8 +19,8 @@ import Slide from '@mui/material/Slide';
 import { Game, onAnswers, OnGameUpdate, onQuestionNumber } from '../data/Game'
 import { Player, PlayerId } from '../data/Player'
 import { Question, QuestionId, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
-import { onUserEvent } from '../data/Util'
-import { Avatar, Badge, Tooltip } from '@mui/material'
+import { range, onUserEvent } from '../data/Util'
+import { Avatar, Badge, Chip, Stack, Tooltip } from '@mui/material'
 import { ConstructionOutlined, ControlPointDuplicateSharp } from '@mui/icons-material'
 import { isConstructorDeclaration } from 'typescript'
 import PlayingCard from './PlayingCard'
@@ -280,9 +280,8 @@ const QuestionCard = ( props: Props ) => {
 
     return (
         <>
-            <Paper className="title" elevation={3}>
-                <h1>#{question.number} - {question.title} - {question.status}</h1>
-            </Paper>
+
+            {/* answers */}
 
             {
                 question.answers.map( answer => {
@@ -329,26 +328,27 @@ const QuestionCard = ( props: Props ) => {
                     )
                 })
             }   
+            
+            {/* players answers */}
 
-            {
-                question.playerAnswers.length > 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start' }}>
-                        { question.playerAnswers.map( playerAnswer => {
-                            const player = game.players.find( player => player.id === playerAnswer.playerId )
-                            if ( !player ) {
-                                return null
-                            }
-                            const answer = question.answers.find( answer => answer.id === playerAnswer.answerId )
-                            if ( !answer ) {
-                                return null
-                            }
-                            const correct = question.status == 'completed' ? answer.correct : undefined
-                            const answerStats = getQuestionAnswerStats( player.stats, question.id, playerAnswer.answerId )
-                            const score = question.status == 'completed' && answerStats ? answerStats.score : undefined
-                            const onClick = question.status == 'played' ? () => removeAnswer( player.id, answer.id ) : undefined                            
-                            return ( 
-                                <div style={{ transition: 'transform 1000ms cubic-bezier(0, 0, 0.2, 1) 1000ms' }}>                               
-                                <Badge badgeContent={badgeValue(score)} color={badgeColor(score)} style={{ margin: '20px 10px', width:'auto' }}>                                    
+            <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start' }}>
+                { 
+                    question.playerAnswers.map( playerAnswer => {
+                        const player = game.players.find( player => player.id === playerAnswer.playerId )
+                        if ( !player ) {
+                            return null
+                        }
+                        const answer = question.answers.find( answer => answer.id === playerAnswer.answerId )
+                        if ( !answer ) {
+                            return null
+                        }
+                        const correct = question.status == 'completed' ? answer.correct : undefined
+                        const answerStats = getQuestionAnswerStats( player.stats, question.id, playerAnswer.answerId )
+                        const score = question.status == 'completed' && answerStats ? answerStats.score : undefined
+                        const onClick = question.status == 'played' ? () => removeAnswer( player.id, answer.id ) : undefined                            
+                        return ( 
+                            <div style={{ transition: 'transform 1000ms cubic-bezier(0, 0, 0.2, 1) 1000ms' }}>                               
+                                <Badge className='card--badge' badgeContent={badgeValue(score)} color={badgeColor(score)}>                                    
                                     <PlayingCard
                                         key={`${player.id}-${answer.id}`} 
                                         card={{
@@ -359,34 +359,22 @@ const QuestionCard = ( props: Props ) => {
                                         onClick={onClick} 
                                     />
                                 </Badge>
-                                </div>
-                            )
-                        } ) }   
-                    </div>
-                )
-            }
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start' }}>
-            {
-                sortedPlayers.map( player => {
-                    const questionStats = getQuestionStats( player.stats, question.id )
-                    const score = question.status == 'completed' && questionStats ? questionStats.score : undefined
-                    return (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start', marginRight: '10px' }}>
-                            <Tooltip title={player.name}>
-                                <Badge badgeContent={badgeValue(score)} color={badgeColor(score)} style={{ margin: '20px 10px', width:'auto' }}>                                    
-                                    <PlayerAvatar key={player.id} number={player.number} size="S"/>
-                                </Badge>                            
-                            </Tooltip>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left', justifyItems: 'flex-start' }}>
-                                <span>{player.stats.score}</span>
                             </div>
-                        </div>
-                    )
-                } )
-            }     
+                        )
+                    } )
+                }
+                {
+                    range( Math.max( 0, game.settings.nbPlayer - question.playerAnswers.length ) ).map( i => {
+                        return (
+                            <div className='card--badge'>     
+                                <PlayingCard cardSize={CardSize.XS}/>
+                            </div>        
+                        )
+                    } )
+                }
             </div>
-            
+
+            {/* music player */}
 
             <Card sx={{ display: 'flex' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -463,10 +451,39 @@ const QuestionCard = ( props: Props ) => {
 
                     </Box>
                 </Box>
-            </Card>
 
-            <LinearProgress variant="determinate" value={currentPercentage} />
-            </>
+            </Card>
+                
+            <div style={{ marginTop: '5px', width: '100%' }}>
+                <LinearProgress variant="determinate" value={currentPercentage} />
+            </div>
+
+            {/* players */}
+
+            <div className='playerChips'>
+            {
+                sortedPlayers.map( player => {
+                    const questionStats = getQuestionStats( player.stats, question.id )
+                    const score = question.status == 'completed' && questionStats ? questionStats.score : undefined
+                    return (
+                        <Tooltip className='playerChip--tooltip' title={player.name}>
+                            <Badge className='playerChip--badge' badgeContent={badgeValue(score)} color={badgeColor(score)}>  
+                                <div className='playerChip'>
+                                    <span className='playerChip--avatar'><PlayerAvatar key={player.id} number={player.number} size="S"/></span>
+                                    <span className='playerChip--score'>{player.stats.score}</span>
+                                </div>
+                            </Badge>                            
+                        </Tooltip>
+                    )
+                } )
+            }     
+            </div>
+
+            {/* debug */}
+
+            <pre style={{ border: '1px solid #999', background: '#f2fff6', padding: '20px' }}>{JSON.stringify(question,undefined,4)}</pre>
+
+        </>
     )
 }
 

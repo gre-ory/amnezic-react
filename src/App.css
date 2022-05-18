@@ -40,24 +40,62 @@
   }
 }
 
+/* ------------------------- player ------------------------- */
+
+/* chip */
+
+.playerChips {
+  display: flex;
+  align-items: center;
+  justify-items: flex-start;
+}
+
+.playerChip {
+  display: flex;
+  align-items: center;
+  justify-items: flex-start;
+  background: #fff;
+  -webkit-box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+  border: 1px solid #777;
+  border-radius: 15px;
+  padding: 5px;
+}
+
+.playerChip--badge {
+  width: auto;
+  margin-top: 15px;
+  margin-right: 10px;
+}
+
+.playerChip--avatar {
+
+}
+
+.playerChip--score {
+  padding: 0 10px;
+}
+
 /* ------------------------- selectable ------------------------- */
 
 .selected {
-  border: 2px solid gold;
-  border-radius: 10px;
+  /* border: 2px solid gold; */
+  /* border-radius: 10px; */
+  border-color: gold;
   cursor: pointer;
   background-color: #ffd70029;
 }
 
 .selectable {
-  border: 2px solid white;
-  border-radius: 10px;
+  /* border: 2px solid white; */
+  /* border-radius: 10px; */
   cursor: pointer;
 }
 
 .selectable:hover {
-  border: 2px solid gold;
-  border-radius: 10px;
+  /* border: 2px solid gold; */
+  /* border-radius: 10px; */
+  border-color: gold;
   background-color: #ffd70029;
 }
 
@@ -71,12 +109,30 @@
 
 .card {
   background: #fff;
-  -webkit-box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
-  box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
-  border: 2px solid #777;
+  /* -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1); */
+  /* box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1); */
+  -webkit-box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+  border: 1px solid #777;
   border-radius: 10px;
   aspect-ratio: 3/5;
   padding: 5px;
+}
+
+.card--empty {
+  margin-top: 3px;
+  /* margin-left: 3px; */
+  background: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  /* background: repeating-linear-gradient( 45deg, #eee5 0px, #eee 2px, #777 2px, #777 4px ); */
+  /* opacity: 0.2; */
+}
+
+.card--badge {
+  width: auto;
+  margin-top: 15px;
+  margin-right: 10px;
 }
 
 .card--inside {

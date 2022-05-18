@@ -44,7 +44,7 @@ const ScoresPage = ( props: Props ) => {
 
     const onNext = () => {   
         if ( game.ended ) {
-            restartNewGame()
+            navigate( toHomePage() )
         } else {
             updateGame( game.id, OnStep( GameStep.QUIZZ ) )
         }        
@@ -63,7 +63,6 @@ const ScoresPage = ( props: Props ) => {
 
     return (
         <GamePage gameStep={GameStep.SCORES} game={game} updateGame={updateGame} onNext={onNext}>
-            <h3>Scores</h3>
 
             <Grid container spacing={2}>
 

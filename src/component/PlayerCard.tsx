@@ -114,7 +114,7 @@ const PlayerCard = ( props: Props ) => {
                     <PlayingCard card={{
                             ...player.card,
                             number: player.number,
-                            size: CardSize.M,
+                            size: CardSize.S,
                         }} 
                         onClick={openModal} 
                     />                   

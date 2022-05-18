@@ -100,8 +100,6 @@ const SettingsPage = ( props: Props ) => {
     return (
         <GamePage gameStep={GameStep.SETTINGS} game={game} updateGame={updateGame} onNext={onNext}>
             
-            <h3>Settings</h3>
-
             <Grid container spacing={2}>
 
                 {/* nb players */}

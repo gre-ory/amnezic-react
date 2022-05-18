@@ -19,7 +19,7 @@ const NextButton = ( props: Props ) => {
     const onClick = onUserEvent( onNext )
 
     return (
-        <IconButton color="secondary" title={description} aria-label={description} onClick={onClick}>
+        <IconButton color="secondary" title={description} onClick={onClick}>
             <SkipNextIcon />
         </IconButton>
     )

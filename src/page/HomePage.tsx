@@ -87,22 +87,29 @@ const HomePage = ( props: Props ) => {
     } )
 
     return (
-        <Page onNext={startGame}>
+        <Page title="Amnezic" onNext={startGame}>
             <Grid container spacing={2}>
-                
-                <Grid item xs={12} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px' }}>
-                    <NextButton title="Start Game" onNext={startGame} />
+
+                {/* new game */}
+
+                <Grid item xs={12} style={{ marginTop: '40px' }} textAlign="left">
+                    <GameCard
+                        startGame={startGame}
+                    />
                 </Grid>
 
+                {/* prevous game */}
+                
                 <Grid item xs={9} style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
                     <h3>Previous games</h3>
                 </Grid>
+
                 <Grid item xs={3} style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
                     
                     {/* clear previous games */}
 
-                    <IconButton 
-                        aria-label="home" 
+                    <IconButton
+                        title="Delete all games" 
                         color="default" 
                         disabled={games.length == 0} 
                         onClick={deleteAllGames}

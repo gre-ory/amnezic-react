@@ -81,8 +81,12 @@ const QuestionPage = ( props: Props ) => {
 
     const onNext = () => question.nextNumber ? updateQuestionNumber( question.nextNumber ) : endGame()
 
+    // title
+
+    const title = `#${question.number} - ${question.title} - ${question.status}`
+
     return (
-        <GamePage gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onNext={onNext}>
+        <GamePage title={title} gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onNext={onNext}>
             <QuestionCard game={game} question={question} updateGame={updateGame} updateQuestion={updateQuestion}/>
         </GamePage>
     )

@@ -7,21 +7,35 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
-import { Card } from '../data/Card'
+import { Card, CardSize } from '../data/Card'
 import PlayingCardIcon from './PlayingCardIcon';
 
 interface Props {
-    card: Card
+    card?: Card
+    cardSize?: CardSize
     selected?: boolean
     disabled?: boolean
     onClick?: () => void    
 }
 
 const PlayingCard = ( props: Props ) => {
-    const { card, selected, disabled, onClick } = props
+    const { card, cardSize, selected, disabled, onClick } = props
 
     if ( card == undefined ) {
-        return null
+        return (
+            <div className={`card size-${cardSize} card--empty`} onClick={onClick}>
+                <div className="card--header">
+                    <div className="card--symbol"> </div>                
+                </div>
+                <div className="card--content">
+                    <div className="card--value"> </div>
+                    <div className="card--symbol"> </div>
+                </div>
+                <div className="card--footer">
+                    <div className="card--symbol"> </div>
+                </div>
+            </div>
+        )
     }
 
     let cardClassNames = `card`

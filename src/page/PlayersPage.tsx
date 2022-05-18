@@ -42,8 +42,6 @@ const PlayersPage = ( props: Props ) => {
 
     return (
         <GamePage gameStep={GameStep.PLAYERS} game={game} updateGame={updateGame} onNext={onNext}>
-            
-            <h3>Players</h3>
 
             <Grid container spacing={2}>
 
