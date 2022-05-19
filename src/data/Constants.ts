@@ -1,7 +1,7 @@
 
 export const DEFAULT_NB_PLAYER = 2
 export const MIN_NB_PLAYER = 2
-export const MAX_NB_PLAYER = 9
+export const MAX_NB_PLAYER = 10
 export const INCREMENT_NB_PLAYER = 1
 export const PLAYER_ID_SUFFIX = 9000
 

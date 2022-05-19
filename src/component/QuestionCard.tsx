@@ -3,9 +3,7 @@ import React from 'react'
 import LinearProgress from '@mui/material/LinearProgress'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
-import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
@@ -13,21 +11,20 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import PauseIcon from '@mui/icons-material/Pause'
 import SkipNextIcon from '@mui/icons-material/SkipNext'
-import NextButton from '../component/NextButton'
 import Slide from '@mui/material/Slide';
 
 import { Game, onAnswers, OnGameUpdate, onQuestionNumber } from '../data/Game'
 import { Player, PlayerId } from '../data/Player'
-import { Question, QuestionId, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
+import { Question, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
 import { range, onUserEvent } from '../data/Util'
-import { Avatar, Badge, Chip, Stack, Tooltip } from '@mui/material'
-import { ConstructionOutlined, ControlPointDuplicateSharp } from '@mui/icons-material'
-import { isConstructorDeclaration } from 'typescript'
+import { Avatar, Badge, Tooltip } from '@mui/material'
 import PlayingCard from './PlayingCard'
 import { CardSize } from '../data/Card'
 import { AnswerId } from '../data/Answer'
-import PlayerAvatar from './PlayerAvatar'
+import PlayerAvatar, { AvatarSize } from './PlayerAvatar'
 import { getQuestionAnswerStats, getQuestionStats } from '../data/PlayerStats'
+import PlayerCard from './PlayerCard'
+import { withStyles } from '@mui/styles'
 
 interface Props {
     game: Game
@@ -278,6 +275,18 @@ const QuestionCard = ( props: Props ) => {
         return undefined
     }
 
+    const LightTooltip = withStyles( theme => ( {
+        tooltip: {
+            backgroundColor: 'transparent', // theme.palette.common.white,
+            color: "rgba(0, 0, 0, 0.87)",
+            // boxShadow: theme.shadows[1],
+            fontSize: 11
+        },
+        arrow: {
+            color: "white"
+        }
+    } ) ) ( Tooltip );
+
     return (
         <>
 
@@ -463,20 +472,21 @@ const QuestionCard = ( props: Props ) => {
             <div className='playerChips'>
             {
                 sortedPlayers.map( player => {
+                    const tooltipId = `player-tooltip-${player.id}`
                     const questionStats = getQuestionStats( player.stats, question.id )
                     const score = question.status == 'completed' && questionStats ? questionStats.score : undefined
                     return (
-                        <Tooltip className='playerChip--tooltip' title={player.name}>
+                        <LightTooltip title={<PlayerCard player={player} avatarSize={AvatarSize.M} cardSize={CardSize.XS}/>} >
                             <Badge className='playerChip--badge' badgeContent={badgeValue(score)} color={badgeColor(score)}>  
                                 <div className='playerChip'>
-                                    <span className='playerChip--avatar'><PlayerAvatar key={player.id} number={player.number} size="S"/></span>
+                                    <span className='playerChip--avatar'><PlayerAvatar key={player.id} number={player.number} size={AvatarSize.S}/></span>
                                     <span className='playerChip--score'>{player.stats.score}</span>
                                 </div>
                             </Badge>                            
-                        </Tooltip>
+                        </LightTooltip>
                     )
                 } )
-            }     
+            }
             </div>
 
             {/* debug */}

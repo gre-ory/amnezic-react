@@ -45,22 +45,25 @@ export const DiamondCard: Card = { symbol: CardSymbol.DIAMOND, color: CardColor.
 export const ClubCard: Card = { symbol: CardSymbol.CLUB, color: CardColor.BLACK }
 export const SpadeCard: Card = { symbol: CardSymbol.SPADE, color: CardColor.BLACK }
 
-export const RedCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.RED }
-export const OrangeCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.ORANGE }
-export const YellowCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.YELLOW }
-export const GreenCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.GREEN }
-export const PurpleCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.PURPLE }
 export const BlueCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.BLUE }
-export const PinkCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.PINK }
-export const BrownCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.BROWN }
+export const YellowCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.YELLOW }
+export const RedCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.RED }
+export const GreenCircleCard: Card = { symbol: CardSymbol.CIRCLE, color: CardColor.GREEN }
+
+export const OrangeTriangleCard: Card = { symbol: CardSymbol.TRIANGLE, color: CardColor.ORANGE }
+export const PurpleTriangleCard: Card = { symbol: CardSymbol.TRIANGLE, color: CardColor.PURPLE }
 
 export const DefaultCards: Card[] = [ 
   ClubCard, 
   DiamondCard, 
   HeartCard, 
-  SpadeCard, 
+  SpadeCard,
+
   BlueCircleCard, 
-  GreenCircleCard, 
   YellowCircleCard, 
-  RedCircleCard 
+  RedCircleCard, 
+  GreenCircleCard,
+  
+  OrangeTriangleCard,
+  PurpleTriangleCard 
 ]

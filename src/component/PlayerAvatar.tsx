@@ -7,12 +7,13 @@ interface Props {
     size: AvatarSize
 }
 
-export type AvatarSize = 
-  | 'XS' 
-  | 'S' 
-  | 'M' 
-  | 'L' 
-  | 'XL'
+export enum AvatarSize {
+    XS = 'XS',
+    S = 'S',
+    M = 'M',
+    L = 'L',
+    XL = 'XL',
+}
 
 const PlayerAvatar = ( props: Props ) => {
     const { number, size } = props

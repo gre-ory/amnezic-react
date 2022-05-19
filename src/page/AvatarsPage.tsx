@@ -11,18 +11,16 @@ interface Props {}
 const AvatarsPage = ( props: Props ) => {
 
     return (
-        <Page>
-            
-            <h3>Avatars</h3>
+        <Page title="Avatars">
 
             <Grid container spacing={2}>
 
                 { [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].map(number => {
 
                     return (
-                        <Grid key={number} item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Grid key={number} item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', backgroundColor: '#ddd' }}>
                             {
-                                ['XS','S','M','L','XL'].map(size => {
+                                Object.keys( AvatarSize ).map(size => {
                                     return (
                                         <PlayerAvatar key={`${number}-${size}`} number={number} size={size as AvatarSize} />
                                     )
