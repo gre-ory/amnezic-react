@@ -25,6 +25,7 @@ import PlayerAvatar, { AvatarSize } from './PlayerAvatar'
 import { getQuestionAnswerStats, getQuestionStats } from '../data/PlayerStats'
 import PlayerCard from './PlayerCard'
 import { withStyles } from '@mui/styles'
+import MediaCard from './MediaCard'
 
 interface Props {
     game: Game
@@ -178,11 +179,13 @@ const QuestionCard = ( props: Props ) => {
     const onPreviousQuestion = onUserEvent( previousQuestion )
     const onNextQuestion = onUserEvent( nextQuestion )
 
-    const pauseShown = isPlaying
+    const showAnswer = question.status === 'completed'
+
+    const pauseShown = isPlaying && !showAnswer
     const pauseDisabled = question.status != 'ready'
     const onPause = onUserEvent( () => pauseMusic() )
 
-    const playShown = !pauseShown
+    const playShown = !pauseShown && !showAnswer
     const playDisabled = question.status != 'ready'
     const onPlay = onUserEvent( () => playMusic() )
 
@@ -208,8 +211,6 @@ const QuestionCard = ( props: Props ) => {
                 break
         }
     } )
-
-    const showAnswer = question.status === 'completed'
 
     //
     // keyboard shortcuts
@@ -336,132 +337,102 @@ const QuestionCard = ( props: Props ) => {
                         </Slide>
                     )
                 })
-            }   
-            
-            {/* players answers */}
+            } 
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start' }}>
-                { 
-                    question.playerAnswers.map( playerAnswer => {
-                        const player = game.players.find( player => player.id === playerAnswer.playerId )
-                        if ( !player ) {
-                            return null
-                        }
-                        const answer = question.answers.find( answer => answer.id === playerAnswer.answerId )
-                        if ( !answer ) {
-                            return null
-                        }
-                        const correct = question.status == 'completed' ? answer.correct : undefined
-                        const answerStats = getQuestionAnswerStats( player.stats, question.id, playerAnswer.answerId )
-                        const score = question.status == 'completed' && answerStats ? answerStats.score : undefined
-                        const onClick = question.status == 'played' ? () => removeAnswer( player.id, answer.id ) : undefined                            
-                        return ( 
-                            <div style={{ transition: 'transform 1000ms cubic-bezier(0, 0, 0.2, 1) 1000ms' }}>                               
-                                <Badge className='card--badge' badgeContent={badgeValue(score)} color={badgeColor(score)}>                                    
-                                    <PlayingCard
-                                        key={`${player.id}-${answer.id}`} 
-                                        card={{
-                                            ...player.card,
-                                            number: answer.number,
-                                            size: CardSize.XS,
-                                        }} 
-                                        onClick={onClick} 
-                                    />
-                                </Badge>
-                            </div>
-                        )
-                    } )
-                }
-                {
-                    range( Math.max( 0, game.settings.nbPlayer - question.playerAnswers.length ) ).map( i => {
-                        return (
-                            <div className='card--badge'>     
-                                <PlayingCard cardSize={CardSize.XS}/>
-                            </div>        
-                        )
-                    } )
-                }
+            <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'space-between' }}>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start', marginTop: '15px' }}>
+
+                    {/* music player */}
+
+                    <LightTooltip title={showAnswer ? <MediaCard media={question.media} /> : false} >
+                        <div style={{ width: '56px', height: '56px', marginRight: '10px', background: showAnswer ? `url(${question.media.album.picture})` : `none` }}>
+
+                            {/* pause */}
+
+                            {
+                                pauseShown && (
+                                    <IconButton aria-label="pause" disabled={pauseDisabled} onClick={onPause}>
+                                        <PauseIcon sx={{ height: 38, width: 38 }}/>
+                                    </IconButton>
+                                )
+                            }
+
+                            {/* play */}
+
+                            {
+                                playShown && (
+                                    <IconButton aria-label="play" disabled={playDisabled} onClick={onPlay}>
+                                        <PlayArrowIcon sx={{ height: 38, width: 38 }}/>
+                                    </IconButton>
+                                )
+                            }  
+
+                        </div>
+                    </LightTooltip>
+    
+                    {/* players answers */}
+                
+                    { 
+                        question.playerAnswers.map( playerAnswer => {
+                            const player = game.players.find( player => player.id === playerAnswer.playerId )
+                            if ( !player ) {
+                                return null
+                            }
+                            const answer = question.answers.find( answer => answer.id === playerAnswer.answerId )
+                            if ( !answer ) {
+                                return null
+                            }
+                            const correct = question.status == 'completed' ? answer.correct : undefined
+                            const answerStats = getQuestionAnswerStats( player.stats, question.id, playerAnswer.answerId )
+                            const score = question.status == 'completed' && answerStats ? answerStats.score : undefined
+                            const onClick = question.status == 'played' ? () => removeAnswer( player.id, answer.id ) : undefined                            
+                            return ( 
+                                <div style={{ transition: 'transform 1000ms cubic-bezier(0, 0, 0.2, 1) 1000ms' }}>                               
+                                    <Badge className='card--badge' badgeContent={badgeValue(score)} color={badgeColor(score)}>                                    
+                                        <PlayingCard
+                                            key={`${player.id}-${answer.id}`} 
+                                            card={{
+                                                ...player.card,
+                                                number: answer.number,
+                                                size: CardSize.XS,
+                                            }} 
+                                            onClick={onClick} 
+                                        />
+                                    </Badge>
+                                </div>
+                            )
+                        } )
+                    }
+                    {
+                        range( Math.max( 0, game.settings.nbPlayer - question.playerAnswers.length ) ).map( i => {
+                            return (
+                                <div className='card--badge'>     
+                                    <PlayingCard cardSize={CardSize.XS}/>
+                                </div>        
+                            )
+                        } )
+                    }
+
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-end' }}>
+
+                    {/* previous */}
+
+                    <IconButton aria-label="previous" disabled={previousDisabled} onClick={onPrevious}>
+                        <SkipPreviousIcon />
+                    </IconButton>
+
+                    {/* next */}
+
+                    <IconButton aria-label="next" disabled={nextDisabled} onClick={onNext}>
+                        <SkipNextIcon />
+                    </IconButton>
+
+                </div>
+
             </div>
-
-            {/* music player */}
-
-            <Card sx={{ display: 'flex' }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                    
-                    <Typography variant="h5" color="text.primary" component="div" style={{ margin: '5px 10px', opacity: showAnswer ? '1' : '0' }}>
-                        {question.media.title}
-                    </Typography>
-
-                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
-
-                        {/* previous */}
-
-                        <IconButton aria-label="previous" disabled={previousDisabled} onClick={onPrevious}>
-                            <SkipPreviousIcon />
-                        </IconButton>
-
-                        {/* pause */}
-
-                        {
-                            pauseShown && (
-                                <IconButton aria-label="pause" disabled={pauseDisabled} onClick={onPause}>
-                                    <PauseIcon sx={{ height: 38, width: 38 }}/>
-                                </IconButton>
-                            )
-                        }
-
-                        {/* play */}
-
-                        {
-                            playShown && (
-                                <IconButton aria-label="play" disabled={playDisabled} onClick={onPlay}>
-                                    <PlayArrowIcon sx={{ height: 38, width: 38 }}/>
-                                </IconButton>
-                            )
-                        }       
-
-                        {/* next */}
-
-                        <IconButton aria-label="next" disabled={nextDisabled} onClick={onNext}>
-                            <SkipNextIcon />
-                        </IconButton>
-
-                        <CardMedia
-                            component="img"
-                            sx={{ width: 56, height: 56, margin: '5px 10px', opacity: showAnswer ? '1' : '0' }}
-                            image={question.media.album.picture}
-                            alt={question.media.album.title}
-                        />
-
-                        <div style={{ display: 'flex', flexDirection: 'column', opacity: showAnswer ? '1' : '0' }}>
-                            <Typography variant="subtitle1" color="text.secondary" component="div">
-                                Album
-                            </Typography>
-                            <Typography variant="subtitle1" color="text.primary" component="div">
-                                {question.media.album.title}
-                            </Typography>
-                        </div>
-
-                        <CardMedia
-                            component="img"
-                            sx={{ width: 56, height: 56, margin: '5px 10px', opacity: showAnswer ? '1' : '0' }}
-                            image={question.media.artist.picture}
-                            alt={question.media.artist.name}
-                        />
-
-                        <div style={{ display: 'flex', flexDirection: 'column', opacity: showAnswer ? '1' : '0' }}>
-                            <Typography variant="subtitle1" color="text.secondary" component="div">
-                                Artist
-                            </Typography>
-                            <Typography variant="subtitle1" color="text.primary" component="div">
-                                {question.media.artist.name}
-                            </Typography>
-                        </div>
-
-                    </Box>
-                </Box>
-
-            </Card>
                 
             <div style={{ marginTop: '5px', width: '100%' }}>
                 <LinearProgress variant="determinate" value={currentPercentage} />
