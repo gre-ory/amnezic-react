@@ -20,7 +20,7 @@ export interface PlayerStats {
 
 export function newPlayerStats(): PlayerStats {
   return {
-    score: 999,
+    score: 0,
     nbAnswer: 0,
     nbSuccess: 0,
     nbMiss: 0,

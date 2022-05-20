@@ -127,7 +127,15 @@ const QuestionCard = ( props: Props ) => {
                     return (
                         <Fade key={answer.id} in={true} timeout={timeout} style={{ transitionDelay: `${delay}ms` }}>
                             <Paper key={answer.id} className="answer" elevation={3} style={{ margin: '2px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div 
+                                    style={{
+                                        position: 'relative', 
+                                        display: 'inline-flex',
+                                        alignItems: 'center', 
+                                        justifyContent: 'space-between',
+                                        width: '100%'
+                                    }}
+                                >                                    
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
                                         <Avatar sx={{ bgcolor: color }} style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
                                         <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
@@ -135,13 +143,24 @@ const QuestionCard = ( props: Props ) => {
                                             <Typography variant='subtitle1'>{answer.hint}</Typography>
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
+                                    <div
+                                        style={{
+                                            top: 0,
+                                            left: 0,
+                                            bottom: 0,
+                                            right: 5,
+                                            position: 'absolute',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'flex-end',
+                                        }}
+                                    >
                                         { ( question.status == 'played' ) && (
                                             game.players.map( ( player: Player ) => {
                                                 const disabled = hasAnswer( player.id, answer.id )
                                                 const onClick = question.status == 'played' && !disabled ? () => addAnswer( player.id, answer.id ) : undefined
                                                 return (
-                                                    <div style={{ marginLeft: '5px' }}>
+                                                    <div key={`answer-${answer.id}-${player.id}`} style={{ marginLeft: '5px' }}>
                                                         <PlayingCard
                                                             key={`${player.id}-${answer.id}`} 
                                                             card={{
@@ -170,9 +189,15 @@ const QuestionCard = ( props: Props ) => {
 
                     {/* music player */}
 
-                    <MusicPlayer media={question.media} delay={question.answers.length + 4} played={musicPlayed} onMusicEnded={onNext} />
+                    <MusicPlayer 
+                        questionId={question.id} 
+                        media={question.media} 
+                        delay={question.answers.length + 4} 
+                        played={musicPlayed} 
+                        onMusicEnded={onNext}
+                    />
     
-                    {/* players answers */}
+                    {/* selected players answers */}
                 
                     { 
                         question.playerAnswers.map( playerAnswer => {
@@ -189,7 +214,7 @@ const QuestionCard = ( props: Props ) => {
                             const score = question.status == 'completed' && answerStats ? answerStats.score : undefined
                             const onClick = question.status == 'played' ? () => removeAnswer( player.id, answer.id ) : undefined                            
                             return ( 
-                                <div style={{ transition: 'transform 1000ms cubic-bezier(0, 0, 0.2, 1) 1000ms' }}>                               
+                                <div key={`selected-${answer.id}-${player.id}`} style={{ transition: 'transform 1000ms cubic-bezier(0, 0, 0.2, 1) 1000ms' }}>                               
                                     <Badge className='card--badge' badgeContent={badgeValue(score)} color={badgeColor(score)}>                                    
                                         <PlayingCard
                                             key={`${player.id}-${answer.id}`} 
@@ -208,7 +233,7 @@ const QuestionCard = ( props: Props ) => {
                     {
                         range( Math.max( 0, game.settings.nbPlayer - question.playerAnswers.length ) ).map( i => {
                             return (
-                                <div className='card--badge'>     
+                                <div key={`selected-${i}`} className='card--badge'>     
                                     <PlayingCard cardSize={CardSize.XS}/>
                                 </div>        
                             )
@@ -228,7 +253,7 @@ const QuestionCard = ( props: Props ) => {
                     const questionStats = getQuestionStats( player.stats, question.id )
                     const score = question.status == 'completed' && questionStats ? questionStats.score : undefined
                     return (
-                        <LightTooltip title={<PlayerCard player={player} avatarSize={AvatarSize.M} cardSize={CardSize.XS}/>} >
+                        <LightTooltip key={`player-${player.id}`} title={<PlayerCard player={player} avatarSize={AvatarSize.M} cardSize={CardSize.XS}/>} >
                             <Badge className='playerChip--badge' badgeContent={badgeValue(score)} color={badgeColor(score)}>  
                                 <div className='playerChip' style={{ cursor: 'help' }}>
                                     <span className='playerChip--avatar'><PlayerAvatar key={player.id} number={player.number} size={AvatarSize.S}/></span>
