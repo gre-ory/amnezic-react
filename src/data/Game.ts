@@ -88,7 +88,7 @@ export function addQuestion( game: Game, title: string, media: Media ): Question
   const current: Question = {
     id: ( QUESTION_ID_SUFFIX + number ) * ANSWER_ID_SUFFIX,
     number: number, 
-    status: 'not-ready',
+    status: 'not-played',
     title: title,
     media: media,
     answers: [],

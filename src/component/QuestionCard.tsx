@@ -15,9 +15,9 @@ import Slide from '@mui/material/Slide';
 
 import { Game, onAnswers, OnGameUpdate, onQuestionNumber } from '../data/Game'
 import { Player, PlayerId } from '../data/Player'
-import { Question, OnQuestionUpdate, onQuestionReady, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
+import { Question, OnQuestionUpdate, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
 import { range, onUserEvent } from '../data/Util'
-import { Avatar, Badge, Tooltip } from '@mui/material'
+import { Avatar, Badge, Fade, Grow, Tooltip } from '@mui/material'
 import PlayingCard from './PlayingCard'
 import { CardSize } from '../data/Card'
 import { AnswerId } from '../data/Answer'
@@ -26,16 +26,18 @@ import { getQuestionAnswerStats, getQuestionStats } from '../data/PlayerStats'
 import PlayerCard from './PlayerCard'
 import { withStyles } from '@mui/styles'
 import MediaCard from './MediaCard'
+import MusicPlayer from './MusicPlayer'
 
 interface Props {
     game: Game
     question: Question
     updateGame: OnGameUpdate
-    updateQuestion: OnQuestionUpdate
+    updateQuestion: OnQuestionUpdate    
+    onNext: () => void
 }
 
 const QuestionCard = ( props: Props ) => {
-    const { game, question, updateGame, updateQuestion } = props
+    const { game, question, updateGame, updateQuestion, onNext } = props
 
     const [ questionNumber, setQuestionNumber ] = React.useState( game.questionNumber )
 
@@ -43,69 +45,11 @@ const QuestionCard = ( props: Props ) => {
         return null
     }
         
-    const audioRef = React.useRef( new Audio( question.media.music ) )
-    const isReady = React.useRef( false );
-
-    // const [ isPlaying, setIsPlaying ] = React.useState( false )
-    // const [ isPlaying, setIsPlaying ] = React.useState( false )
-    const [ isPlaying, setIsPlaying ] = React.useState( false )
-    const [ duration, setDuration ] = React.useState( 0 )
-    const [ currentTime, setCurrentTime ] = React.useState( 0 )
-
     const musicPlayed = question.status == 'played' || question.status == 'completed'
 
-    let currentPercentage = 0
-    if ( musicPlayed ) {
-        currentPercentage = 100
-    } else if ( question.status == 'ready' && duration ) {
-        currentPercentage = Math.ceil( ( currentTime / duration ) * 100 )
-    }
-    const trackStyling = `-webkit-gradient(linear, 0% 0%, 100% 0%, color-stop(${currentPercentage}%, #fff), color-stop(${currentPercentage}%, #777))`
-
-    // update helpers
-
-    const previousQuestion = () => {
-        if ( question.previousNumber ) {
-            updateGame( game.id, onQuestionNumber( question.previousNumber ) )
-            setQuestionNumber( question.previousNumber )
-        }
-    }
-
-    const nextQuestion = () => {
-        if ( question.nextNumber ) {
-            updateGame( game.id, onQuestionNumber( question.nextNumber ) )
-            setQuestionNumber( question.nextNumber )
-        }
-    }
-
-    const musicReady = () => {
-        // if ( question.status == 'not-ready' ) {
-            updateQuestion( game.id, question.id, onQuestionReady )
-        // }
-    }
-
-    const musicEnded = () => {
-        // if ( question.status == 'ready' ) {
-            updateQuestion( game.id, question.id, onQuestionPlayed )
-        // }
-    }
-
-    const musicAnswered = () => {
-        // if ( question.status == 'played' ) {
-            updateGame( game.id, onAnswers( game, question ) )
-            updateQuestion( game.id, question.id, onQuestionCompleted )
-        // }
-    }
-
-    const playMusic = () => {        
-        audioRef.current.play()
-        setIsPlaying( true )
-    }
-
-    const pauseMusic = () => {        
-        audioRef.current.pause()
-        setIsPlaying( false )
-    }
+    //
+    // answers helpers
+    //
 
     const hasAnswer = ( playerId: PlayerId, answerId: AnswerId ): boolean => {
         return hasPlayerAnswer( question, playerId, answerId )
@@ -118,125 +62,6 @@ const QuestionCard = ( props: Props ) => {
     const removeAnswer = ( playerId: PlayerId, answerId: AnswerId ) => {
         updateQuestion( game.id, question.id, ( question: Question ) => removePlayerAnswer( question, playerId, answerId ) )        
     }
-
-    //
-    // audio events
-    //
-
-    React.useEffect( () => {
-
-        console.log("pause...")
-        audioRef.current.pause();
-    
-        console.log("new...")
-        audioRef.current = new Audio( question.media.music )
-        setDuration( 0 )
-        setCurrentTime( 0 )
-
-        const audio = audioRef.current;
-    
-        const onAudioLoad = () => {
-            console.log( `onAudioLoad >>> setCurrentTime( ${audio.currentTime} ) + setDuration( ${audio.duration} )` )
-            setCurrentTime( audio.currentTime )
-            setDuration( audio.duration )
-        }
-        const onAudioReady = () => {            
-            console.log( 'onAudioReady >>> musicReady' )
-            musicReady()
-        }
-        const onAudioUpdate = () => {  
-            console.log( `onAudioUpdate >>> setCurrentTime( ${audio.currentTime} )` )
-            setCurrentTime( audio.currentTime )
-        }
-        const onAudioEnd = () => {
-            console.log( 'onAudioEnd >>> musicEnded()' )
-            musicEnded()
-        }
-    
-        // listeners
-
-        console.log("add listener...")
-        audio.addEventListener( 'loadeddata', onAudioLoad )    
-        audio.addEventListener( 'canplaythrough', onAudioReady )
-        audio.addEventListener( 'timeupdate', onAudioUpdate )
-        audio.addEventListener( 'ended', onAudioEnd )
-
-        // React state listeners: update DOM on React state changes
-        // TODO playing ? audio.play() : audio.pause();
-    
-        // effect cleanup
-        return () => {
-            console.log("remove listener...")
-            audio.removeEventListener( 'loadeddata', onAudioLoad )    
-            audio.removeEventListener( 'canplaythrough', onAudioReady )
-            audio.removeEventListener( 'timeupdate', onAudioUpdate )
-            audio.removeEventListener( 'ended', onAudioEnd )
-        }
-    }, [ questionNumber ] );
-
-    console.log("render...")
-
-    const onPreviousQuestion = onUserEvent( previousQuestion )
-    const onNextQuestion = onUserEvent( nextQuestion )
-
-    const showAnswer = question.status === 'completed'
-
-    const pauseShown = isPlaying && !showAnswer
-    const pauseDisabled = question.status != 'ready'
-    const onPause = onUserEvent( () => pauseMusic() )
-
-    const playShown = !pauseShown && !showAnswer
-    const playDisabled = question.status != 'ready'
-    const onPlay = onUserEvent( () => playMusic() )
-
-    const previousDisabled = question.previousNumber === undefined
-    const onPrevious = onUserEvent( () => {
-      previousQuestion()  
-    } )
-
-    const nextDisabled = question.status == 'not-ready'
-    const onNext = onUserEvent( () => {
-        switch ( question.status ) {
-            case 'not-ready':
-                break
-            case 'ready':
-                pauseMusic()
-                musicEnded()
-                break
-            case 'played':
-                musicAnswered()
-                break
-            case 'completed':
-                nextQuestion()
-                break
-        }
-    } )
-
-    //
-    // keyboard shortcuts
-    // 
-
-    const handleKeyPress = React.useCallback( ( event ) => {        
-        switch ( event.key ) {
-            case 'Space':
-                if ( question.status == 'ready' ) {
-                    if ( isPlaying ) {
-                        console.log( `key "${event.key}" >>> pauseMusic()`);
-                        pauseMusic();
-                    } else {
-                        console.log( `key "${event.key}" >>> playMusic()`);
-                        playMusic();
-                    }
-                }
-                break;
-        }
-    }, [] );
-    React.useEffect( () => {
-        document.addEventListener( 'keydown', handleKeyPress );
-        return () => {
-            document.removeEventListener( 'keydown', handleKeyPress );
-        };
-    }, [ handleKeyPress ] );
 
     //
     // sort players by score
@@ -298,9 +123,9 @@ const QuestionCard = ( props: Props ) => {
                     const timeout = musicPlayed ? 0 : 1000
                     const answerNumber = answer.id % 100 
                     const delay = musicPlayed ? 0 : answerNumber * 1000
-                    const color = question.status == 'completed' ? answer.correct ? 'green' : 'orange' : 'grey'
+                    const color = musicPlayed ? answer.correct ? 'green' : 'orange' : 'grey'
                     return (
-                        <Slide key={answer.id} direction="left" in={true} mountOnEnter unmountOnExit timeout={timeout} style={{ transitionDelay: `${delay}ms` }}>
+                        <Fade key={answer.id} in={true} timeout={timeout} style={{ transitionDelay: `${delay}ms` }}>
                             <Paper key={answer.id} className="answer" elevation={3} style={{ margin: '2px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
@@ -311,12 +136,12 @@ const QuestionCard = ( props: Props ) => {
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
-                                        { ( question.status == 'played' || question.status == 'completed' ) && (
+                                        { ( question.status == 'played' ) && (
                                             game.players.map( ( player: Player ) => {
                                                 const disabled = hasAnswer( player.id, answer.id )
-                                                const onClick = disabled ? undefined : () => addAnswer( player.id, answer.id )
+                                                const onClick = question.status == 'played' && !disabled ? () => addAnswer( player.id, answer.id ) : undefined
                                                 return (
-                                                    <div style={{ margin: '0 10px' }}>
+                                                    <div style={{ marginLeft: '5px' }}>
                                                         <PlayingCard
                                                             key={`${player.id}-${answer.id}`} 
                                                             card={{
@@ -334,7 +159,7 @@ const QuestionCard = ( props: Props ) => {
                                     </div>
                                 </div>                                
                             </Paper>
-                        </Slide>
+                        </Fade>
                     )
                 })
             } 
@@ -345,31 +170,7 @@ const QuestionCard = ( props: Props ) => {
 
                     {/* music player */}
 
-                    <LightTooltip title={showAnswer ? <MediaCard media={question.media} /> : false} >
-                        <div style={{ width: '56px', height: '56px', marginRight: '10px', background: showAnswer ? `url(${question.media.album.picture})` : `none` }}>
-
-                            {/* pause */}
-
-                            {
-                                pauseShown && (
-                                    <IconButton aria-label="pause" disabled={pauseDisabled} onClick={onPause}>
-                                        <PauseIcon sx={{ height: 38, width: 38 }}/>
-                                    </IconButton>
-                                )
-                            }
-
-                            {/* play */}
-
-                            {
-                                playShown && (
-                                    <IconButton aria-label="play" disabled={playDisabled} onClick={onPlay}>
-                                        <PlayArrowIcon sx={{ height: 38, width: 38 }}/>
-                                    </IconButton>
-                                )
-                            }  
-
-                        </div>
-                    </LightTooltip>
+                    <MusicPlayer media={question.media} delay={question.answers.length + 4} played={musicPlayed} onMusicEnded={onNext} />
     
                     {/* players answers */}
                 
@@ -416,26 +217,6 @@ const QuestionCard = ( props: Props ) => {
 
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-end' }}>
-
-                    {/* previous */}
-
-                    <IconButton aria-label="previous" disabled={previousDisabled} onClick={onPrevious}>
-                        <SkipPreviousIcon />
-                    </IconButton>
-
-                    {/* next */}
-
-                    <IconButton aria-label="next" disabled={nextDisabled} onClick={onNext}>
-                        <SkipNextIcon />
-                    </IconButton>
-
-                </div>
-
-            </div>
-                
-            <div style={{ marginTop: '5px', width: '100%' }}>
-                <LinearProgress variant="determinate" value={currentPercentage} />
             </div>
 
             {/* players */}
@@ -449,7 +230,7 @@ const QuestionCard = ( props: Props ) => {
                     return (
                         <LightTooltip title={<PlayerCard player={player} avatarSize={AvatarSize.M} cardSize={CardSize.XS}/>} >
                             <Badge className='playerChip--badge' badgeContent={badgeValue(score)} color={badgeColor(score)}>  
-                                <div className='playerChip'>
+                                <div className='playerChip' style={{ cursor: 'help' }}>
                                     <span className='playerChip--avatar'><PlayerAvatar key={player.id} number={player.number} size={AvatarSize.S}/></span>
                                     <span className='playerChip--score'>{player.stats.score}</span>
                                 </div>

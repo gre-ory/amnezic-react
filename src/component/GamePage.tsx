@@ -12,12 +12,13 @@ interface Props {
     gameStep: GameStep
     game: Game
     updateGame: ( gameId: string, update: ( game: Game ) => Game ) => void
+    onPrevious?: () => void
     onNext?: () => void
     children: any
 }
 
 const GamePage = ( props: Props ) => {
-    const { title, gameStep, game, updateGame, onNext, children } = props
+    const { title, gameStep, game, updateGame, onPrevious, onNext, children } = props
 
     const navigate = useNavigate()
     
@@ -31,7 +32,7 @@ const GamePage = ( props: Props ) => {
     return (
         <>
             <div className={`page step-${gameStep.toLowerCase()}`}>
-                <Header title={title} gameStep={gameStep} game={game} updateGame={updateGame} onNext={onNext}/>
+                <Header title={title} gameStep={gameStep} game={game} updateGame={updateGame} onPrevious={onPrevious} onNext={onNext}/>
                 {children}
                 <Footer />
             </div>

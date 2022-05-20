@@ -24,8 +24,8 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import GamePage from '../component/GamePage'
 import QuestionCard from '../component/QuestionCard'
 
-import { Game, GameStep, OnGameUpdate, selectGame, selectQuestion, onQuestionNumber, onEndGame } from '../data/Game'
-import { QuestionId, OnQuestionUpdate } from '../data/Question'
+import { Game, GameStep, OnGameUpdate, selectGame, selectQuestion, onQuestionNumber, onEndGame, onAnswers } from '../data/Game'
+import { QuestionId, OnQuestionUpdate, onQuestionPlayed, onQuestionCompleted } from '../data/Question'
 import { toHomePage, toGamePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 
@@ -69,6 +69,15 @@ const QuestionPage = ( props: Props ) => {
 
     // update helpers
 
+    const musicPlayed = () => {
+        updateQuestion( game.id, question.id, onQuestionPlayed )
+    }
+
+    const musicAnswered = () => {
+        updateGame( game.id, onAnswers( game, question ) )
+        updateQuestion( game.id, question.id, onQuestionCompleted )
+    }
+
     const updateQuestionNumber = ( questionNumber: number ) => {
         updateGame( game.id, onQuestionNumber( questionNumber ) )
     }
@@ -78,16 +87,43 @@ const QuestionPage = ( props: Props ) => {
     }
 
     // user events
+    
+    const onPrevious = question.previousNumber ? () => {
+        if ( question.previousNumber ) {
+            console.log( `onNext >>> updateQuestionNumber( ${question.previousNumber} )` )
+            updateQuestionNumber( question.previousNumber )
+        }
+    } : undefined
 
-    const onNext = () => question.nextNumber ? updateQuestionNumber( question.nextNumber ) : endGame()
+    const onNext = () => {
+        switch ( question.status ) {
+            case 'not-played':
+                console.log( 'onNext >>> musicPlayed()' )
+                musicPlayed()
+                break
+            case 'played':
+                console.log( 'onNext >>> musicAnswered()' )
+                musicAnswered()
+                break
+            case 'completed':
+                if ( question.nextNumber ) {
+                    console.log( `onNext >>> updateQuestionNumber( ${question.nextNumber} )` )
+                    updateQuestionNumber( question.nextNumber )
+                } else {
+                    console.log( `onNext >>> endGame()` )
+                    endGame()
+                }
+                break
+        }
+    }
 
     // title
 
     const title = `#${question.number} - ${question.title} - ${question.status}`
 
     return (
-        <GamePage title={title} gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onNext={onNext}>
-            <QuestionCard game={game} question={question} updateGame={updateGame} updateQuestion={updateQuestion}/>
+        <GamePage title={title} gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onPrevious={onPrevious} onNext={onNext}>
+            <QuestionCard game={game} question={question} updateGame={updateGame} updateQuestion={updateQuestion} onNext={onNext}/>
         </GamePage>
     )
 }

@@ -9,8 +9,7 @@ import { toZeroPadString } from './Util'
 // status
 
 export type QuestionStatus = 
-  | 'not-ready' 
-  | 'ready'
+  | 'not-played' 
   | 'played'
   | 'completed'
 
@@ -83,14 +82,6 @@ export function isCorrect( question: Question, playerAnswer: PlayerAnswer ): boo
 
 // //////////////////////////////////////////////////
 // state
-
-export function onQuestionReady( question: Question ): Question {
-  console.log( `[on-question-ready] question: ${question.id}` )
-
-  question.status = 'ready'
-  
-  return question
-}
 
 export function onQuestionPlayed( question: Question ): Question {
   console.log( `[on-question-played] question: ${question.id}` )

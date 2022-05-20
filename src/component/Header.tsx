@@ -6,11 +6,7 @@ import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 
-import SettingsIcon from '@mui/icons-material/Settings'
-import HomeIcon from '@mui/icons-material/Home'
-import GroupIcon from '@mui/icons-material/Group'
-import MusicNoteIcon from '@mui/icons-material/MusicNote'
-import MilitaryTechIcon from '@mui/icons-material/MilitaryTech'
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
 import SkipNextIcon from '@mui/icons-material/SkipNext'
 import MenuIcon from '@mui/icons-material/Menu'
 
@@ -18,19 +14,20 @@ import { Game, GameStep, OnGameUpdate, OnStep } from '../data/Game'
 import { isSettingsPageDisabled, isPlayersPageDisabled, isQuizzPageDisabled, isScoresPageDisabled } from '../data/Game'
 import { toHomePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
-import { ContentCopy, Group, Home, MilitaryTech, MusicNote, Settings } from '@mui/icons-material'
-import { Button, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from '@mui/material'
+import {  Group, Home, MilitaryTech, MusicNote, Settings } from '@mui/icons-material'
+import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material'
 
 interface Props {
     title?: string
     gameStep?: GameStep
     game?: Game
     updateGame?: OnGameUpdate
+    onPrevious?: () => void
     onNext?: () => void
 }
 
 const Header = ( props: Props ) => {
-    const { title, gameStep, game, updateGame, onNext } = props
+    const { title, gameStep, game, updateGame, onPrevious, onNext } = props
 
     const navigate = useNavigate()
 
@@ -49,14 +46,6 @@ const Header = ( props: Props ) => {
     const isPlayersSelected = gameStep == GameStep.PLAYERS
     const isQuizzSelected = gameStep == GameStep.QUIZZ
     const isScoresSelected = gameStep == GameStep.SCORES
-
-    // color helpers
-
-    // const homeColor = isHomeSelected ? 'secondary' : 'default'
-    // const settingsColor = isSettingsSelected ? 'secondary' : 'default'
-    // const playersColor = isPlayersSelected ? 'secondary' : 'default'
-    // const quizzColor = isQuizzSelected ? 'secondary' : 'default'
-    // const scoresColor = isScoresSelected ? 'secondary' : 'default'
 
     // disabled helpers
 
@@ -82,12 +71,20 @@ const Header = ( props: Props ) => {
     const onPlayersPage = !isPlayersSelected ? onUserEvent( () => updateGameStep( GameStep.PLAYERS ) ) : undefined
     const onQuizzPage = !isQuizzSelected ? onUserEvent( () => updateGameStep( GameStep.QUIZZ ) ) : undefined
     const onScoresPage = !isScoresSelected ? onUserEvent( () => updateGameStep( GameStep.SCORES ) ) : undefined
+    const onPreviousPage = onUserEvent( () => onPrevious && onPrevious() )
     const onNextPage = onUserEvent( () => onNext && onNext() )
 
     // keyboard shortcuts
 
     const handleKeyPress = React.useCallback( ( event ) => {        
         switch ( event.key ) {
+            case 'p':
+            case 'ArrowLeft':
+                if ( onPrevious ) {
+                    console.log( `key "${event.key}" >>> onPrevious()`);
+                    onPrevious();
+                }
+                break;
             case 'n':
             case 'Enter':
             case 'ArrowRight':
@@ -219,15 +216,24 @@ const Header = ( props: Props ) => {
 
                         <div style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>{finalTitle}</div>
 
-                        {/* Next */}
+                        {/* Previous & Next */}
                         
                         <div>
+
+                            { onPrevious && (
+                                <IconButton 
+                                    aria-label="Previous" 
+                                    color="info"
+                                    onClick={onPrevious}
+                                >
+                                    <SkipPreviousIcon />
+                                </IconButton>
+                            ) }
                             
-                            { game && (
+                            { onNext && (
                                 <IconButton 
                                     aria-label="Next" 
-                                    color="info" 
-                                    disabled={isNextDisabled} 
+                                    color="info"
                                     onClick={onNext}
                                 >
                                     <SkipNextIcon />
