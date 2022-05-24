@@ -6,6 +6,35 @@ export function range( nb: number ): number[] {
     return Array.from( Array( nb ).keys() )
 }
 
+export function pickIndexes( nbSelected: number, nbTotal: number ): number[] {    
+
+    if ( nbTotal <= nbSelected ) {
+        return shuffle( range( nbTotal ) )
+    }
+
+    var selected = new Set<number>();
+    for( var i = 0; i < nbSelected; i++ ) {
+        var j = Math.random() * nbTotal | 0;
+        while(selected.has(j)){
+            j = Math.random() * nbTotal | 0;
+        }
+        selected.add( j );
+    }
+    return Array.from( selected )
+}
+
+export function pick<T>( values: T[] ): T {
+    return values[ Math.random() * values.length | 0 ];
+}
+
+export function shuffle<T>( values: T[] ) {
+    for ( let i = values.length - 1; i > 0; i-- ) {
+        let j = Math.random() * ( i + 1 ) | 0;
+        [ values[ i ], values[ j ] ] = [ values[ j ], values[ i ] ];
+    }
+    return values
+}
+
 // //////////////////////////////////////////////////
 // format
 

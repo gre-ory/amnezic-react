@@ -8,13 +8,13 @@ export interface Media {
   title: string
   music: string 
   artist: Artist
-  album: Album  
+  album?: Album  
 }
 
 // //////////////////////////////////////////////////
 // create
 
-export function newMedia( title: string, music: string, artist: Artist, album: Album ): Media {
+export function newMedia( title: string, music: string, artist: Artist, album?: Album ): Media {
   return {
     title: title,
     music: music,

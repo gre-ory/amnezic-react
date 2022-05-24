@@ -28,8 +28,7 @@ function App() {
       console.log( `[add-game] ${game.id}` )
       setGames( prev => {
         const newGames = [ game, ...prev ]
-        storeGames( newGames )
-        return newGames      
+        return storeGames( newGames )
       } )
   }
 
@@ -37,8 +36,7 @@ function App() {
       console.log( `[delete-game] ${game.id}` )
       setGames( prev => {
         const newGames = prev.filter( g => g.id !== game.id ) 
-        storeGames( newGames )
-        return newGames      
+        return storeGames( newGames )
       } )
   }
 
@@ -55,8 +53,7 @@ function App() {
         for ( const game of newGames ) {
           console.log( `[after] ${game.id}` )
         }
-        storeGames( newGames )
-        return newGames   
+        return storeGames( newGames )
       } )
   }
 
@@ -64,8 +61,7 @@ function App() {
     console.log( `[update-game] ${gameId}` )
     setGames( prev => {
       const newGames = prev.map( game => game.id === gameId ? update( game ) : game )
-      storeGames( newGames )
-      return newGames      
+      return storeGames( newGames )
     } )
   }
 
@@ -79,8 +75,7 @@ function App() {
         game.questions = game.questions.map( question => question.id === questionId ? update( question ) : question )
         return game        
       } )
-      storeGames( newGames )
-      return newGames      
+      return storeGames( newGames )
     } )
   }
 

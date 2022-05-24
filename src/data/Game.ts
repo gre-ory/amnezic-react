@@ -5,12 +5,13 @@ import { Player, PlayerId, PlayerUpdater } from './Player'
 import { addAnswer, isCorrect, Question, QuestionId, QuestionUpdater } from './Question'
 import { newArtist } from './Artist'
 import { newAlbum } from './Album'
-import { range, toZeroPadString } from './Util'
+import { range, toTimeString, toZeroPadString } from './Util'
 import { Media, newMedia } from './Media'
 import { GameStats, newGameStats } from './GameStats'
 import { Card, DefaultCards } from './Card'
 import { flagAnswerAsCorrect, flagAnswerAsIncorrect, flagQuestionAsMiss, newPlayerStats } from './PlayerStats'
-import { ANSWER_ID_SUFFIX, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
+import { ANSWER_ID_SUFFIX, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, MAX_NB_GAME, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
+import { buildDummyQuestions, buildLegacyQuestions, buildTestQuestions } from './Quizz'
 
 // //////////////////////////////////////////////////
 // model
@@ -150,17 +151,45 @@ export function clearGames() {
   localStorage.removeItem( GAMES )
 }
 
-export function storeGames( games: Game[] ) {
+export function sortGames( games: Game[] ): Game[] {
+  const sortedGames = [ ...games ].sort( ( left: Game, right: Game ): number => {
+    return right.updated - left.updated
+  } )
+  console.log(`[sort] ${sortedGames.length} game(s)`)
+  sortedGames.forEach( g => console.log( `[sort] game ${g.id} - nbQuestion ${g.settings.nbQuestion} - updated ${toTimeString( g.updated )}` ) )
+  return sortedGames
+}
+
+export function sliceGames( games: Game[] ): Game[] {
+  const slicedGames = games.slice( 0, MAX_NB_GAME )
+  console.log(`[slice] ${slicedGames.length} game(s)`)
+  slicedGames.forEach( g => console.log( `[slice] game ${g.id} - nbQuestion ${g.settings.nbQuestion} - updated ${toTimeString( g.updated )}` ) )
+  return slicedGames
+}
+
+export function sanitizeGames( games: Game[] ): Game[] {
+  return sliceGames( sortGames( games ) )
+}
+
+export function storeGames( games: Game[] ): Game[] {
+
   console.log(`[store] ${games.length} game(s)`)
-  games.forEach( g => console.log( `[store] game ${g.id} - nbQuestion ${g.settings.nbQuestion}` ) )
-  localStorage.setItem( GAMES, JSON.stringify( games ) )
+  games.forEach( g => console.log( `[store] game ${g.id} - nbQuestion ${g.settings.nbQuestion} - updated ${toTimeString( g.updated )}` ) )
+  
+  const sanitizedGames = games.slice( 0, MAX_NB_GAME )
+
+  localStorage.setItem( GAMES, JSON.stringify( sanitizedGames ) )
+
+  return sanitizedGames
 }
 
 export function loadGames(): Game[] {
   const games: Game[] = JSON.parse( localStorage.getItem( GAMES ) || '[]' ) || []
-  // console.log(`[load] ${games.length} game(s)`)
-  games.forEach( g => console.log( `[load] game ${g.id} - nbQuestion ${g.settings.nbQuestion}` ) )
-  return games
+  
+  console.log(`[load] ${games.length} game(s)`)
+  games.forEach( g => console.log( `[load] game ${g.id} - nbQuestion ${g.settings.nbQuestion} - updated ${toTimeString( g.updated )}` ) )
+  
+  return sortGames( games )
 }
 
 // //////////////////////////////////////////////////
@@ -234,27 +263,12 @@ export function onSetUp( game: Game ): Game {
   console.log( `[on-set-up] ${game.id}` )
 
   //
-  // load game
+  // build questions
   //
 
-  const nbQuestion = game.settings.nbQuestion
-  const nbAnswer = game.settings.nbAnswer
-  range( nbQuestion ).map( i => i+1 ).forEach( i => {
-    // "https://api.deezer.com/artist/27/image"
-    const artist = newArtist( "Daft Punk", "https://e-cdns-images.dzcdn.net/images/artist/f2bc007e9133c946ac3c3907ddc5d2ea/56x56-000000-80-0-0.jpg" )
-    // "https://api.deezer.com/album/302127/image"
-    const album = newAlbum( "Discovery", "https://e-cdns-images.dzcdn.net/images/cover/2e018122cb56986277102d2041a592c8/56x56-000000-80-0-0.jpg" )
-    const media = newMedia( "Harder, Better, Faster, Stronger", "https://cdns-preview-d.dzcdn.net/stream/c-deda7fa9316d9e9e880d2c6207e92260-8.mp3", artist, album )
-    const question: Question = addQuestion( game, "Genre", media )
-
-    for ( let j = 0 ; j < nbAnswer ; j++ ) {
-      if ( i % nbAnswer == j ) {
-        addAnswer( question, media.title, artist.name, true )
-      } else {
-        addAnswer( question, `title ${j+1}`, `artist ${j+1}`, false )
-      }
-    }
-  } )
+  // game = buildDummyQuestions( game )
+  // game = buildTestQuestions( game )
+  game = buildLegacyQuestions( game )
 
   //
   // create default players

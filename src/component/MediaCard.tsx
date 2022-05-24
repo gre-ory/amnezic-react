@@ -31,8 +31,8 @@ const MediaCard = ( props: Props ) => {
                     <CardMedia
                         component="img"
                         sx={{ width: 56, height: 56, margin: '5px 10px' }}
-                        image={media.album.picture}
-                        alt={media.album.title}
+                        image={media.album ? media.album.picture : ''}
+                        alt={media.album ? media.album.title : ''}
                     />
 
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -40,7 +40,7 @@ const MediaCard = ( props: Props ) => {
                             Album
                         </Typography>
                         <Typography variant="subtitle1" color="text.primary" component="div">
-                            {media.album.title}
+                            {media.album ? media.album.title : ''}
                         </Typography>
                     </div>
 

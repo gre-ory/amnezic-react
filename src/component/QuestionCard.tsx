@@ -124,6 +124,7 @@ const QuestionCard = ( props: Props ) => {
                     const answerNumber = answer.id % 100 
                     const delay = musicPlayed ? 0 : answerNumber * 1000
                     const color = musicPlayed ? answer.correct ? 'green' : 'orange' : 'grey'
+                    const hintDelay = musicPlayed ? 0 : ( question.answers.length + 15 ) * 1000
                     return (
                         <Fade key={answer.id} in={true} timeout={timeout} style={{ transitionDelay: `${delay}ms` }}>
                             <Paper key={answer.id} className="answer" elevation={3} style={{ margin: '2px' }}>
@@ -140,7 +141,9 @@ const QuestionCard = ( props: Props ) => {
                                         <Avatar sx={{ bgcolor: color }} style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
                                         <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
                                             <Typography variant='h5'>{answer.answer}</Typography>
-                                            <Typography variant='subtitle1'>{answer.hint}</Typography>
+                                            <Fade in={true} timeout={timeout} style={{ transitionDelay: `${hintDelay}ms` }}>
+                                                <Typography variant='subtitle2' style={{ marginLeft: '20px', color: 'gray' }}>{answer.hint}</Typography>
+                                            </Fade>                                            
                                         </div>
                                     </div>
                                     <div

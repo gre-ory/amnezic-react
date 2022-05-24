@@ -230,7 +230,7 @@ const MusicPlayer = ( props: Props ) => {
 
     return (
         <LightTooltip title={played ? <MediaCard media={media} /> : false} >
-            <div style={{ width: '56px', height: '56px', cursor: played ? 'help' : 'auto', marginRight: '10px', background: played ? `url(${media.album.picture})` : `none`, backgroundSize: '56px 56px' }}>                
+            <div style={{ width: '56px', height: '56px', cursor: played ? 'help' : 'auto', marginRight: '10px', background: played && media.album ? `url(${media.album.picture})` : `none`, backgroundSize: '56px 56px' }}>                
 
                 <Box 
                     sx={{ 

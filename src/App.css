@@ -85,7 +85,7 @@
   /* border-radius: 10px; */
   border-color: gold;
   cursor: pointer;
-  background-color: #ffd70029;
+  background-color: #fff9d6;
 }
 
 .selectable {
@@ -98,7 +98,7 @@
   /* border: 2px solid gold; */
   /* border-radius: 10px; */
   border-color: gold;
-  background-color: #ffd70029;
+  background-color: #fff9d6;
 }
 
 .disabled {
