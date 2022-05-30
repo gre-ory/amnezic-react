@@ -6,6 +6,7 @@ import CardContent from '@mui/material/CardContent'
 
 import { CardMedia, Typography } from '@mui/material'
 import { Media } from '../data/Media'
+import musicBackground from '../static/music.png'
 
 interface Props {
     media: Media
@@ -17,6 +18,10 @@ const MediaCard = ( props: Props ) => {
     if ( !media ) {
         return null
     }
+
+    const mediaImage = media.artist && media.artist.picture ? media.artist.picture : media.album && media.album.picture ? media.album.picture : musicBackground
+    const artistName = media.artist && media.artist.name ? media.artist.name : '-'
+    const albumName = media.album && media.album.title ? media.album.title : '-'
 
     return (
         <Card variant="outlined">
@@ -31,33 +36,31 @@ const MediaCard = ( props: Props ) => {
                     <CardMedia
                         component="img"
                         sx={{ width: 56, height: 56, margin: '5px 10px' }}
-                        image={media.album ? media.album.picture : ''}
-                        alt={media.album ? media.album.title : ''}
+                        image={mediaImage}
                     />
 
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography variant="subtitle1" color="text.secondary" component="div">
-                            Album
-                        </Typography>
-                        <Typography variant="subtitle1" color="text.primary" component="div">
-                            {media.album ? media.album.title : ''}
-                        </Typography>
-                    </div>
-
-                    <CardMedia
-                        component="img"
-                        sx={{ width: 56, height: 56, margin: '5px 10px' }}
-                        image={media.artist.picture}
-                        alt={media.artist.name}
-                    />
-
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', marginRight: '10px' }}>
+                        
                         <Typography variant="subtitle1" color="text.secondary" component="div">
                             Artist
                         </Typography>
-                        <Typography variant="subtitle1" color="text.primary" component="div">
-                            {media.artist.name}
+                        
+                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                            Album
                         </Typography>
+
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', marginRight: '10px' }}>
+                        
+                        <Typography variant="subtitle1" color="text.primary" component="div">
+                            {artistName}
+                        </Typography>
+
+                        <Typography variant="subtitle1" color="text.primary" component="div">
+                            {albumName}
+                        </Typography>
+
                     </div>
 
                 </Box>

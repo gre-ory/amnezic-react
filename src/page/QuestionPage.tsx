@@ -28,6 +28,7 @@ import { Game, GameStep, OnGameUpdate, selectGame, selectQuestion, onQuestionNum
 import { QuestionId, OnQuestionUpdate, onQuestionPlayed, onQuestionCompleted } from '../data/Question'
 import { toHomePage, toGamePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
+import { DEBUG } from '../data/Constants'
 
 interface Props {
     games: Game[]
@@ -88,7 +89,7 @@ const QuestionPage = ( props: Props ) => {
 
     // user events
     
-    const onPrevious = question.previousNumber ? () => {
+    const onPrevious = DEBUG && question.previousNumber ? () => {
         if ( question.previousNumber ) {
             console.log( `onNext >>> updateQuestionNumber( ${question.previousNumber} )` )
             updateQuestionNumber( question.previousNumber )
@@ -119,7 +120,7 @@ const QuestionPage = ( props: Props ) => {
 
     // title
 
-    const title = `#${question.number} - ${question.title} - ${question.status}`
+    const title =  DEBUG ? `#${question.number} - ${question.title} - ${question.status}` : `#${question.number} - ${question.title}`
 
     return (
         <GamePage title={title} gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onPrevious={onPrevious} onNext={onNext}>

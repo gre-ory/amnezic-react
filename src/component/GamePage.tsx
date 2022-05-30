@@ -6,6 +6,7 @@ import { toHomePage, toGamePage } from '../data/Navigate'
 
 import Header from './Header'
 import Footer from './Footer'
+import { DEBUG } from '../data/Constants'
 
 interface Props {
     title?: string
@@ -36,7 +37,7 @@ const GamePage = ( props: Props ) => {
                 {children}
                 <Footer />
             </div>
-            <pre style={{ border: '1px solid #999', background: '#eee', padding: '20px' }}>{JSON.stringify(game,undefined,4)}</pre>
+            {DEBUG && <pre style={{ border: '1px solid #999', background: '#eee', padding: '20px' }}>{JSON.stringify(game,undefined,4)}</pre>}
         </>
     )
 }

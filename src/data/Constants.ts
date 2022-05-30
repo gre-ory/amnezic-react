@@ -1,4 +1,6 @@
 
+export const DEBUG = false
+
 export const MAX_NB_GAME = 4
 
 export const DEFAULT_NB_PLAYER = 2
@@ -18,4 +20,7 @@ export const MIN_NB_ANSWER_PER_QUESTION = 3
 export const MAX_NB_ANSWER_PER_QUESTION = 6
 export const INCREMENT_NB_ANSWER_PER_QUESTION = 1
 export const ANSWER_ID_SUFFIX = 100
+
+export const ONE_SECOND = DEBUG ? 300 : 1000
+export const MAX_NB_SECONDS = DEBUG ? 20 : 30
 

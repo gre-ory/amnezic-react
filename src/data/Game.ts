@@ -147,7 +147,6 @@ export function updateQuestion( questionId: QuestionId, update: QuestionUpdater 
 const GAMES = 'games'
 
 export function clearGames() {
-  console.log(`[clear]`)
   localStorage.removeItem( GAMES )
 }
 
@@ -155,15 +154,11 @@ export function sortGames( games: Game[] ): Game[] {
   const sortedGames = [ ...games ].sort( ( left: Game, right: Game ): number => {
     return right.updated - left.updated
   } )
-  console.log(`[sort] ${sortedGames.length} game(s)`)
-  sortedGames.forEach( g => console.log( `[sort] game ${g.id} - nbQuestion ${g.settings.nbQuestion} - updated ${toTimeString( g.updated )}` ) )
   return sortedGames
 }
 
 export function sliceGames( games: Game[] ): Game[] {
   const slicedGames = games.slice( 0, MAX_NB_GAME )
-  console.log(`[slice] ${slicedGames.length} game(s)`)
-  slicedGames.forEach( g => console.log( `[slice] game ${g.id} - nbQuestion ${g.settings.nbQuestion} - updated ${toTimeString( g.updated )}` ) )
   return slicedGames
 }
 
@@ -172,23 +167,13 @@ export function sanitizeGames( games: Game[] ): Game[] {
 }
 
 export function storeGames( games: Game[] ): Game[] {
-
-  console.log(`[store] ${games.length} game(s)`)
-  games.forEach( g => console.log( `[store] game ${g.id} - nbQuestion ${g.settings.nbQuestion} - updated ${toTimeString( g.updated )}` ) )
-  
   const sanitizedGames = games.slice( 0, MAX_NB_GAME )
-
   localStorage.setItem( GAMES, JSON.stringify( sanitizedGames ) )
-
   return sanitizedGames
 }
 
 export function loadGames(): Game[] {
-  const games: Game[] = JSON.parse( localStorage.getItem( GAMES ) || '[]' ) || []
-  
-  console.log(`[load] ${games.length} game(s)`)
-  games.forEach( g => console.log( `[load] game ${g.id} - nbQuestion ${g.settings.nbQuestion} - updated ${toTimeString( g.updated )}` ) )
-  
+  const games: Game[] = JSON.parse( localStorage.getItem( GAMES ) || '[]' ) || []  
   return sortGames( games )
 }
 

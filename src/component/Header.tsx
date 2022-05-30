@@ -76,12 +76,13 @@ const Header = ( props: Props ) => {
 
     // keyboard shortcuts
 
-    const handleKeyPress = React.useCallback( ( event ) => {        
+    const handleKeyPress = React.useCallback( ( event ) => {    
+        console.log( `header >>> key-down >>> [${event.key}]` )    
         switch ( event.key ) {
             case 'p':
             case 'ArrowLeft':
                 if ( onPrevious ) {
-                    console.log( `key "${event.key}" >>> onPrevious()`);
+                    console.log( `header >>> key "${event.key}" >>> onPrevious()`);
                     onPrevious();
                 }
                 break;
@@ -89,12 +90,13 @@ const Header = ( props: Props ) => {
             case 'Enter':
             case 'ArrowRight':
                 if ( onNext ) {
-                    console.log( `key "${event.key}" >>> onNext()`);
+                    console.log( `header >>> key "${event.key}" >>> onNext()`);
                     onNext();
                 }
                 break;
         }
     }, [] );
+    
     React.useEffect( () => {
         document.addEventListener( 'keydown', handleKeyPress );
         return () => {

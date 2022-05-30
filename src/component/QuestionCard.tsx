@@ -20,13 +20,14 @@ import { range, onUserEvent } from '../data/Util'
 import { Avatar, Badge, Fade, Grow, Tooltip } from '@mui/material'
 import PlayingCard from './PlayingCard'
 import { CardSize } from '../data/Card'
-import { AnswerId } from '../data/Answer'
+import { Answer, AnswerId } from '../data/Answer'
 import PlayerAvatar, { AvatarSize } from './PlayerAvatar'
 import { getQuestionAnswerStats, getQuestionStats } from '../data/PlayerStats'
 import PlayerCard from './PlayerCard'
 import { withStyles } from '@mui/styles'
 import MediaCard from './MediaCard'
 import MusicPlayer from './MusicPlayer'
+import { DEBUG, MAX_NB_SECONDS, ONE_SECOND } from '../data/Constants'
 
 interface Props {
     game: Game
@@ -39,13 +40,30 @@ interface Props {
 const QuestionCard = ( props: Props ) => {
     const { game, question, updateGame, updateQuestion, onNext } = props
 
-    const [ questionNumber, setQuestionNumber ] = React.useState( game.questionNumber )
+    const [ questionId, setQuestionId ] = React.useState( question.id )
+    const [ musicLoading, setMusicLoading ] = React.useState( true )
+    const [ nbSecondsTotal, setNbSecondsTotal ] = React.useState( 0 )
+    const [ nbShownAnswers, setNbShownAnswers ] = React.useState( 0 )
+    const [ musicReady, setMusicReady ] = React.useState( false )
+    const [ countDown, setCountDown ] = React.useState( 3 )
+    const [ musicStarted, setMusicStarted ] = React.useState( false )
+    const [ musicPlaying, setMusicPlaying ] = React.useState( false )
+    const [ nbSecondsPlayed, setNbSecondsPlayed ] = React.useState( 0 )
+    const [ musicEnded, setMusicEnded ] = React.useState( false )
 
     if ( !game || !question ) {
         return null
     }
+
+    React.useEffect( () => {
+        if ( questionId != question.id ) {
+            console.log( `new question >>> setQuestionId( ${question.id} ) + reset()` ) 
+            setQuestionId( question.id )
+            reset()
+        }
+    }, [ questionId, question.id ] );
         
-    const musicPlayed = question.status == 'played' || question.status == 'completed'
+    const musicPlayed = musicEnded || question.status == 'played' || question.status == 'completed'
 
     //
     // answers helpers
@@ -113,80 +131,221 @@ const QuestionCard = ( props: Props ) => {
         }
     } ) ) ( Tooltip );
 
+    //
+    // events
+    //
+
+    const reset = () => {
+        setMusicLoading( true )
+        setNbSecondsTotal( 0 )
+        setNbShownAnswers( 0 )
+        setMusicReady( false )
+        setCountDown( 3 )
+        setMusicStarted( false )
+        setMusicPlaying( false )
+        setNbSecondsPlayed( 0 )
+        setMusicEnded( false )
+    }
+
+    const resetOnPlayed = () => {
+        setNbShownAnswers( question.answers.length )
+    }
+
+    const showMusicLoading = () => {
+        console.log( 'showMusicLoading >>> ...' ) 
+    }
+
+    const onMusicLoaded = ( nbSeconds: number ) => {
+        console.log( `onMusicLoaded >>> setMusicLoading( false ) + setNbSeconds( Math.min( ${nbSeconds}, ${MAX_NB_SECONDS} ) )` ) 
+        setMusicLoading( false )
+        setNbSecondsTotal( Math.min( Math.ceil( nbSeconds ), MAX_NB_SECONDS ) )
+        setMusicStarted( false )
+        setMusicPlaying( false )
+        setNbSecondsPlayed( 0 )
+        setMusicEnded( false )
+    }
+
+    const onMusicPlaying = () => {
+        if ( musicStarted && !musicPlayed ) {
+            console.log( 'onMusicPlaying >>> setMusicPlaying( true )' ) 
+            setMusicPlaying( true )
+        } else {
+            console.log( `onMusicPlaying >>> WRONG state! ( musicStarted: ${musicStarted}, musicPlayed: ${musicPlayed} )` ) 
+        }
+    }
+
+    const onMusicPaused = () => {
+        if ( musicStarted && !musicPlayed ) {
+            console.log( 'onMusicPaused >>> setMusicPlaying( false )' ) 
+            setMusicPlaying( false )
+        } else {
+            console.log( `onMusicPaused >>> WRONG state! ( musicStarted: ${musicStarted}, musicPlayed: ${musicPlayed} )` ) 
+        }
+    }
+
+    const onMusicEnded = () => {
+        console.log( 'onMusicEnded >>> onNext() + reset()' )
+        onNext()        
+        reset() 
+    }
+
+    const showNextAnswer = () => {        
+        if ( nbShownAnswers == question.answers.length ) {
+            console.log( 'showNextAnswer >>> setMusicReady( true )' ) 
+            setMusicReady( true )
+        } else {            
+            // console.log( `showNextAnswer >>> ${nbShownAnswers} + 1` ) 
+            setNbShownAnswers( nbShownAnswers + 1 )
+        }
+    }
+
+    const showCountDown = () => {
+        if ( countDown > 0 ) {
+            // console.log( `showCountDown >>> ${countDown} - 1` ) 
+            setCountDown( countDown - 1 )
+        } else {
+            console.log( 'showCountDown >>> setMusicStarted( true ) + setMusicPlaying( true )' ) 
+            setMusicStarted( true )
+            setMusicPlaying( true )
+        }
+    }
+
+    const showNbSecondsPlayed = () => {
+        if ( nbSecondsPlayed < nbSecondsTotal ) {
+            // console.log( `showNbSecondsPlayed >>> ${nbSecondsPlayed} + 1` ) 
+            setNbSecondsPlayed( nbSecondsPlayed + 1 )
+        } else {
+            console.log( 'showCountDown >>> pauseMusic()' ) 
+            setMusicPlaying( false )
+            setMusicEnded( true )
+            onMusicEnded()
+        }
+    }
+
+    React.useEffect( () => {
+        let timerId: any = undefined;
+        if ( musicPlayed ) {
+            resetOnPlayed()
+            // console.log( 'timer >>> musicPlayed >>> STOP' ) 
+            clearInterval( timerId );
+            timerId = undefined;
+        } else if ( musicLoading ) {
+            // console.log( 'timer >>> musicLoading >>> showMusicLoading' ) 
+            timerId = setInterval( showMusicLoading, ONE_SECOND );
+        } else if ( !musicReady ) {
+            // console.log( 'timer >>> !musicReady >>> showNextAnswer' ) 
+            timerId = setInterval( showNextAnswer, ONE_SECOND );
+        } else if ( !musicStarted ) {
+            // console.log( 'timer >>> !musicStarted >>> showCountDown' ) 
+            timerId = setInterval( showCountDown, ONE_SECOND );
+        } else if ( musicPlaying ) {
+            // console.log( 'timer >>> musicPlaying >>> showNbSecondsPlayed' ) 
+            timerId = setInterval( showNbSecondsPlayed, ONE_SECOND );
+        } else {
+            resetOnPlayed()
+            console.log( 'timer >>> ??? >>> STOP' ) 
+            clearInterval( timerId );
+            timerId = undefined;
+        }                
+        return () => {
+            timerId && clearInterval( timerId );
+        }
+    }, [ musicLoading, countDown, nbShownAnswers, musicReady, musicStarted, musicPlaying, nbSecondsPlayed, musicPlayed ] );
+
+    const progress = musicPlayed ? 100 : !musicStarted ? 0 : Math.ceil( Math.min( nbSecondsPlayed, nbSecondsTotal ) * 100 / nbSecondsTotal )
+    const musicPaused = !musicPlayed && musicStarted && !musicPlaying
+    const showHints = progress > 50
+    const countingDown = musicReady && !musicStarted
+
     return (
-        <>
+        <>  
+            {/* counting down */}
+
+            {countingDown && (
+                <div className='countDown'>
+                    <span>{countDown}</span>
+                </div>
+            )}
 
             {/* answers */}
 
             {
-                question.answers.map( answer => {
-                    const timeout = musicPlayed ? 0 : 1000
+                question.answers.map( ( answer, index ) => {
+
+                    const shown = index < nbShownAnswers
+                    const hidden = !shown
+                    const last = index == ( nbShownAnswers - 1 )
+                    const timeout = last && !musicPlayed ? 1000 : 0
                     const answerNumber = answer.id % 100 
-                    const delay = musicPlayed ? 0 : answerNumber * 1000
-                    const color = musicPlayed ? answer.correct ? 'green' : 'orange' : 'grey'
-                    const hintDelay = musicPlayed ? 0 : ( question.answers.length + 15 ) * 1000
-                    return (
-                        <Fade key={answer.id} in={true} timeout={timeout} style={{ transitionDelay: `${delay}ms` }}>
-                            <Paper key={answer.id} className="answer" elevation={3} style={{ margin: '2px' }}>
-                                <div 
+                    const color = musicPlayed ? answer.correct ? '#00c508' : 'grey' : 'grey'
+                    const backgroundColor = musicPlayed ? answer.correct ? '#00ff131f' : 'white' : 'white'
+                    
+                    const answerElement = (
+                        <Paper key={answer.id} className="answer" elevation={3} style={{ margin: '2px', opacity: hidden ? '0' : '1', filter: musicPaused ? 'blur(6px)' : 'none', backgroundColor: backgroundColor }}>
+                            <div 
+                                style={{
+                                    position: 'relative', 
+                                    display: 'inline-flex',
+                                    alignItems: 'center', 
+                                    justifyContent: 'space-between',
+                                    width: '100%'
+                                }}
+                            >                                    
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
+                                    <Avatar sx={{ bgcolor: color }} style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
+                                    <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
+                                        <Typography variant='h5'>{answer.answer}</Typography>
+                                        <Typography variant='subtitle2' style={{ marginLeft: '20px', color: 'gray', opacity: showHints ? '1' : '0' }}>{answer.hint}</Typography>
+                                    </div>
+                                </div>
+                                <div
                                     style={{
-                                        position: 'relative', 
-                                        display: 'inline-flex',
-                                        alignItems: 'center', 
-                                        justifyContent: 'space-between',
-                                        width: '100%'
+                                        top: 0,
+                                        left: 0,
+                                        bottom: 0,
+                                        right: 5,
+                                        position: 'absolute',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'flex-end',
                                     }}
-                                >                                    
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
-                                        <Avatar sx={{ bgcolor: color }} style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
-                                        <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
-                                            <Typography variant='h5'>{answer.answer}</Typography>
-                                            <Fade in={true} timeout={timeout} style={{ transitionDelay: `${hintDelay}ms` }}>
-                                                <Typography variant='subtitle2' style={{ marginLeft: '20px', color: 'gray' }}>{answer.hint}</Typography>
-                                            </Fade>                                            
-                                        </div>
-                                    </div>
-                                    <div
-                                        style={{
-                                            top: 0,
-                                            left: 0,
-                                            bottom: 0,
-                                            right: 5,
-                                            position: 'absolute',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'flex-end',
-                                        }}
-                                    >
-                                        { ( question.status == 'played' ) && (
-                                            game.players.map( ( player: Player ) => {
-                                                const disabled = hasAnswer( player.id, answer.id )
-                                                const onClick = question.status == 'played' && !disabled ? () => addAnswer( player.id, answer.id ) : undefined
-                                                return (
-                                                    <div key={`answer-${answer.id}-${player.id}`} style={{ marginLeft: '5px' }}>
-                                                        <PlayingCard
-                                                            key={`${player.id}-${answer.id}`} 
-                                                            card={{
-                                                                ...player.card,
-                                                                number: answer.number,
-                                                                size: CardSize.XS,
-                                                            }}
-                                                            disabled={disabled} 
-                                                            onClick={onClick} 
-                                                        />
-                                                    </div>
-                                                )
-                                            } )
-                                        ) }
-                                    </div>
-                                </div>                                
-                            </Paper>
-                        </Fade>
+                                >
+                                    { ( question.status == 'played' ) && (
+                                        game.players.map( ( player: Player ) => {
+                                            const disabled = hasAnswer( player.id, answer.id )
+                                            const onClick = question.status == 'played' && !disabled ? () => addAnswer( player.id, answer.id ) : undefined
+                                            return (
+                                                <div key={`answer-${answer.id}-${player.id}`} style={{ marginLeft: '5px' }}>
+                                                    <PlayingCard
+                                                        key={`${player.id}-${answer.id}`} 
+                                                        card={{
+                                                            ...player.card,
+                                                            number: answer.number,
+                                                            size: CardSize.XS,
+                                                        }}
+                                                        disabled={disabled} 
+                                                        onClick={onClick} 
+                                                    />
+                                                </div>
+                                            )
+                                        } )
+                                    ) }
+                                </div>
+                            </div>                                
+                        </Paper>
                     )
+                    
+                    if ( last ) {
+                        <Fade key={answer.id} in={true} timeout={timeout}>
+                            {answerElement}                            
+                        </Fade>
+                    }
+
+                    return answerElement
                 })
             } 
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start', marginTop: '15px' }}>
 
@@ -194,10 +353,16 @@ const QuestionCard = ( props: Props ) => {
 
                     <MusicPlayer 
                         questionId={question.id} 
-                        media={question.media} 
-                        delay={question.answers.length + 4} 
+                        media={question.media}
+                        loading={musicLoading}
+                        started={musicStarted}
+                        playing={musicPlaying} 
+                        progress={progress}
                         played={musicPlayed} 
-                        onMusicEnded={onNext}
+                        onMusicLoaded={onMusicLoaded}
+                        onMusicPlaying={onMusicPlaying}
+                        onMusicPaused={onMusicPaused}
+                        onMusicEnded={onMusicEnded}
                     />
     
                     {/* selected players answers */}
@@ -271,7 +436,21 @@ const QuestionCard = ( props: Props ) => {
 
             {/* debug */}
 
-            <pre style={{ border: '1px solid #999', background: '#f2fff6', padding: '20px' }}>{JSON.stringify(question,undefined,4)}</pre>
+            {DEBUG && <pre style={{ border: '1px solid #999', background: '#fff6f2', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span>{musicLoading?'loading':'--'}</span>
+                <span>answers: {nbShownAnswers}/{question.answers.length}</span>
+                <span>{musicReady?'ready':'--'}</span>
+                <span>{countDown}s</span>
+                <span>{musicStarted?'started':'--'}</span>
+                <span>music: {nbSecondsPlayed}s / {nbSecondsTotal}s</span>
+                <span>{progress}%</span>
+                <span>{musicPlaying?'playing':'paused'}</span>
+                <span>{showHints?'hints':'--'}</span>
+                <span>{musicEnded?'ended':'--'}</span>
+                <span>{musicPlayed?'played':'--'}</span>
+            </pre>}
+
+            {DEBUG && <pre style={{ border: '1px solid #999', background: '#f2fff6', padding: '20px' }}>{JSON.stringify(question,undefined,4)}</pre>}
 
         </>
     )
