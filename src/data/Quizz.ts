@@ -45,29 +45,29 @@ const noPictureMusic = newMedia(
         undefined
     ), 
     undefined
-)  
+)
 
-const wrongUrlMusic = newMedia(
-    "Wrong URL", 
-    "https://cdns-preview-3.dzcdn.net/stream/c-3d8caae0a1c59f417f31bb747c43818b-7", 
+const shortMusic = newMedia(
+    "Short", 
+    "http://cache.amnezic.com/Rem2-14-10.mp3", 
     newArtist( 
-        "Wrong URL", 
+        "Short", 
         undefined
     ), 
     undefined
 ) 
 
-const forbiddenMusic = newMedia(
-    "Forbidden",
+const failedMusic = newMedia(
+    "Failed",
     "http://cache.amnezic.com/Clash%20-%20Should%20I%20Stay%20Or%20Go.mp3",
     newArtist( 
-        "Forbidden", 
+        "Failed", 
         undefined
     ), 
     undefined
 )
 
-const dummyMusics = [ fullMusic, noAlbumMusic, noPictureMusic, wrongUrlMusic, forbiddenMusic ]
+const dummyMusics = [ fullMusic, noAlbumMusic, noPictureMusic, shortMusic, failedMusic ]
 
 export function buildDummyQuestions( game: Game ): Game {
 

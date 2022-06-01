@@ -10,7 +10,7 @@ import { Media, newMedia } from './Media'
 import { GameStats, newGameStats } from './GameStats'
 import { Card, DefaultCards } from './Card'
 import { flagAnswerAsCorrect, flagAnswerAsIncorrect, flagQuestionAsMiss, newPlayerStats } from './PlayerStats'
-import { ANSWER_ID_SUFFIX, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, MAX_NB_GAME, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
+import { ANSWER_ID_SUFFIX, DEBUG, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, MAX_NB_GAME, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
 import { buildDummyQuestions, buildLegacyQuestions, buildTestQuestions } from './Quizz'
 import { AvatarId } from './Avatar'
 
@@ -253,9 +253,12 @@ export function onSetUp( game: Game ): Game {
   // build questions
   //
 
-  game = buildDummyQuestions( game )
-  // game = buildTestQuestions( game )
-  // game = buildLegacyQuestions( game )
+  if ( DEBUG ) {
+    game = buildDummyQuestions( game )
+    // game = buildTestQuestions( game )
+  } else {
+    game = buildLegacyQuestions( game )
+  }
 
   //
   // create default players
