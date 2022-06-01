@@ -15,9 +15,9 @@ import Slide from '@mui/material/Slide';
 
 import { Game, onAnswers, OnGameUpdate, onQuestionNumber } from '../data/Game'
 import { Player, PlayerId } from '../data/Player'
-import { Question, OnQuestionUpdate, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer } from '../data/Question'
+import { Question, OnQuestionUpdate, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer, onQuestionFailed } from '../data/Question'
 import { range, onUserEvent } from '../data/Util'
-import { Avatar, Badge, Fade, Grow, Tooltip } from '@mui/material'
+import { Alert, Avatar, Badge, Fade, Grow, Tooltip } from '@mui/material'
 import PlayingCard from './PlayingCard'
 import { CardSize } from '../data/Card'
 import { Answer, AnswerId } from '../data/Answer'
@@ -27,7 +27,7 @@ import PlayerCard from './PlayerCard'
 import { withStyles } from '@mui/styles'
 import MediaCard from './MediaCard'
 import MusicPlayer from './MusicPlayer'
-import { DEBUG, MAX_NB_SECONDS, ONE_SECOND } from '../data/Constants'
+import { DEBUG, MAX_NB_SECONDS_LOADING, MAX_NB_SECONDS_PLAYING, ONE_SECOND } from '../data/Constants'
 
 interface Props {
     game: Game
@@ -63,10 +63,11 @@ const QuestionCard = ( props: Props ) => {
         }
     }, [ questionId, question.id ] );
         
+    const musicFailed = question.status == 'failed'
     const musicPlayed = musicEnded || question.status == 'played' || question.status == 'completed'
 
     //
-    // answers helpers
+    // update helpers
     //
 
     const hasAnswer = ( playerId: PlayerId, answerId: AnswerId ): boolean => {
@@ -79,6 +80,10 @@ const QuestionCard = ( props: Props ) => {
 
     const removeAnswer = ( playerId: PlayerId, answerId: AnswerId ) => {
         updateQuestion( game.id, question.id, ( question: Question ) => removePlayerAnswer( question, playerId, answerId ) )        
+    }
+
+    const flagQuestionAsFailed = () => {
+        updateQuestion( game.id, question.id, ( question: Question ) => onQuestionFailed( question ) )        
     }
 
     //
@@ -151,18 +156,20 @@ const QuestionCard = ( props: Props ) => {
         setNbShownAnswers( question.answers.length )
     }
 
-    const showMusicLoading = () => {
-        console.log( 'showMusicLoading >>> ...' ) 
-    }
-
     const onMusicLoaded = ( nbSeconds: number ) => {
-        console.log( `onMusicLoaded >>> setMusicLoading( false ) + setNbSeconds( Math.min( ${nbSeconds}, ${MAX_NB_SECONDS} ) )` ) 
+        console.log( `onMusicLoaded >>> setMusicLoading( false ) + setNbSeconds( Math.min( ${nbSeconds}, ${MAX_NB_SECONDS_PLAYING} ) )` ) 
         setMusicLoading( false )
-        setNbSecondsTotal( Math.min( Math.ceil( nbSeconds ), MAX_NB_SECONDS ) )
+        setNbSecondsTotal( Math.min( Math.ceil( nbSeconds ), MAX_NB_SECONDS_PLAYING ) )
         setMusicStarted( false )
         setMusicPlaying( false )
         setNbSecondsPlayed( 0 )
         setMusicEnded( false )
+    }
+
+    const onMusicFailed = () => {
+        console.log( `onMusicFailed >>> flagQuestionAsFailed() + setMusicLoading( false )` )
+        flagQuestionAsFailed()
+        setMusicLoading( false )
     }
 
     const onMusicPlaying = () => {
@@ -200,11 +207,12 @@ const QuestionCard = ( props: Props ) => {
     }
 
     const showCountDown = () => {
-        if ( countDown > 0 ) {
+        if ( countDown > 1 ) {
             // console.log( `showCountDown >>> ${countDown} - 1` ) 
             setCountDown( countDown - 1 )
         } else {
             console.log( 'showCountDown >>> setMusicStarted( true ) + setMusicPlaying( true )' ) 
+            setCountDown( 0 )
             setMusicStarted( true )
             setMusicPlaying( true )
         }
@@ -224,14 +232,14 @@ const QuestionCard = ( props: Props ) => {
 
     React.useEffect( () => {
         let timerId: any = undefined;
-        if ( musicPlayed ) {
+        if ( musicFailed || musicPlayed ) {
             resetOnPlayed()
-            // console.log( 'timer >>> musicPlayed >>> STOP' ) 
+            // console.log( 'timer >>> musicFailed or musicPlayed >>> STOP' ) 
             clearInterval( timerId );
             timerId = undefined;
         } else if ( musicLoading ) {
             // console.log( 'timer >>> musicLoading >>> showMusicLoading' ) 
-            timerId = setInterval( showMusicLoading, ONE_SECOND );
+            timerId = setInterval( onMusicFailed, ONE_SECOND * MAX_NB_SECONDS_LOADING );
         } else if ( !musicReady ) {
             // console.log( 'timer >>> !musicReady >>> showNextAnswer' ) 
             timerId = setInterval( showNextAnswer, ONE_SECOND );
@@ -250,21 +258,60 @@ const QuestionCard = ( props: Props ) => {
         return () => {
             timerId && clearInterval( timerId );
         }
-    }, [ musicLoading, countDown, nbShownAnswers, musicReady, musicStarted, musicPlaying, nbSecondsPlayed, musicPlayed ] );
+    }, [ musicLoading, musicFailed, countDown, nbShownAnswers, musicReady, musicStarted, musicPlaying, nbSecondsPlayed, musicPlayed ] );
 
     const progress = musicPlayed ? 100 : !musicStarted ? 0 : Math.ceil( Math.min( nbSecondsPlayed, nbSecondsTotal ) * 100 / nbSecondsTotal )
     const musicPaused = !musicPlayed && musicStarted && !musicPlaying
     const showHints = progress > 50
     const countingDown = musicReady && !musicStarted
 
+    let musicPlayerInfo = undefined
+    if ( musicFailed ) {
+        musicPlayerInfo = (
+            <Typography sx={{ fontSize: 40, fontWeight: 'bold', color: 'red' }}>
+                X
+            </Typography>
+        )
+    } else if ( musicLoading ) {
+        musicPlayerInfo = undefined
+    } else if ( !musicReady ) {
+        musicPlayerInfo = (
+            <Typography sx={{ fontSize: 40, fontWeight: 'bold', color: 'gray' }}>
+                {question.answers.length-nbShownAnswers+1+countDown}
+            </Typography>
+        )
+    } else if ( !musicStarted ) {
+        musicPlayerInfo = (
+            <Typography sx={{ fontSize: 40, fontWeight: 'bold', color: 'gray' }}>
+                {countDown}
+            </Typography>
+        )
+    } else if ( !musicPlayed ) {
+        musicPlayerInfo = (
+            <Typography sx={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>
+                {nbSecondsTotal-nbSecondsPlayed}s
+            </Typography>
+        )
+    }
+
     return (
         <>  
-            {/* counting down */}
 
-            {countingDown && (
-                <div className='countDown'>
-                    <span>{countDown}</span>
-                </div>
+            {/* warning: music failed */}
+
+            {musicFailed && (
+                <Alert 
+                    severity="warning" 
+                    style={{ 
+                        position: 'absolute',
+                        width: '60%',
+                        top: '25%',
+                        left: '20%',
+                        boxShadow: '3px 3px 3px rgb(0,0,0,0.1)',
+                    }}
+                >
+                    Could not load music! Please proceed to next question.
+                </Alert>
             )}
 
             {/* answers */}
@@ -273,9 +320,9 @@ const QuestionCard = ( props: Props ) => {
                 question.answers.map( ( answer, index ) => {
 
                     const shown = index < nbShownAnswers
-                    const hidden = !shown
-                    const last = index == ( nbShownAnswers - 1 )
-                    const timeout = last && !musicPlayed ? 1000 : 0
+                    const hidden = musicFailed || !shown
+                    // const last = index == ( nbShownAnswers - 1 )
+                    // const timeout = last && !musicPlayed ? 1000 : 0
                     const answerNumber = answer.id % 100 
                     const color = musicPlayed ? answer.correct ? '#00c508' : 'grey' : 'grey'
                     const backgroundColor = musicPlayed ? answer.correct ? '#00ff131f' : 'white' : 'white'
@@ -335,11 +382,11 @@ const QuestionCard = ( props: Props ) => {
                         </Paper>
                     )
                     
-                    if ( last ) {
-                        <Fade key={answer.id} in={true} timeout={timeout}>
-                            {answerElement}                            
-                        </Fade>
-                    }
+                    // if ( last ) {
+                    //     <Fade key={answer.id} in={true} timeout={timeout}>
+                    //         {answerElement}                            
+                    //     </Fade>
+                    // }
 
                     return answerElement
                 })
@@ -354,7 +401,9 @@ const QuestionCard = ( props: Props ) => {
                     <MusicPlayer 
                         questionId={question.id} 
                         media={question.media}
+                        failed={musicFailed}
                         loading={musicLoading}
+                        info={musicPlayerInfo}
                         started={musicStarted}
                         playing={musicPlaying} 
                         progress={progress}
@@ -420,11 +469,17 @@ const QuestionCard = ( props: Props ) => {
                     const tooltipId = `player-tooltip-${player.id}`
                     const questionStats = getQuestionStats( player.stats, question.id )
                     const score = question.status == 'completed' && questionStats ? questionStats.score : undefined
+                    const disableTooltip = !musicPlayed
                     return (
-                        <LightTooltip key={`player-${player.id}`} title={<PlayerCard player={player} avatarSize={AvatarSize.M} cardSize={CardSize.XS}/>} >
+                        <LightTooltip 
+                            key={tooltipId} 
+                            title={<PlayerCard player={player} avatarSize={AvatarSize.M} cardSize={CardSize.XS}/>} 
+                            disableFocusListener={disableTooltip}
+                            disableHoverListener={disableTooltip}
+                        >
                             <Badge className='playerChip--badge' badgeContent={badgeValue(score)} color={badgeColor(score)}>  
-                                <div className='playerChip' style={{ cursor: 'help' }}>
-                                    <span className='playerChip--avatar'><PlayerAvatar key={player.id} number={player.number} size={AvatarSize.S}/></span>
+                                <div className='playerChip' style={{ cursor: musicPlayed ? 'help' : 'auto', }}>
+                                    <span className='playerChip--avatar'><PlayerAvatar key={player.id} id={player.avatarId} size={AvatarSize.S}/></span>
                                     <span className='playerChip--score'>{player.stats.score}</span>
                                 </div>
                             </Badge>                            

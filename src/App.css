@@ -40,27 +40,6 @@
   }
 }
 
-/* ------------------------- countdown ------------------------- */
-
-.countDown {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 100;
-  background-color: #00000045;
-  color: white;
-  font-size: 200px;
-  text-align: center;
-  font-weight: bolder;
-  padding-top: 100px;
-}
-
-.countDown span {
-
-}
-
 /* ------------------------- player ------------------------- */
 
 /* chip */
@@ -124,6 +103,15 @@
 
 .disabled {
   opacity: 0.2;
+}
+
+.avatar.selectable {
+  border: 2px solid white;
+}
+
+.avatar.selected,
+.avatar.selectable:hover {
+  border: 2px solid gold;
 }
 
 /* ------------------------- card ------------------------- */

@@ -83,7 +83,7 @@ const ScoresPage = ( props: Props ) => {
                                 previousPosition = position
 
                                 return (
-                                    <Grid key={player.id} item xs={6} textAlign="left">
+                                    <Grid key={player.id} item xs={12} textAlign="left">
                                         <PlayerScoreCard
                                             game={game}
                                             player={player}

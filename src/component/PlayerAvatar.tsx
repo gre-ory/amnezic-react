@@ -1,10 +1,14 @@
 import React from 'react'
+import { AvatarId } from '../data/Avatar'
 
 import { PlayerId } from '../data/Player'
 
 interface Props {
-    number: number
+    id: AvatarId
     size: AvatarSize
+    disabled?: boolean
+    selected?: boolean
+    onClick?: () => void
 }
 
 export enum AvatarSize {
@@ -16,10 +20,23 @@ export enum AvatarSize {
 }
 
 const PlayerAvatar = ( props: Props ) => {
-    const { number, size } = props
+    const { id, size, disabled, selected, onClick } = props
+
+    let avatarClassNames = `avatar`
+    avatarClassNames = `${avatarClassNames} avatar-${id}`
+    avatarClassNames = `${avatarClassNames} avatar-${size}`    
+    if ( disabled ) {
+        avatarClassNames = `${avatarClassNames} disabled`
+    }
+    if ( selected ) {
+        avatarClassNames = `${avatarClassNames} selected`
+    }
+    if ( onClick ) {
+        avatarClassNames = `${avatarClassNames} selectable`
+    }
 
     return (
-        <div className={`avatar avatar-${size} avatar-${number}`}></div>
+        <div className={avatarClassNames} onClick={onClick}></div>
     )
 }
 

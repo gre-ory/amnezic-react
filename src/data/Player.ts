@@ -1,5 +1,6 @@
 
 import { customAlphabet } from 'nanoid'
+import { AvatarId } from './Avatar'
 
 import { Card } from './Card'
 import { PlayerStats } from './PlayerStats'
@@ -18,7 +19,8 @@ export type PlayerId = number
 
 export interface Player {
   id: PlayerId
-  number: number,
+  number: number
+  avatarId: AvatarId
   name: string
   status: PlayerStatus
   card: Card

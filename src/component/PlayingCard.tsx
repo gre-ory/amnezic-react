@@ -51,36 +51,27 @@ const PlayingCard = ( props: Props ) => {
     if ( onClick ) {
         cardClassNames = `${cardClassNames} selectable`
     }
-    // let selectClassNames = `card--inside`
-    // if ( selected ) {
-    //     selectClassNames = `${selectClassNames} selected`
-    // }
-    // if ( onClick ) {
-    //     selectClassNames = `${selectClassNames} selectable`
-    // }
 
     return (
         <div className={cardClassNames} onClick={onClick}>
-            {/* <div className={selectClassNames}> */}
-                <div className="card--header">
-                    <div className="card--symbol">
-                        <PlayingCardIcon symbol={card.symbol} color={card.color}/>
-                    </div>                
+            <div className="card--header">
+                <div className="card--symbol">
+                    <PlayingCardIcon symbol={card.symbol} color={card.color}/>
+                </div>                
+            </div>
+            <div className="card--content">
+                <div className="card--value">
+                    {card.number ? `${card.number % 10}` : card.value}
                 </div>
-                <div className="card--content">
-                    <div className="card--value">
-                        {card.number ? `${card.number % 10}` : card.value}
-                    </div>
-                    <div className="card--symbol">
-                        <PlayingCardIcon symbol={card.symbol} color={card.color}/>
-                    </div>
+                <div className="card--symbol">
+                    <PlayingCardIcon symbol={card.symbol} color={card.color}/>
                 </div>
-                <div className="card--footer">
-                    <div className="card--symbol">
-                        <PlayingCardIcon symbol={card.symbol} color={card.color}/>
-                    </div>
+            </div>
+            <div className="card--footer">
+                <div className="card--symbol">
+                    <PlayingCardIcon symbol={card.symbol} color={card.color}/>
                 </div>
-            {/* </div> */}
+            </div>
         </div>
     )
 }

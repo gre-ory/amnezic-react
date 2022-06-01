@@ -12,6 +12,7 @@ export type QuestionStatus =
   | 'not-played' 
   | 'played'
   | 'completed'
+  | 'failed'
 
 // //////////////////////////////////////////////////
 // model
@@ -95,6 +96,14 @@ export function onQuestionCompleted( question: Question ): Question {
   console.log( `[on-question-completed] question: ${question.id}` )
 
   question.status = 'completed'
+  
+  return question
+}
+
+export function onQuestionFailed( question: Question ): Question {
+  console.log( `[on-question-failed] question: ${question.id}` )
+
+  question.status = 'failed'
   
   return question
 }

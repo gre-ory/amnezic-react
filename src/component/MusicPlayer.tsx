@@ -17,7 +17,9 @@ import musicBackground from '../static/music.png'
 interface Props {
     questionId: QuestionId
     media: Media
+    failed: boolean
     loading: boolean
+    info?: any
     started: boolean
     playing: boolean
     progress: number
@@ -29,7 +31,7 @@ interface Props {
 }
 
 const MusicPlayer = ( props: Props ) => {
-    const { questionId, media, loading, started, playing, progress, played, onMusicLoaded, onMusicPlaying, onMusicPaused, onMusicEnded } = props
+    const { questionId, media, loading, info, started, playing, progress, played, onMusicLoaded, onMusicPlaying, onMusicPaused, onMusicEnded } = props
 
     if ( !questionId && !media ) {
         return null
@@ -262,15 +264,24 @@ const MusicPlayer = ( props: Props ) => {
 
     return (
         <LightTooltip title={played ? <MediaCard media={media} /> : false} >
-            <div style={{ width: '56px', height: '56px', cursor: played ? 'help' : 'auto', marginRight: '10px', background: played ? media.album ? `url(${media.album.picture})` : `url(${musicBackground})` : 'none', backgroundSize: '56px 56px' }}>                
+            <div 
+                style={{ 
+                    width: '56px', 
+                    height: '56px', 
+                    cursor: played ? 'help' : 'auto', 
+                    marginRight: '10px', 
+                    border: played ? '1px solid #777' : 'none',
+                    borderRadius: '28px', 
+                    backgroundColor: played ? 'transparent' : '#eee',
+                    background: played ? media.album ? `url(${media.album.picture})` : `url(${musicBackground})` : 'none', 
+                    backgroundSize: '56px 56px' 
+                }}
+            >                
 
                 <Box 
                     sx={{ 
                         width: '56px', 
                         height: '56px',
-                        border: '0px solid #777',
-                        borderRadius: '28px', 
-                        backgroundColor: '#eee',
                         position: 'relative', 
                         display: 'inline-flex', 
                         alignItems: 'center', 
@@ -278,8 +289,14 @@ const MusicPlayer = ( props: Props ) => {
                     }} 
                     onClick={playingMusic ? onPause : onPlay}
                 >
-                    { !played && loading && <CircularProgress variant="indeterminate"/> }
+                    
+                    {/* progress */}
+
+                    { !played && loading && <CircularProgress variant="indeterminate"/> }                    
                     { !played && !loading && started && <CircularProgress size={56} variant="determinate" value={progress}/> }
+                    
+                    {/* buttons */}
+
                     <Box
                         sx={{
                             top: 0,
@@ -293,13 +310,13 @@ const MusicPlayer = ( props: Props ) => {
                         }}
                     >
                         <Typography variant="caption" component="div" color="text.secondary">
-                            {   
+                            {/* {   
                                 playingMusic && (
                                     <IconButton aria-label="pause" onClick={onPause}>
                                         <PauseIcon sx={{ height: 38, width: 38 }}/>
                                     </IconButton>
                                 )
-                            }
+                            } */}
                             {
                                 pausingMusic && (
                                     <IconButton aria-label="play" onClick={onPlay}>
@@ -309,6 +326,27 @@ const MusicPlayer = ( props: Props ) => {
                             }
                         </Typography>
                     </Box>
+
+                    {/* info */}
+
+                    {info && (
+                        <Box
+                            sx={{
+                                top: 0,
+                                left: 0,
+                                bottom: 0,
+                                right: 0,
+                                position: 'absolute',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                            onClick={started ? playingMusic ? onPause : onPlay : undefined}
+                        >
+                            {info}                            
+                        </Box>
+                    )}
+
                 </Box>
 
             </div>

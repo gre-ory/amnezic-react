@@ -17,6 +17,9 @@ import PlayingCard from './PlayingCard'
 import PlayingCardIcon from './PlayingCardIcon'
 import PlayerAvatar, { AvatarSize } from './PlayerAvatar';
 import { Typography } from '@mui/material'
+import PlayingCardModal from './PlayingCardModal'
+import AvatarModal from './AvatarModal'
+import { AvatarId } from '../data/Avatar'
 
 interface Props {
     player: Player 
@@ -30,10 +33,15 @@ const PlayerCard = ( props: Props ) => {
     const { player, avatarSize, cardSize, game, updateGame } = props
 
     const [ name, setName ] = React.useState( player.name )
-    const [ open, setOpen ] = React.useState( false )
-    const openModal = () => setOpen(true)
-    const closeModal = () => setOpen(false)
     const editMode = game !== undefined && updateGame !== undefined
+    
+    const [ playingCardModal, setPlayingCardModal ] = React.useState( false )
+    const openPlayingCardModal = () => setPlayingCardModal(true)
+    const closePlayingCardModal = () => setPlayingCardModal(false)
+    
+    const [ avatarModal, setAvatarModal ] = React.useState( false )
+    const openAvatarModal = () => setAvatarModal(true)
+    const closeAvatarModal = () => setAvatarModal(false)
 
     if ( !player.number ) {
         return null
@@ -47,6 +55,15 @@ const PlayerCard = ( props: Props ) => {
         if ( editMode ) {
             updateGame( game.id, updatePlayer( player.id, ( player: Player ): Player => {
                 player.name = name
+                return player
+            } ) )
+        }
+    }
+
+    const updatePlayerAvatar = ( avatarId: AvatarId ) => {
+        if ( editMode ) {
+            updateGame( game.id, updatePlayer( player.id, ( player: Player ): Player => {
+                player.avatarId = avatarId
                 return player
             } ) )
         }
@@ -95,17 +112,9 @@ const PlayerCard = ( props: Props ) => {
         } )
     }
 
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 500,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-    };
+    const onAvatarChange = (avatarId: AvatarId) => {
+        updatePlayerAvatar( avatarId )
+    }
 
     return (
         <Card variant="outlined">
@@ -115,7 +124,11 @@ const PlayerCard = ( props: Props ) => {
 
                 <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
                     <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-                        <PlayerAvatar number={player.number} size={avatarSize || AvatarSize.L} />
+                        <PlayerAvatar 
+                            id={player.avatarId} 
+                            size={avatarSize || AvatarSize.L}
+                            onClick={editMode ? openAvatarModal : undefined}
+                        />
                         { editMode && <TextField id="standard-basic" style={{ marginLeft: '10px' }} label="Name" variant="standard" value={name} onChange={onNameChange} onBlur={onNameBlur} /> }
                         { !editMode && (
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginLeft: '10px', marginRight: '10px' }}>
@@ -129,131 +142,31 @@ const PlayerCard = ( props: Props ) => {
                             number: player.number,
                             size: cardSize || CardSize.S,
                         }} 
-                        onClick={editMode ? openModal : undefined} 
+                        onClick={editMode ? openPlayingCardModal : undefined} 
                     />                   
                 </Grid>
 
                 { editMode && (
-                    <Modal
-                        open={open}
-                        onClose={closeModal}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                    > 
-                        <Box sx={style}>
-                            <Grid container spacing={2}>
-                                
-                                <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                
-                                    <IconButton aria-label="Close" onClick={closeModal}>
-                                        <CloseIcon />
-                                    </IconButton>
+                    <PlayingCardModal
+                        open={playingCardModal}
+                        closeModal={closePlayingCardModal}
+                        card={{
+                            ...player.card,
+                            value: `${player.number % 10}`,
+                        }}
+                        onSymbolChange={onSymbolChange}
+                        onColorChange={onColorChange}
+                        onCardChange={onCardChange}
+                    />
+                ) }
 
-                                </Grid>
-
-                                <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px', marginBottom: '30px' }}>
-                                
-                                    <PlayingCard card={{
-                                            ...player.card,
-                                            value: `${player.number % 10}`,
-                                            size: CardSize.XL,
-                                        }} 
-                                    />
-
-                                </Grid>
-
-                                {/* colors */}
-
-                                <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <Typography variant='h6'>
-                                        Colors
-                                    </Typography>                                
-                                </Grid>
-
-                                <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                
-                                    {
-                                        Object.keys(CardColor).map( key => { 
-                                            const newColor = key as CardColor
-                                            return (
-                                                <div 
-                                                    key={newColor} 
-                                                    style={{ width: '100%', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
-                                                    className={player.card.color == newColor ? 'selected' : 'selectable'} 
-                                                    onClick={() => onColorChange(newColor)}
-                                                >
-                                                    <PlayingCardIcon 
-                                                        symbol={CardSymbol.CIRCLE}
-                                                        color={newColor}
-                                                    />
-                                                </div> 
-                                            )
-                                        } )
-                                    }
-
-                                </Grid>
-
-                                {/* symbols */}
-                                
-                                <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <Typography variant='h6'>
-                                        Symbol
-                                    </Typography>                                
-                                </Grid>
-
-                                <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
-                                
-                                    {
-                                        Object.keys(CardSymbol).map( key => { 
-                                            const newSymbol = key as CardSymbol
-                                            return (
-                                                <div 
-                                                    key={newSymbol} 
-                                                    style={{ width: '100%', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                    className={player.card.symbol == newSymbol ? 'selected' : 'selectable'} 
-                                                    onClick={() => onSymbolChange(newSymbol)}
-                                                >
-                                                    <PlayingCardIcon 
-                                                        symbol={newSymbol}
-                                                        color={CardColor.GRAY}
-                                                    />
-                                                </div>
-                                            )
-                                        } )
-                                    }
-
-                                </Grid>
-
-                                {/* symbols */}
-
-                                <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <Typography variant='h6'>
-                                        Pre-defined
-                                    </Typography>                                
-                                </Grid>
-
-                                <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
-
-                                    {
-                                        DefaultCards.map( defaultCard => {
-                                            return (
-                                                <PlayingCard card={{
-                                                        ...defaultCard,
-                                                        number: player.number,
-                                                        size: CardSize.S,
-                                                    }}
-                                                    onClick={() => onCardChange(defaultCard)} 
-                                                />
-                                            )
-                                        } )
-                                    }
-
-                                </Grid>
-
-                            </Grid>
-                        </Box>
-
-                    </Modal>
+                { editMode && (
+                    <AvatarModal
+                        open={avatarModal}
+                        closeModal={closeAvatarModal}
+                        avatarId={player.avatarId}
+                        onAvatarChange={onAvatarChange}
+                    />
                 ) }
 
             </Grid>
