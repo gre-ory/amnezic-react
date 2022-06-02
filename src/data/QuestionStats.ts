@@ -10,6 +10,7 @@ export interface QuestionStats {
   id: QuestionId
   score: number
   answers: AnswerStats[]
+  error: boolean
 }
 
 export function getAnswerStats( stats: QuestionStats, answerId: AnswerId ): AnswerStats | undefined {  

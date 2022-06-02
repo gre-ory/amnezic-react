@@ -106,7 +106,7 @@ const QuestionPage = ( props: Props ) => {
                 console.log( 'onNext >>> musicAnswered()' )
                 musicAnswered()
                 break
-            case 'failed':
+            case 'error':
             case 'completed':
                 if ( question.nextNumber ) {
                     console.log( `onNext >>> updateQuestionNumber( ${question.nextNumber} )` )

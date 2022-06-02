@@ -13,9 +13,10 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { Game, GameStep, OnGameUpdate, OnStep } from '../data/Game'
 import { isSettingsPageDisabled, isPlayersPageDisabled, isQuizzPageDisabled, isScoresPageDisabled } from '../data/Game'
 import { toHomePage } from '../data/Navigate'
-import { onUserEvent } from '../data/Util'
+import { onKeyEvent, onUserEvent } from '../data/Util'
 import {  Group, Home, MilitaryTech, MusicNote, Settings } from '@mui/icons-material'
 import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material'
+import { HEADER_KEYBOARD_SHORTCUTS } from '../data/Constants'
 
 interface Props {
     title?: string
@@ -54,7 +55,6 @@ const Header = ( props: Props ) => {
     const isPlayersDisabled = isPlayersPageDisabled( game )
     const isQuizzDisabled = isQuizzPageDisabled( game )
     const isScoresDisabled = isScoresPageDisabled( game )
-    const isNextDisabled = ( onNext === undefined )
 
     // update helpers
 
@@ -71,38 +71,38 @@ const Header = ( props: Props ) => {
     const onPlayersPage = !isPlayersSelected ? onUserEvent( () => updateGameStep( GameStep.PLAYERS ) ) : undefined
     const onQuizzPage = !isQuizzSelected ? onUserEvent( () => updateGameStep( GameStep.QUIZZ ) ) : undefined
     const onScoresPage = !isScoresSelected ? onUserEvent( () => updateGameStep( GameStep.SCORES ) ) : undefined
-    const onPreviousPage = onUserEvent( () => onPrevious && onPrevious() )
-    const onNextPage = onUserEvent( () => onNext && onNext() )
 
     // keyboard shortcuts
 
-    const handleKeyPress = React.useCallback( ( event ) => {    
-        console.log( `header >>> key-down >>> [${event.key}]` )    
-        switch ( event.key ) {
-            case 'p':
-            case 'ArrowLeft':
-                if ( onPrevious ) {
-                    console.log( `header >>> key "${event.key}" >>> onPrevious()`);
-                    onPrevious();
-                }
-                break;
-            case 'n':
-            case 'Enter':
-            case 'ArrowRight':
-                if ( onNext ) {
-                    console.log( `header >>> key "${event.key}" >>> onNext()`);
-                    onNext();
-                }
-                break;
-        }
-    }, [] );
-    
-    React.useEffect( () => {
-        document.addEventListener( 'keydown', handleKeyPress );
-        return () => {
-            document.removeEventListener( 'keydown', handleKeyPress );
-        };
-    }, [ handleKeyPress ] );
+    if ( HEADER_KEYBOARD_SHORTCUTS ) {
+
+        const handleKeyPress = React.useCallback( onKeyEvent( ( key: string ): boolean => {
+            switch ( key ) {
+                case 'ArrowLeft':
+                    if ( onPrevious ) {
+                        console.log( `header >>> key "${key}" >>> onPrevious()`);
+                        onPrevious();
+                        return true;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if ( onNext ) {
+                        console.log( `header >>> key "${key}" >>> onNext()`);
+                        onNext();
+                        return true;
+                    }
+                    break;
+            } 
+            return false;
+        } ), [ onPrevious, onNext ] );
+        
+        React.useEffect( () => {
+            document.addEventListener( 'keydown', handleKeyPress );
+            return () => {
+                document.removeEventListener( 'keydown', handleKeyPress );
+            };
+        }, [ handleKeyPress ] );
+    }
 
     // menu 
 

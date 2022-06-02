@@ -131,10 +131,12 @@
 }
 
 .card--empty {
-  margin-top: 3px;
+  /* margin-top: 3px; */
   /* margin-left: 3px; */
-  background: rgba(0, 0, 0, 0.1);
-  border-color: rgba(0, 0, 0, 0.1);
+  /* background: rgba(0, 0, 0, 0.1); */
+  /* border-color: rgba(0, 0, 0, 0.1); */
+  /* background: rgba(0, 0, 0, 0.05); */
+  border: 1px dashed #aaa;
   box-shadow: none;
   /* background: repeating-linear-gradient( 45deg, #eee5 0px, #eee 2px, #777 2px, #777 4px ); */
   /* opacity: 0.2; */

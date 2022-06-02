@@ -10,6 +10,9 @@ import { toHomePage, toGamePage } from '../data/Navigate'
 import { Grid } from '@mui/material'
 import PlayerScoreCard from '../component/PlayerScoreCard'
 import { Player } from '../data/Player'
+import { VictoryChart, VictoryLine, VictoryScatter, VictoryTooltip, VictoryGroup, VictoryVoronoiContainer, VictoryLegend } from 'victory'
+import { computeVizualiationScoreData } from '../data/PlayerStats'
+import PlayerAvatar, { AvatarSize } from '../component/PlayerAvatar'
 
 interface Props {
     games: Game[]
@@ -61,10 +64,30 @@ const ScoresPage = ( props: Props ) => {
     let previousPosition: number | undefined = undefined
     let previousScore: number | undefined = undefined
 
+    const colorScale: string[] = [ 
+        "#f29e4c",
+        "#f1c453",
+        "#efea5a",
+        "#b9e769", 
+        "#83e377", 
+        "#16db93", 
+        "#0db39e", 
+        "#048ba8", 
+        "#2c699a", 
+        "#54478c" 
+    ]
+    const medalColorScale: string[] = [ 
+        "gold",
+        "grey",
+        "brown" 
+    ]
+
     return (
         <GamePage gameStep={GameStep.SCORES} game={game} updateGame={updateGame} onNext={onNext}>
 
             <Grid container spacing={2}>
+
+                {/* players */}
 
                 {
                     (
@@ -88,6 +111,8 @@ const ScoresPage = ( props: Props ) => {
                                             game={game}
                                             player={player}
                                             position={position}
+                                            color={colorScale[index % colorScale.length]}
+                                            medalColor={position-1 < medalColorScale.length ? medalColorScale[position-1] : undefined}
                                         />
                                     </Grid>
                                 )
@@ -96,12 +121,39 @@ const ScoresPage = ( props: Props ) => {
                     )
                 }
 
-            </Grid>            
-            {game.ended && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px' }}>
-                    <ReplayButton title="Start Game" onClick={restartNewGame}/>
-                </div>
-            )}
+                {/* graph */}
+
+                <VictoryChart height={390}> 
+
+                    {sortedPlayers.map( ( player, index ) => {
+                        const data = computeVizualiationScoreData( player.stats )
+                        const color = colorScale[index % colorScale.length]
+                        return (
+
+                            <VictoryGroup
+                                key={`player-graph-${player.id}`}
+                                color={color}
+                                labels={({ datum }) => `#${index+1} - ${player.name}: ${datum.tooltip}`}
+                                labelComponent={
+                                    <VictoryTooltip
+                                        style={{ fontSize: 10 }}
+                                    />
+                                }
+                                data={data}
+                            >
+                                <VictoryLine/>
+                                <VictoryScatter
+                                    size={3}
+                                    style={{ data: { fill: color } }}
+                                />
+                            </VictoryGroup>
+                        )
+                    })}
+
+                </VictoryChart>
+
+            </Grid> 
+            
         </GamePage>
     )
 }

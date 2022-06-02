@@ -12,7 +12,14 @@ export interface PlayerStats {
   nbSuccess: number
   nbFailure: number
   nbMiss: number,
+  nbError: number,
   questions: QuestionStats[]
+}
+
+export interface PlayerVizualiationScoreData {
+  x: string // question number
+  y: number // player score
+  tooltip: string
 }
 
 // //////////////////////////////////////////////////
@@ -23,8 +30,9 @@ export function newPlayerStats(): PlayerStats {
     score: 0,
     nbAnswer: 0,
     nbSuccess: 0,
-    nbMiss: 0,
     nbFailure: 0,
+    nbMiss: 0,
+    nbError: 0,
     questions: [],
   }
 }
@@ -46,7 +54,8 @@ export function getOrSetQuestionStats( stats: PlayerStats, questionId: QuestionI
   const questionStats: QuestionStats = {
     id: questionId,
     score: 0,
-    answers: []
+    answers: [],
+    error: false
   }
   stats.questions.push( questionStats )
   return questionStats
@@ -94,5 +103,45 @@ export function flagQuestionAsMiss( stats: PlayerStats, questionId: QuestionId )
   
   // per question
   const questionStats = getOrSetQuestionStats( stats, questionId )
-  questionStats.score += 0
+  questionStats.score = 0
+}
+
+export function flagQuestionAsError( stats: PlayerStats, questionId: QuestionId ) {
+  
+  // global
+  stats.nbError++
+  stats.score += 0
+  
+  // per question
+  const questionStats = getOrSetQuestionStats( stats, questionId )
+  questionStats.score = 0
+  questionStats.error = true
+}
+
+export function computeVizualiationScoreData( stats: PlayerStats ): PlayerVizualiationScoreData[] {
+  const data:PlayerVizualiationScoreData[] = []
+  let questionNumber = 0
+  let intermediateScore = 0
+  for ( const question of stats.questions ) {
+    questionNumber++
+    intermediateScore += question.score
+    
+    let tooltip = ''
+    if ( question.error ) {
+      tooltip = `${intermediateScore} (error)`
+    } else if ( question.answers.length == 0 ) {
+      tooltip = `${intermediateScore} (miss)`
+    } else if ( question.score >= 0 ) {
+      tooltip = `${intermediateScore} (+${question.score})`
+    } else {
+      tooltip = `${intermediateScore} (${question.score})`
+    }
+    
+    data.push({
+      x: `Q${questionNumber}`,
+      y: intermediateScore,
+      tooltip : tooltip
+    })
+  }
+  return data
 }

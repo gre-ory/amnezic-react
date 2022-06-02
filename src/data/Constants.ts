@@ -1,6 +1,9 @@
 
 export const DEBUG = false
 
+export const HEADER_KEYBOARD_SHORTCUTS = true
+export const MUSIC_PLAYER_KEYBOARD_SHORTCUTS = true
+
 export const MAX_NB_GAME = 4
 
 export const DEFAULT_NB_PLAYER = 2
@@ -22,7 +25,7 @@ export const INCREMENT_NB_ANSWER_PER_QUESTION = 1
 export const ANSWER_ID_SUFFIX = 100
 
 export const ONE_SECOND = DEBUG ? 300 : 1000
-export const MAX_NB_SECONDS_LOADING = DEBUG ? 5 : 15
+export const MAX_NB_SECONDS_LOADING = DEBUG ? 10 : 15
 export const MAX_NB_SECONDS_PLAYING = DEBUG ? 20 : 30
 
 export const MAX_NB_AVATAR = 20

@@ -37,7 +37,7 @@ const AvatarModal = ( props: Props ) => {
             aria-describedby="modal-modal-description"
         > 
             <Box sx={style}>
-                <Grid container spacing={2} style={{ alignItems: 'flex-end' }}>
+                <Grid container spacing={2} style={{ alignItems: 'center' }}>
                     
                     <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                     
@@ -57,7 +57,7 @@ const AvatarModal = ( props: Props ) => {
                     
                     <Grid item xs={8} container spacing={1} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
 
-                        <Grid item xs={12} textAlign="left">
+                        <Grid item xs={12} textAlign="center">
                             <Typography>
                                 <b>Avatars</b>
                             </Typography> 

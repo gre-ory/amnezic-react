@@ -81,6 +81,7 @@ export function onUserEvent( callback: Callback ): EventCallback {
     return ( event: any ) => {
         callback()
         event.stopPropagation()
+        event.preventDefault()
     }
 }
 
@@ -93,7 +94,11 @@ export type KeyEventCallback = ( event: any ) => void
 export function onKeyEvent( keyCallback: KeyCallback ): EventCallback {
     return ( event: any ) => {
         if ( keyCallback( event.key ) ) {
+            console.log( `key-event [${event.key}] >>> handled! >>> stop propagation!` )    
             event.stopPropagation()
+            event.preventDefault()
+        } else {
+            console.log( `key-event [${event.key}] >>> propagate...` )    
         }
     }
 }

@@ -6,12 +6,13 @@ import PauseIcon from '@mui/icons-material/Pause'
 
 import { Game, OnGameUpdate } from '../data/Game'
 import { Question, OnQuestionUpdate, QuestionId } from '../data/Question'
-import { onUserEvent } from '../data/Util'
+import { onKeyEvent, onUserEvent } from '../data/Util'
 import { Box, CircularProgress, Tooltip, Typography } from '@mui/material'
 import { withStyles } from '@mui/styles'
 import MediaCard from './MediaCard'
 import { Media } from '../data/Media'
 import musicBackground from '../static/music.png'
+import { MUSIC_PLAYER_KEYBOARD_SHORTCUTS } from '../data/Constants'
 
 
 interface Props {
@@ -82,7 +83,21 @@ const MusicPlayer = ( props: Props ) => {
             console.log( `pauseMusic >>> playing >>> onMusicPaused()` )
             onMusicPaused()
         }
-    } 
+    }
+    
+    const toggleMusic = () => {           
+        if ( started && !played ) {
+            if ( playing ) {
+                console.log( `toggleMusic >>> playing >>> onMusicPaused()` )
+                onMusicPaused()
+            } else {
+                console.log( `toggleMusic >>> not playing >>> onMusicPlaying()` )
+                onMusicPlaying()
+            }
+        } else {
+            console.log( `toggleMusic >>> not started or already played >>> No-Op` )
+        }
+    }
 
     React.useEffect( () => {
         if ( audioRef.current ) {
@@ -187,63 +202,37 @@ const MusicPlayer = ( props: Props ) => {
     const onPlay = pausingMusic ? onUserEvent( () => playMusic() ) : undefined
 
     //
-    // timer 
-    //
-
-    // React.useEffect( () => {
-    //     console.log( `[effect] timer >>> played: ${played}` )
-    //     if ( !played ) {
-    //         let timerId: any = undefined;
-    //         if ( seconds > 0 ) {
-    //             timerId = setInterval( () => {
-    //                 setSeconds( seconds => seconds - 1 );
-    //             }, 1000 );
-    //             console.log( `timer ${timerId} >>> ${seconds} >>> -1s` )
-    //         } else {
-    //             console.log( `timer ${timerId} >>> OFF >>> remove + timerOff()` )
-    //             clearInterval( timerId );            
-    //             timerOff()
-    //         }
-    //         return () => {
-    //             console.log( `timer ${timerId} >>> unmount >>> remove` )
-    //             clearInterval( timerId );
-    //         }
-    //     }
-    // }, [ played, seconds ] );
-
-    //
     // keyboard shortcuts
     // 
 
-    const handleKeyPress = React.useCallback( ( event ) => {   
-        console.log( `music-player >>> key-down >>> [${event.key}]` )          
-        switch ( event.key ) {
-            case 'Space':
-                if ( playingMusic ) {
-                    console.log( `key "${event.key}" >>> pauseMusic()`);
-                    pauseMusic();
-                } else if ( pausingMusic ) {
-                    console.log( `key "${event.key}" >>> playMusic()`);
-                    playMusic();
-                }
-                break;
-            case 'ArrowUp':
-                console.log( `key "${event.key}" >>> moreVolume()`);
-                moreVolume();
-                break;
-            case 'ArrowDown':
-                console.log( `key "${event.key}" >>> lessVolume()`);
-                lessVolume();
-                break;
-        }
-    }, [] );
+    if ( MUSIC_PLAYER_KEYBOARD_SHORTCUTS ) {
 
-    React.useEffect( () => {
-        document.addEventListener( 'keydown', handleKeyPress );
-        return () => {
-            document.removeEventListener( 'keydown', handleKeyPress );
-        };
-    }, [ handleKeyPress ] );    
+        const handleKeyPress = React.useCallback( onKeyEvent( ( key: string ): boolean => {
+            switch ( key ) {
+                case ' ':
+                    console.log( `music-player >>> key "${key}" >>> toggleMusic()`);
+                    toggleMusic();
+                    return true;
+                case 'ArrowUp':
+                    console.log( `music-player >>> key "${key}" >>> moreVolume()`);
+                    moreVolume();
+                    return true;
+                case 'ArrowDown':
+                    console.log( `music-player >>> key "${key}" >>> lessVolume()`);
+                    lessVolume();
+                    return true;
+            } 
+            return false;
+        } ), [ toggleMusic, moreVolume, lessVolume ] );
+
+        React.useEffect( () => {
+            document.addEventListener( 'keydown', handleKeyPress );
+            return () => {
+                document.removeEventListener( 'keydown', handleKeyPress );
+            };
+        }, [ handleKeyPress ] ); 
+
+    }  
 
     //
     // tooltip
@@ -261,6 +250,16 @@ const MusicPlayer = ( props: Props ) => {
     } ) ) ( Tooltip );
 
     // console.log( `[render] music player: ready=${musicIsReady}, seconds=${seconds}/${delay}, played=${played}` )
+    
+    const icon = started && pausingMusic ? (
+        <Typography variant="caption" component="div" color="text.secondary">
+            <IconButton aria-label="play" onClick={onPlay}>
+                <PlayArrowIcon sx={{ height: 38, width: 38 }}/>
+            </IconButton> 
+        </Typography>
+    ) : undefined
+    
+    const onClick = started && playingMusic ? onPause : undefined
 
     return (
         <LightTooltip title={played ? <MediaCard media={media} /> : false} >
@@ -285,17 +284,18 @@ const MusicPlayer = ( props: Props ) => {
                         position: 'relative', 
                         display: 'inline-flex', 
                         alignItems: 'center', 
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        cursor: onClick ? 'pointer' : 'auto',                        
                     }} 
-                    onClick={playingMusic ? onPause : onPlay}
+                    onClick={onClick}
                 >
                     
                     {/* progress */}
 
                     { !played && loading && <CircularProgress variant="indeterminate"/> }                    
-                    { !played && !loading && started && <CircularProgress size={56} variant="determinate" value={progress}/> }
+                    { !played && !loading && started && <CircularProgress size={56} variant="determinate" value={progress} onClick={onClick}/> }
                     
-                    {/* buttons */}
+                    {/* button or info */}
 
                     <Box
                         sx={{
@@ -308,44 +308,10 @@ const MusicPlayer = ( props: Props ) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}
+                        onClick={onClick}
                     >
-                        <Typography variant="caption" component="div" color="text.secondary">
-                            {/* {   
-                                playingMusic && (
-                                    <IconButton aria-label="pause" onClick={onPause}>
-                                        <PauseIcon sx={{ height: 38, width: 38 }}/>
-                                    </IconButton>
-                                )
-                            } */}
-                            {
-                                pausingMusic && (
-                                    <IconButton aria-label="play" onClick={onPlay}>
-                                        <PlayArrowIcon sx={{ height: 38, width: 38 }}/>
-                                    </IconButton>
-                                )
-                            }
-                        </Typography>
-                    </Box>
-
-                    {/* info */}
-
-                    {info && (
-                        <Box
-                            sx={{
-                                top: 0,
-                                left: 0,
-                                bottom: 0,
-                                right: 0,
-                                position: 'absolute',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}
-                            onClick={started ? playingMusic ? onPause : onPlay : undefined}
-                        >
-                            {info}                            
-                        </Box>
-                    )}
+                        { icon ? icon : info }
+                    </Box>                    
 
                 </Box>
 

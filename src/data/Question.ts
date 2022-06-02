@@ -12,7 +12,7 @@ export type QuestionStatus =
   | 'not-played' 
   | 'played'
   | 'completed'
-  | 'failed'
+  | 'error'
 
 // //////////////////////////////////////////////////
 // model
@@ -100,10 +100,10 @@ export function onQuestionCompleted( question: Question ): Question {
   return question
 }
 
-export function onQuestionFailed( question: Question ): Question {
-  console.log( `[on-question-failed] question: ${question.id}` )
+export function onQuestionError( question: Question ): Question {
+  console.log( `[on-question-error] question: ${question.id}` )
 
-  question.status = 'failed'
+  question.status = 'error'
   
   return question
 }

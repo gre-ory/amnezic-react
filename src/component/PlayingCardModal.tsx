@@ -50,9 +50,13 @@ const PlayingCardModal = ( props: Props ) => {
 
                     </Grid>
 
+                </Grid>
+
+                <Grid container spacing={2} style={{ alignItems: 'flex-end' }}>
+
                     <Grid item xs={4} container spacing={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
-                        <Grid item xs={12} textAlign="left">
+                        <Grid item xs={12} textAlign="center">
                             <Typography>
                                 <b>Colors</b>
                             </Typography> 
@@ -95,7 +99,7 @@ const PlayingCardModal = ( props: Props ) => {
                     
                     <Grid item xs={4} container spacing={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
 
-                        <Grid item xs={12} textAlign="left">
+                        <Grid item xs={12} textAlign="center">
                             <Typography>
                                 <b>Symbols</b>
                             </Typography> 
@@ -126,7 +130,7 @@ const PlayingCardModal = ( props: Props ) => {
 
                     {/* symbols */}
 
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Typography>
                             <b>Pre-defined</b>
                         </Typography>                                
@@ -140,6 +144,7 @@ const PlayingCardModal = ( props: Props ) => {
                                     <PlayingCard card={{
                                             ...defaultCard,
                                             number: card.number,
+                                            value: card.value,
                                             size: CardSize.XS,
                                         }}
                                         onClick={() => onCardChange(defaultCard)} 

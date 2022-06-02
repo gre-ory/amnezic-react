@@ -19,15 +19,18 @@ import PlayingCard from './PlayingCard'
 import PlayingCardIcon from './PlayingCardIcon'
 import PlayerAvatar, { AvatarSize } from './PlayerAvatar';
 import { Accordion, AccordionDetails, AccordionSummary, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
+import { ColorizeRounded } from '@mui/icons-material'
 
 interface Props {
     game: Game
     player: Player
-    position: number    
+    position: number
+    color: string
+    medalColor?: string    
 }
 
 const PlayerScoreCard = ( props: Props ) => {
-    const { game, player, position } = props
+    const { game, player, position, color, medalColor } = props
 
     if ( !player.number ) {
         return null
@@ -60,9 +63,6 @@ const PlayerScoreCard = ( props: Props ) => {
     const failurePercent = nbTotal > 0 ? player.stats.nbFailure * 100 / nbTotal : 0
     const missPercent = nbTotal > 0 ? player.stats.nbMiss * 100 / nbTotal : 0
 
-    const color = position == 1 ? 'gold' : position == 2 ? 'grey' : position == 3 ? 'brown' : 'black'
-    const colorMedal = position <= 3 ? color : 'transparent'
-
     let sumBySuccessAnswer = 0
     let sumByFailureAnswer = 0
     let nbSuccessAnswer = 0
@@ -83,6 +83,7 @@ const PlayerScoreCard = ( props: Props ) => {
     const avgDelta = ( nbSuccessAnswer + nbFailureAnswer ) > 0 ? ( sumBySuccessAnswer + sumByFailureAnswer ) / ( nbSuccessAnswer + nbFailureAnswer ) : 0    
 
     return (
+
         <Accordion>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -92,11 +93,43 @@ const PlayerScoreCard = ( props: Props ) => {
                 
                 <Grid container spacing={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
                     <Grid item xs={12}>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Typography style={{ fontSize: '2.5em', color: color, marginRight: '20px' }}>{position}</Typography>
-                            <PlayerAvatar id={player.avatarId} size={AvatarSize.L}/>
-                            <Typography style={{ marginLeft: '10px' }}>{player.name}</Typography>
-                            <MilitaryTechIcon style={{ marginLeft: '10px', fontSize: '2.5em', color: colorMedal }}/>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                <div style={{ 
+                                    width: '32px',
+                                    borderRadius: '20px',
+                                    border: `4px solid ${medalColor || '#42a5f5'}`,
+                                    color: medalColor || '#42a5f5',
+                                    // boxShadow: 'rgb(0 0 0 / 20%) 3px 3px 3px',
+                                    fontSize: '15px',
+                                    fontWeight: 'bold',
+                                    aspectRatio: '1',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginRight: '30px',
+                                }}>
+                                    {position}                                   
+                                </div>
+                                <PlayerAvatar id={player.avatarId} size={AvatarSize.M}/>
+                                <Typography style={{ marginLeft: '10px' }} >{player.name}</Typography>
+                                <MilitaryTechIcon style={{ marginLeft: '20px', fontSize: '2.5em', color: medalColor, opacity: medalColor ? '1' : '0' }}/>
+                            </div>
+                            <div style={{ 
+                                width: '40px',
+                                borderRadius: '20px',
+                                marginRight: '10px',
+                                backgroundColor: color,
+                                boxShadow: 'rgb(0 0 0 / 20%) 3px 3px 3px',
+                                fontSize: '15px',
+                                fontWeight: 'bold',
+                                aspectRatio: '1',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                {player.stats.score}
+                            </div>
                         </Box> 
                     </Grid>
                 </Grid>

@@ -13,9 +13,9 @@ import PauseIcon from '@mui/icons-material/Pause'
 import SkipNextIcon from '@mui/icons-material/SkipNext'
 import Slide from '@mui/material/Slide';
 
-import { Game, onAnswers, OnGameUpdate, onQuestionNumber } from '../data/Game'
+import { Game, onAnswers, onErrorAnswers, OnGameUpdate, onQuestionNumber } from '../data/Game'
 import { Player, PlayerId } from '../data/Player'
-import { Question, OnQuestionUpdate, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer, onQuestionFailed } from '../data/Question'
+import { Question, OnQuestionUpdate, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer, onQuestionError } from '../data/Question'
 import { range, onUserEvent } from '../data/Util'
 import { Alert, Avatar, Badge, Fade, Grow, Tooltip } from '@mui/material'
 import PlayingCard from './PlayingCard'
@@ -63,7 +63,7 @@ const QuestionCard = ( props: Props ) => {
         }
     }, [ questionId, question.id ] );
         
-    const musicFailed = question.status == 'failed'
+    const musicError = question.status == 'error'
     const musicPlayed = musicEnded || question.status == 'played' || question.status == 'completed'
 
     //
@@ -83,7 +83,8 @@ const QuestionCard = ( props: Props ) => {
     }
 
     const flagQuestionAsFailed = () => {
-        updateQuestion( game.id, question.id, ( question: Question ) => onQuestionFailed( question ) )        
+        updateQuestion( game.id, question.id, ( question: Question ) => onQuestionError( question ) )  
+        updateGame( game.id, onErrorAnswers( game, question ) )     
     }
 
     //
@@ -152,6 +153,11 @@ const QuestionCard = ( props: Props ) => {
         setMusicEnded( false )
     }
 
+    const resetOnError = () => {
+        setMusicLoading( false )
+        setNbShownAnswers( 0 )
+    }
+
     const resetOnPlayed = () => {
         setNbShownAnswers( question.answers.length )
     }
@@ -168,8 +174,8 @@ const QuestionCard = ( props: Props ) => {
 
     const onMusicFailed = () => {
         console.log( `onMusicFailed >>> flagQuestionAsFailed() + setMusicLoading( false )` )
-        flagQuestionAsFailed()
         setMusicLoading( false )
+        flagQuestionAsFailed()
     }
 
     const onMusicPlaying = () => {
@@ -232,9 +238,12 @@ const QuestionCard = ( props: Props ) => {
 
     React.useEffect( () => {
         let timerId: any = undefined;
-        if ( musicFailed || musicPlayed ) {
+        if ( musicError ) {
+            resetOnError()
+            clearInterval( timerId );
+            timerId = undefined;
+        } else if ( musicPlayed ) {
             resetOnPlayed()
-            // console.log( 'timer >>> musicFailed or musicPlayed >>> STOP' ) 
             clearInterval( timerId );
             timerId = undefined;
         } else if ( musicLoading ) {
@@ -258,7 +267,7 @@ const QuestionCard = ( props: Props ) => {
         return () => {
             timerId && clearInterval( timerId );
         }
-    }, [ musicLoading, musicFailed, countDown, nbShownAnswers, musicReady, musicStarted, musicPlaying, nbSecondsPlayed, musicPlayed ] );
+    }, [ musicLoading, musicError, countDown, nbShownAnswers, musicReady, musicStarted, musicPlaying, nbSecondsPlayed, musicPlayed ] );
 
     const progress = musicPlayed ? 100 : !musicStarted ? 0 : Math.ceil( Math.min( nbSecondsPlayed, nbSecondsTotal ) * 100 / nbSecondsTotal )
     const musicPaused = !musicPlayed && musicStarted && !musicPlaying
@@ -266,27 +275,21 @@ const QuestionCard = ( props: Props ) => {
     const countingDown = musicReady && !musicStarted
 
     let musicPlayerInfo = undefined
-    if ( musicFailed ) {
+    if ( musicError ) {
         musicPlayerInfo = (
             <Typography sx={{ fontSize: 40, fontWeight: 'bold', color: 'red' }}>
                 X
             </Typography>
         )
-    } else if ( musicLoading ) {
+    } else if ( musicLoading || !musicReady || musicPlayed ) {
         musicPlayerInfo = undefined
-    } else if ( !musicReady ) {
-        musicPlayerInfo = (
-            <Typography sx={{ fontSize: 40, fontWeight: 'bold', color: 'gray' }}>
-                {question.answers.length-nbShownAnswers+1+countDown}
-            </Typography>
-        )
     } else if ( !musicStarted ) {
         musicPlayerInfo = (
             <Typography sx={{ fontSize: 40, fontWeight: 'bold', color: 'gray' }}>
                 {countDown}
             </Typography>
         )
-    } else if ( !musicPlayed ) {
+    } else {
         musicPlayerInfo = (
             <Typography sx={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>
                 {nbSecondsTotal-nbSecondsPlayed}s
@@ -299,15 +302,16 @@ const QuestionCard = ( props: Props ) => {
 
             {/* warning: music failed */}
 
-            {musicFailed && (
+            {musicError && (
                 <Alert 
                     severity="warning" 
                     style={{ 
                         position: 'absolute',
-                        width: '60%',
+                        width: '500px',
                         top: '25%',
-                        left: '20%',
+                        left: 'calc( 50% - 250px )',
                         boxShadow: '3px 3px 3px rgb(0,0,0,0.1)',
+                        borderRadius: '10px',
                     }}
                 >
                     Could not load music! Please proceed to next question.
@@ -320,7 +324,7 @@ const QuestionCard = ( props: Props ) => {
                 question.answers.map( ( answer, index ) => {
 
                     const shown = index < nbShownAnswers
-                    const hidden = musicFailed || !shown
+                    const hidden = musicError || !shown
                     // const last = index == ( nbShownAnswers - 1 )
                     // const timeout = last && !musicPlayed ? 1000 : 0
                     const answerNumber = answer.id % 100 
@@ -394,14 +398,14 @@ const QuestionCard = ( props: Props ) => {
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start', marginTop: '15px' }}>
+                <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyItems: 'flex-start', marginTop: '15px' }}>
 
                     {/* music player */}
 
                     <MusicPlayer 
                         questionId={question.id} 
                         media={question.media}
-                        failed={musicFailed}
+                        failed={musicError}
                         loading={musicLoading}
                         info={musicPlayerInfo}
                         started={musicStarted}
@@ -415,7 +419,8 @@ const QuestionCard = ( props: Props ) => {
                     />
     
                     {/* selected players answers */}
-                
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyItems: 'flex-start', justifyContent: 'space-between', marginLeft: '50px' }}>
                     { 
                         question.playerAnswers.map( playerAnswer => {
                             const player = game.players.find( player => player.id === playerAnswer.playerId )
@@ -448,7 +453,7 @@ const QuestionCard = ( props: Props ) => {
                         } )
                     }
                     {
-                        range( Math.max( 0, game.settings.nbPlayer - question.playerAnswers.length ) ).map( i => {
+                        range( Math.max( 1, game.settings.nbPlayer - question.playerAnswers.length ) ).map( i => {
                             return (
                                 <div key={`selected-${i}`} className='card--badge'>     
                                     <PlayingCard cardSize={CardSize.XS}/>
@@ -456,6 +461,7 @@ const QuestionCard = ( props: Props ) => {
                             )
                         } )
                     }
+                    </div>
 
                 </div>
 
@@ -492,6 +498,7 @@ const QuestionCard = ( props: Props ) => {
             {/* debug */}
 
             {DEBUG && <pre style={{ border: '1px solid #999', background: '#fff6f2', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span>{musicError?'error':'--'}</span>
                 <span>{musicLoading?'loading':'--'}</span>
                 <span>answers: {nbShownAnswers}/{question.answers.length}</span>
                 <span>{musicReady?'ready':'--'}</span>

@@ -15,14 +15,14 @@ import { Shuffle } from "@mui/icons-material"
 // dummy game
 
 const fullMusic = newMedia(
-    "Harder, Better, Faster, Stronger", 
+    "Harder, Better, Faster, Stronger & Pêcheur", 
     "https://cdns-preview-d.dzcdn.net/stream/c-deda7fa9316d9e9e880d2c6207e92260-8.mp3", 
     newArtist( 
-        "Daft Punk", 
+        "Daft Punk & Pêcheur", 
         "https://e-cdns-images.dzcdn.net/images/artist/f2bc007e9133c946ac3c3907ddc5d2ea/56x56-000000-80-0-0.jpg"
     ), 
     newAlbum( 
-        "Discovery", 
+        "Discovery & Pêcheur", 
         "https://e-cdns-images.dzcdn.net/images/cover/2e018122cb56986277102d2041a592c8/56x56-000000-80-0-0.jpg"
     )
 )
@@ -73,7 +73,7 @@ export function buildDummyQuestions( game: Game ): Game {
 
     const nbQuestion = game.settings.nbQuestion
     const nbAnswer = game.settings.nbAnswer
-    range( nbQuestion ).map( i => i+1 ).forEach( i => {
+    range( nbQuestion ).forEach( i => {
         const media = dummyMusics[ i % dummyMusics.length ]
         const question: Question = addQuestion( game, media.artist.name, media )
 
