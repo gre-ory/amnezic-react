@@ -143,8 +143,8 @@ export function buildLegacyQuestions( game: Game ): Game {
             const musics = genre.media || []        
             const correctIndex = questionIndex - startIndex
             const correctMusic = musics[ correctIndex ]
-            const artist = newArtist( correctMusic.artist.name )
-            const media = newMedia( correctMusic.title, correctMusic.music, artist, undefined )
+            const artist = newArtist( correctMusic.artist && correctMusic.artist.name ? correctMusic.artist.name : '???' )
+            const media = newMedia( correctMusic.title || '???', correctMusic.music, artist, undefined )
             const question: Question = addQuestion( game, genre.genre, media )
 
             const indexes = pickIndexes( nbAnswer, musics.length ).filter( index => index != correctIndex ).slice( 0, nbAnswer - 1 )
@@ -153,7 +153,7 @@ export function buildLegacyQuestions( game: Game ): Game {
 
             for ( const index of indexes ) {
                 const music = musics[ index ]
-                addAnswer( question, music.artist.name, music.title, index === correctIndex )
+                addAnswer( question, music.artist && music.artist.name ? music.artist.name : '???', music.title || '???', index === correctIndex )
             }
 
             break

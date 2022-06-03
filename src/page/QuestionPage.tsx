@@ -121,7 +121,7 @@ const QuestionPage = ( props: Props ) => {
 
     // title
 
-    const title =  DEBUG ? `#${question.number} - ${question.title} - ${question.status}` : `#${question.number} - ${question.title}`
+    const title =  DEBUG ? `Q${question.number} - ${question.title} - ${question.status}` : `Q${question.number} - ${question.title}`
 
     return (
         <GamePage title={title} gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onPrevious={onPrevious} onNext={onNext}>

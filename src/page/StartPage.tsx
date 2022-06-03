@@ -41,7 +41,7 @@ const StartPage = ( props: Props ) => {
 
     return (
         <GamePage gameStep={GameStep.QUIZZ} game={game} updateGame={updateGame} onNext={onNext}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '200px' }}>
                 <NextButton title="Start Game" onNext={onNext}/>
             </div>
         </GamePage>                

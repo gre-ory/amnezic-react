@@ -120,8 +120,16 @@ export function flagQuestionAsError( stats: PlayerStats, questionId: QuestionId 
 
 export function computeVizualiationScoreData( stats: PlayerStats ): PlayerVizualiationScoreData[] {
   const data:PlayerVizualiationScoreData[] = []
+  
   let questionNumber = 0
   let intermediateScore = 0
+
+  data.push({
+    x: ` `,
+    y: intermediateScore,
+    tooltip : `${intermediateScore} (start)`
+  })
+
   for ( const question of stats.questions ) {
     questionNumber++
     intermediateScore += question.score

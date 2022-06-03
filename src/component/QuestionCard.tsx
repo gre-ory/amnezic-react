@@ -325,13 +325,11 @@ const QuestionCard = ( props: Props ) => {
 
                     const shown = index < nbShownAnswers
                     const hidden = musicError || !shown
-                    // const last = index == ( nbShownAnswers - 1 )
-                    // const timeout = last && !musicPlayed ? 1000 : 0
                     const answerNumber = answer.id % 100 
                     const color = musicPlayed ? answer.correct ? '#00c508' : 'grey' : 'grey'
                     const backgroundColor = musicPlayed ? answer.correct ? '#00ff131f' : 'white' : 'white'
                     
-                    const answerElement = (
+                    return (
                         <Paper key={answer.id} className="answer" elevation={3} style={{ margin: '2px', opacity: hidden ? '0' : '1', filter: musicPaused ? 'blur(6px)' : 'none', backgroundColor: backgroundColor }}>
                             <div 
                                 style={{
@@ -343,10 +341,10 @@ const QuestionCard = ( props: Props ) => {
                                 }}
                             >                                    
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
-                                    <Avatar sx={{ bgcolor: color }} style={{ margin: '10px', padding: '5px' }}>{answer.number}</Avatar>
+                                    <Avatar sx={{ bgcolor: color }} style={{ margin: '10px', padding: '5px', fontSize: '2rem', fontWeight: 'bold' }}>{answer.number}</Avatar>
                                     <div style={{ display: 'flex', flexDirection:'column', alignItems: 'flex-start', justifyContent: 'left' }}> 
-                                        <Typography variant='h5'>{answer.answer}</Typography>
-                                        <Typography variant='subtitle2' style={{ marginLeft: '20px', color: 'gray', opacity: showHints ? '1' : '0' }}>{answer.hint}</Typography>
+                                        <Typography variant='h5' style={{ lineHeight: '1', fontSize: '2rem', fontWeight: 'bold' }}>{answer.answer}</Typography>
+                                        <Typography variant='subtitle2' style={{ marginLeft: '20px', color: 'gray', lineHeight: '1', fontSize: '1.5rem', opacity: showHints ? '1' : '0' }}>{answer.hint}</Typography>
                                     </div>
                                 </div>
                                 <div
@@ -385,14 +383,6 @@ const QuestionCard = ( props: Props ) => {
                             </div>                                
                         </Paper>
                     )
-                    
-                    // if ( last ) {
-                    //     <Fade key={answer.id} in={true} timeout={timeout}>
-                    //         {answerElement}                            
-                    //     </Fade>
-                    // }
-
-                    return answerElement
                 })
             } 
 

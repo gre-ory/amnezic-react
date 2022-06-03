@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Grid from '@mui/material/Grid'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import { Game, GameId, GameStep, newGame, OnGameUpdate } from '../data/Game'
 import { toGamePage } from '../data/Navigate'
@@ -11,6 +12,7 @@ import { toGamePage } from '../data/Navigate'
 import Page from '../component/Page'
 import GameCard from '../component/GameCard'
 import NextButton from '../component/NextButton'
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 
 interface Props {
     games: Game[]
@@ -88,55 +90,65 @@ const HomePage = ( props: Props ) => {
 
     return (
         <Page title="Amnezic" onNext={startGame}>
-            <Grid container spacing={2}>
+            
 
-                {/* new game */}
+            {/* new game */}
 
-                <Grid item xs={12} style={{ marginTop: '40px' }} textAlign="left">
-                    <GameCard
-                        startGame={startGame}
-                    />
-                </Grid>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '200px' }}>
+                <NextButton title="New Game" onNext={startGame}/>
+            </div>
 
-                {/* prevous game */}
+            {/* prevous game */}
+
+            <Accordion>
                 
-                <Grid item xs={9} style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
-                    <h3>Previous games</h3>
-                </Grid>
-
-                <Grid item xs={3} style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} >
+                    Previous games
+                </AccordionSummary>
+                
+                <AccordionDetails>
                     
-                    {/* clear previous games */}
+                    <Grid container spacing={2}>
 
-                    <IconButton
-                        title="Delete all games" 
-                        color="default" 
-                        disabled={games.length == 0} 
-                        onClick={deleteAllGames}
-                    >
-                        <DeleteIcon />
-                    </IconButton>
+                        {
+                            (
+                                <>
+                                    {sortedGames.map( game => {
+                                        return (
+                                            <Grid key={game.id} item xs={12} textAlign="left">
+                                                <GameCard
+                                                    game={game}
+                                                    resumeGame={resumeGame}
+                                                    deleteGame={deleteGame}
+                                                />
+                                            </Grid>
+                                        )
+                                    })}                        
+                                </>
+                            )
+                        }
 
-                </Grid>
+                        <Grid item xs={12} textAlign="right">
 
-                {
-                    (
-                        <>
-                            {sortedGames.map( game => {
-                                return (
-                                    <Grid key={game.id} item xs={12} textAlign="left">
-                                        <GameCard
-                                            game={game}
-                                            resumeGame={resumeGame}
-                                            deleteGame={deleteGame}
-                                        />
-                                    </Grid>
-                                )
-                            })}                        
-                        </>
-                    )
-                } 
-            </Grid>
+                            {/* clear previous games */}
+
+                            <IconButton
+                                title="Delete all games" 
+                                color="default" 
+                                disabled={games.length == 0} 
+                                onClick={deleteAllGames}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+
+                        </Grid>
+
+                    </Grid>
+
+                </AccordionDetails>
+                
+            </Accordion>
+
         </Page>
     )
 }

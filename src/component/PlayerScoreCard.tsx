@@ -87,8 +87,6 @@ const PlayerScoreCard = ( props: Props ) => {
         <Accordion>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
             >
                 
                 <Grid container spacing={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
