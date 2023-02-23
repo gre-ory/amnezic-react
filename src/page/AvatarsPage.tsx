@@ -22,7 +22,7 @@ const AvatarsPage = ( props: Props ) => {
                             {
                                 Object.keys( AvatarSize ).map(size => {
                                     return (
-                                        <PlayerAvatar key={`${number}-${size}`} number={number} size={size as AvatarSize} />
+                                        <PlayerAvatar key={`${number}-${size}`} id={number} size={size as AvatarSize} />
                                     )
                                 })
                             }

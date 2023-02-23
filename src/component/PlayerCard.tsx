@@ -148,6 +148,7 @@ const PlayerCard = ( props: Props ) => {
 
                 { editMode && (
                     <PlayingCardModal
+                        key={}
                         open={playingCardModal}
                         closeModal={closePlayingCardModal}
                         card={{

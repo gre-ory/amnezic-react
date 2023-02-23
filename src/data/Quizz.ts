@@ -49,7 +49,7 @@ const noPictureMusic = newMedia(
 
 const shortMusic = newMedia(
     "Short", 
-    "http://cache.amnezic.com/Rem2-14-10.mp3", 
+    "http://gregory.valigiani.free.fr/amnezic/Rem2-14-10.mp3", 
     newArtist( 
         "Short", 
         undefined
@@ -59,7 +59,7 @@ const shortMusic = newMedia(
 
 const failedMusic = newMedia(
     "Failed",
-    "http://cache.amnezic.com/Clash%20-%20Should%20I%20Stay%20Or%20Go.mp3",
+    "http://gregory.valigiani.free.fr/amnezic/Clash%20-%20Should%20I%20Stay%20Or%20Go.mp3",
     newArtist( 
         "Failed", 
         undefined
@@ -144,10 +144,11 @@ export function buildLegacyQuestions( game: Game ): Game {
             const correctIndex = questionIndex - startIndex
             const correctMusic = musics[ correctIndex ]
             const artist = newArtist( correctMusic.artist && correctMusic.artist.name ? correctMusic.artist.name : '???' )
-            const media = newMedia( correctMusic.title || '???', correctMusic.music, artist, undefined )
+            const musicURL = process.env.REACT_APP_LEGACY_ROOT_URI + correctMusic.music
+            const media = newMedia( correctMusic.title || '???', musicURL, artist, undefined )
             const question: Question = addQuestion( game, genre.genre, media )
 
-            const indexes = pickIndexes( nbAnswer, musics.length ).filter( index => index != correctIndex ).slice( 0, nbAnswer - 1 )
+            const indexes = pickIndexes( nbAnswer + 1, musics.length ).filter( index => index != correctIndex ).slice( 0, nbAnswer - 1 )
             indexes.push( correctIndex )
             shuffle( indexes )
 

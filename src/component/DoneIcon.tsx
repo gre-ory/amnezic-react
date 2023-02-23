@@ -11,15 +11,15 @@ interface Props {
 
 const DoneIcon = ( props: Props ) => {
     const { title, done } = props
-    const description = title && title != '' ? title : 'Done'    
+    const description = title && title != '' ? title : 'Done'
 
     if ( done ) {
         return (
-            <CheckIcon title={description} color="success" />
+            <CheckIcon color="success" />
         )
     }
     return (
-        <CloseIcon title={`Not ${description}`} color="error" />
+        <CloseIcon color="error" />
     )
 }
 
