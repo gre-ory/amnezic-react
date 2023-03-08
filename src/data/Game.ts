@@ -11,7 +11,7 @@ import { GameStats, newGameStats } from './GameStats'
 import { Card, DefaultCards } from './Card'
 import { flagAnswerAsCorrect, flagAnswerAsIncorrect, flagQuestionAsError, flagQuestionAsMiss, newPlayerStats } from './PlayerStats'
 import { ANSWER_ID_SUFFIX, DEBUG, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, MAX_NB_GAME, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
-import { buildDummyQuestions, buildLegacyQuestions, buildTestQuestions } from './Quizz'
+import { buildDummyQuestions, buildLegacyQuestions, buildTestQuestions, buildQuestionsFromApi } from './Quizz'
 import { AvatarId } from './Avatar'
 
 // //////////////////////////////////////////////////
@@ -102,7 +102,6 @@ export function addQuestion( game: Game, title: string, media: Media ): Question
     previous.nextNumber = current.number
     current.previousNumber = previous.number
   }
-  console.log( current )
   game.questions.push( current )
   return current
 }
@@ -250,13 +249,21 @@ export function onSetUp( game: Game ): Game {
   console.log( `[on-set-up] ${game.id}` )
 
   //
-  // build questions
+  // build questions ( based on game type )
   //
 
-  if ( DEBUG ) {
+  console.log(process.env)
+  console.log(`game type = ${process.env.REACT_APP_GAME_TYPE}`)
+  if ( process.env.REACT_APP_GAME_TYPE == 'dummy' ) {
     game = buildDummyQuestions( game )
-    // game = buildTestQuestions( game )
+  } else if ( process.env.REACT_APP_GAME_TYPE == 'test' ) {
+    game = buildTestQuestions( game )
+  } else if ( process.env.REACT_APP_GAME_TYPE == 'legacy' ) {
+    game = buildLegacyQuestions( game )
+  } else if ( process.env.REACT_APP_GAME_TYPE == 'api' ) {
+    buildQuestionsFromApi( game )
   } else {
+    console.log( `[on-set-up] missing game type >>> FALLBACK to 'legacy'` )
     game = buildLegacyQuestions( game )
   }
 

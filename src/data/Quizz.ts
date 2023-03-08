@@ -75,11 +75,12 @@ export function buildDummyQuestions( game: Game ): Game {
     const nbAnswer = game.settings.nbAnswer
     range( nbQuestion ).forEach( i => {
         const media = dummyMusics[ i % dummyMusics.length ]
-        const question: Question = addQuestion( game, media.artist.name, media )
+        const artist = media.artist ? media.artist.name : `artist ${i+1}`
+        const question: Question = addQuestion( game, artist, media )
 
         for ( let j = 0 ; j < nbAnswer ; j++ ) {
         if ( i % nbAnswer == j ) {
-            addAnswer( question, media.artist.name, media.title, true )
+            addAnswer( question, artist, media.title, true )
         } else {
             addAnswer( question, `artist ${j+1}`, `hint ${j+1}`, false )
         }
@@ -143,6 +144,7 @@ export function buildLegacyQuestions( game: Game ): Game {
             const musics = genre.media || []        
             const correctIndex = questionIndex - startIndex
             const correctMusic = musics[ correctIndex ]
+            console.log(correctMusic.artist)
             const artist = newArtist( correctMusic.artist && correctMusic.artist.name ? correctMusic.artist.name : '???' )
             const musicURL = process.env.REACT_APP_LEGACY_ROOT_URI + correctMusic.music
             const media = newMedia( correctMusic.title || '???', musicURL, artist, undefined )
@@ -163,4 +165,97 @@ export function buildLegacyQuestions( game: Game ): Game {
     }
 
     return game
+}
+
+// //////////////////////////////////////////////////
+// api game
+
+export async function buildQuestionsFromApi( game: Game ) {
+
+    let requestURL = `${process.env.REACT_APP_API_ROOT_URI}/game/new`
+    requestURL = `${requestURL}?nb_question=${game.settings.nbQuestion}`
+    requestURL = `${requestURL}&nb_answer=${game.settings.nbAnswer}`
+    requestURL = `${requestURL}&nb_player=${game.settings.nbPlayer}`
+    console.log(`[api] requestURL = ${requestURL}`)
+
+    const response = await fetch(requestURL, {method: 'PUT'})
+    if (!response.ok) {
+        const message = `An error has occured while fetching new game: ${response.status} ${response.body}`;
+        throw new Error(message);
+    }
+
+    const jsonResponse = await response.json() as JsonResponse;
+    const jsonGame = jsonResponse.game;
+    
+    for ( const jsonQuestion of jsonGame.questions ) {
+        if ( !jsonQuestion ) {
+            continue
+        }
+        const jsonMusic = jsonQuestion.music
+        const jsonTheme = jsonQuestion.theme
+
+        const artist = jsonMusic.artist ? newArtist( jsonMusic.artist.name, jsonMusic.artist.imgUrl ) : undefined
+        const album = jsonMusic.album ? newAlbum( jsonMusic.album.name, jsonMusic.album.imgUrl ) : undefined
+        const media = newMedia( jsonMusic.name, jsonMusic.mp3Url, artist, album )
+        const question: Question = addQuestion( game, jsonTheme.title, media )
+
+        for ( const jsonAnswer of jsonQuestion.answers ) {
+            addAnswer( question, jsonAnswer.text, jsonAnswer.hint, jsonAnswer.correct )
+        }
+    }
+}
+
+export interface JsonResponse {
+    success: boolean
+    game: JsonGame
+}
+
+export interface JsonGame {
+    id: number
+    players: JsonPlayer[]
+    questions: JsonQuestion[]
+}
+
+export interface JsonPlayer {
+    id: number
+    name: string
+    active: boolean
+}
+
+export interface JsonQuestion {
+    id: number
+    theme: JsonTheme
+    music: JsonMusic
+    answers: JsonAnswer[]
+}
+
+export interface JsonTheme {
+    title: string
+}
+
+export interface JsonMusic {
+    id: number
+    name: string
+    mp3Url: string
+    artist?: JsonArtist
+    album?: JsonAlbum
+}
+
+export interface JsonArtist {
+    id: number
+    name: string
+    imgUrl: string
+}
+
+export interface JsonAlbum {
+    id: number
+    name: string
+    imgUrl: string
+}
+
+export interface JsonAnswer {
+    id: number
+    text: string
+    hint: string
+    correct: boolean
 }
