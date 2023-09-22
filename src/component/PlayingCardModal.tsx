@@ -66,9 +66,8 @@ const PlayingCardModal = ( props: Props ) => {
                             Object.keys(CardColor).filter( key => key as CardColor != CardColor.GRAY ).map( key => { 
                                 const newColor = key as CardColor
                                 return (
-                                    <Grid item xs={4}>
+                                    <Grid item key={newColor} xs={4}>
                                         <div 
-                                            key={newColor} 
                                             style={{ width: '75%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
                                             className={card.color == newColor ? 'selected' : 'selectable'} 
                                             onClick={() => onColorChange(newColor)}
@@ -109,18 +108,17 @@ const PlayingCardModal = ( props: Props ) => {
                             Object.keys(CardSymbol).map( key => { 
                                 const newSymbol = key as CardSymbol
                                 return (
-                                    <Grid item xs={4}>
-                                    <div 
-                                        key={newSymbol} 
-                                        style={{ width: '75%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                        className={card.symbol == newSymbol ? 'selected' : 'selectable'} 
-                                        onClick={() => onSymbolChange(newSymbol)}
-                                    >
-                                        <PlayingCardIcon 
-                                            symbol={newSymbol}
-                                            color={CardColor.GRAY}
-                                        />
-                                    </div>                                                
+                                    <Grid key={newSymbol} item xs={4}>
+                                        <div 
+                                            style={{ width: '75%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                            className={card.symbol == newSymbol ? 'selected' : 'selectable'} 
+                                            onClick={() => onSymbolChange(newSymbol)}
+                                        >
+                                            <PlayingCardIcon 
+                                                symbol={newSymbol}
+                                                color={CardColor.GRAY}
+                                            />
+                                        </div>                                                
                                     </Grid>
                                 )
                             } )

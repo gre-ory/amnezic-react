@@ -1,0 +1,20 @@
+{
+  "short_name": "Amnezic",
+  "name": "Amnezic - Blind-test",
+  "icons": [
+    {
+      "src": "icons8-music-16.png",
+      "type": "image/png",
+      "sizes": "16x16"
+    },
+    {
+      "src": "icons8-music-48.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

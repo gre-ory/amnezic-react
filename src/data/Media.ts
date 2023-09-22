@@ -7,14 +7,14 @@ import { Artist } from './Artist'
 export interface Media {
   title: string
   music: string 
-  artist: Artist
+  artist?: Artist
   album?: Album  
 }
 
 // //////////////////////////////////////////////////
 // create
 
-export function newMedia( title: string, music: string, artist: Artist, album?: Album ): Media {
+export function newMedia( title: string, music: string, artist?: Artist, album?: Album ): Media {
   return {
     title: title,
     music: music,
