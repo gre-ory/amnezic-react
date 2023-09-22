@@ -133,16 +133,23 @@ export function buildLegacyQuestions( game: Game ): Game {
 
     for ( const questionIndex of questionIndexes ) {
 
+        console.log("questionIndex: %d",questionIndex)
+
         let startIndex = 0
         for ( const genre of legacyJson.genres ) {
-            const endIndex = startIndex + genre.media.length
+            if ( genre.media.length === 0 ) {
+                continue
+            }
+            const endIndex = startIndex + genre.media.length - 1
+            console.log("   startIndex: %d - length: %d - endIndex: %d",startIndex,genre.media.length, endIndex)
             if ( endIndex < questionIndex ) {
                 startIndex = endIndex + 1
                 continue
             }
 
-            const musics = genre.media || []        
+            const musics = genre.media || []
             const correctIndex = questionIndex - startIndex
+            console.log("   correctIndex: %d - questionIndex: %d - startIndex: %d",correctIndex,questionIndex, startIndex)
             const correctMusic = musics[ correctIndex ]
             console.log(correctMusic.artist)
             const artist = newArtist( correctMusic.artist && correctMusic.artist.name ? correctMusic.artist.name : '???' )
