@@ -28,7 +28,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build:stg": "rm -rf build-stg && dotenv -e .env.staging react-scripts build && mv build build-stg",
+    "build:prd": "rm -rf build-prd && dotenv -e .env.production react-scripts build && mv build build-prd",
+    "build": "echo \"Please use build:stg or build:prd \" && exit 1",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -51,6 +53,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.21.0"
+    "@babel/core": "^7.21.0",
+    "dotenv-cli": "^7.3.0"
   }
 }
