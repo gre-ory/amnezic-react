@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
+import { HashRouter, Route, Routes, Navigate } from "react-router-dom"
 
 import HomePage from './page/HomePage'
 import SettingsPage from './page/SettingsPage'
@@ -15,6 +15,7 @@ import { Game, GameUpdater, loadGames, storeGames, clearGames, GameId } from './
 import './App.css';
 import PlayingCardsPage from './page/PlayingCardsPage';
 import { QuestionId, QuestionUpdater } from './data/Question'
+import { loadingButtonClasses } from '@mui/lab'
 
 function App() {
 
@@ -80,22 +81,24 @@ function App() {
   }
 
   // GREG console.log( '[render] app' )
+  // <Route path="*" element={<>page not found</>} />
 
   return (
     <div className="app app-amnezic">
 
-      <Router>
+      <HashRouter>
         <Routes>
-          <Route path="/" element={<HomePage games={games} addGame={addGame} updateGame={updateGame} deleteGames={deleteGames}/>} />
-          <Route path="/game/:gameId/settings" element={<SettingsPage games={games} updateGame={updateGame} />} />        
+          <Route path="/" element={<HomePage games={games} addGame={addGame} updateGame={updateGame} deleteGames={deleteGames}/>}/>
+          <Route path="/game/:gameId/settings" element={<SettingsPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/players" element={<PlayersPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/start" element={<StartPage games={games} updateGame={updateGame} />} />
           <Route path="/game/:gameId/question/:questionNumber" element={<QuestionPage games={games} updateGame={updateGame} updateQuestion={updateQuestion}/>} />
           <Route path="/game/:gameId/scores" element={<ScoresPage games={games} updateGame={updateGame} addGame={addGame} />} />
           <Route path="/avatars" element={<AvatarsPage />} />
           <Route path="/cards" element={<PlayingCardsPage />} />
+          <Route path="*" element={<Navigate to="/" replace />}/>
         </Routes>
-      </Router>
+      </HashRouter>
 
     </div>
   );
