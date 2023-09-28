@@ -1,0 +1,45 @@
+#!/bin/bash
+
+PHASE=$( echo ${1} | awk '{ print tolower($0); }' )
+if [[ "${PHASE}" == "" ]]; then
+    echo "missing phase!"
+    exit 1
+fi
+
+SCRIPT_DIR=$( dirname $0 )
+ENV_FILE="${SCRIPT_DIR}/${PHASE}.env"
+if [[ ! -e "${ENV_FILE}" ]]; then
+    >&2 echo -e "\033[0;31m missing env file for ${PHASE}! ( ${ENV_FILE} ) \033[0m"
+    exit 1
+fi
+
+set -o allexport
+source "${ENV_FILE}"
+set +o allexport
+
+>&2 echo "~> ENVIRONMENT = ${ENVIRONMENT}"
+>&2 echo "~> FRONTEND_PORT = ${FRONTEND_PORT}"
+>&2 echo "~> FRONTEND_DIRECTORY = ${FRONTEND_DIRECTORY}"
+
+if [[ "${FRONTEND_PORT}" == "" ]]; then
+    echo "missing FRONTEND_PORT!"
+    exit 1
+fi
+if [[ "${FRONTEND_DIRECTORY}" == "" ]]; then
+    echo "missing FRONTEND_DIRECTORY!"
+    exit 1
+fi
+
+>&2 echo "~> cd ${SCRIPT_DIR}"
+cd ${SCRIPT_DIR}
+
+if [[ ! -e "${FRONTEND_DIRECTORY}" ]]; then
+    echo "invalid FRONTEND_DIRECTORY! ( "${FRONTEND_DIRECTORY}" )"
+    exit 1
+fi
+
+>&2 echo "~> cd ${FRONTEND_DIRECTORY}"
+cd ${FRONTEND_DIRECTORY}
+
+>&2 echo "~> python3 -m http.server ${FRONTEND_PORT}"
+python3 -m http.server ${FRONTEND_PORT}
