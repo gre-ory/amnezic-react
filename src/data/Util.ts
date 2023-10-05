@@ -102,3 +102,17 @@ export function onKeyEvent( keyCallback: KeyCallback ): EventCallback {
         }
     }
 }
+
+// //////////////////////////////////////////////////
+// value event
+
+export type ValueCallback = ( value: string ) => void
+export type ValueEventCallback = ( event: any ) => void
+
+export function onValueEvent( callback: ValueCallback ): ValueEventCallback {
+    return ( event: any ) => {
+        callback( event.target.value as string )
+        event.stopPropagation()
+        event.preventDefault()
+    }
+}

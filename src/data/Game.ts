@@ -1,17 +1,19 @@
 import { customAlphabet } from 'nanoid'
 
+import { FetchGame } from "../client/FetchGame"
+
 import { newSettings, Settings, SettingsUpdater } from './Settings'
 import { Player, PlayerId, PlayerUpdater } from './Player'
 import { addAnswer, isCorrect, Question, QuestionId, QuestionUpdater } from './Question'
 import { newArtist } from './Artist'
 import { newAlbum } from './Album'
 import { range, toTimeString, toZeroPadString } from './Util'
-import { Media, newMedia } from './Media'
+import { Music, newMusic } from './Music'
 import { GameStats, newGameStats } from './GameStats'
 import { Card, DefaultCards } from './Card'
 import { flagAnswerAsCorrect, flagAnswerAsIncorrect, flagQuestionAsError, flagQuestionAsMiss, newPlayerStats } from './PlayerStats'
 import { ANSWER_ID_SUFFIX, DEBUG, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, MAX_NB_GAME, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
-import { buildDummyQuestions, buildLegacyQuestions, buildTestQuestions, buildQuestionsFromApi } from './Quizz'
+import { buildDummyQuestions, buildLegacyQuestions, buildTestQuestions } from './Quizz'
 import { AvatarId } from './Avatar'
 
 // //////////////////////////////////////////////////
@@ -86,14 +88,14 @@ export function addPlayer( game: Game, card: Card ): Player {
   return current
 }
 
-export function addQuestion( game: Game, title: string, media: Media ): Question {
+export function addQuestion( game: Game, title: string, music: Music ): Question {
   const number = game.questions.length + 1
   const current: Question = {
     id: ( QUESTION_ID_SUFFIX + number ) * ANSWER_ID_SUFFIX,
     number: number, 
     status: 'not-played',
     title: title,
-    media: media,
+    music: music,
     answers: [],
     playerAnswers: [],
   }
@@ -261,7 +263,7 @@ export function onSetUp( game: Game ): Game {
   } else if ( process.env.REACT_APP_GAME_TYPE == 'legacy' ) {
     game = buildLegacyQuestions( game )
   } else if ( process.env.REACT_APP_GAME_TYPE == 'api' ) {
-    buildQuestionsFromApi( game )
+    FetchGame( game )
   } else {
     console.log( `[on-set-up] missing game type >>> FALLBACK to 'legacy'` )
     game = buildLegacyQuestions( game )

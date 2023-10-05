@@ -1,6 +1,6 @@
 import { Answer, AnswerId } from './Answer'
 import { GameId } from './Game'
-import { Media } from './Media'
+import { Music } from './Music'
 import { PlayerId } from './Player'
 import { PlayerAnswer } from './PlayerAnswer'
 import { toZeroPadString } from './Util'
@@ -24,7 +24,7 @@ export interface Question {
   number: number
   status: QuestionStatus
   title: string
-  media: Media
+  music: Music
   answers: Answer[] 
   playerAnswers: PlayerAnswer[] 
   previousNumber?: number

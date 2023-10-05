@@ -5,30 +5,30 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 
 import { CardMedia, Typography } from '@mui/material'
-import { Media } from '../data/Media'
+import { Music } from '../data/Music'
 import musicBackground from '../static/music.png'
 
 interface Props {
-    media: Media
+    music: Music
 }
 
-const MediaCard = ( props: Props ) => {
-    const { media } = props
+const MusicCard = ( props: Props ) => {
+    const { music } = props
 
-    if ( !media ) {
+    if ( !music ) {
         return null
     }
 
-    const mediaImage = media.artist && media.artist.picture ? media.artist.picture : media.album && media.album.picture ? media.album.picture : musicBackground
-    const artistName = media.artist && media.artist.name ? media.artist.name : '-'
-    const albumName = media.album && media.album.title ? media.album.title : '-'
+    const musicImage = music.artist && music.artist.imgUrl ? music.artist.imgUrl : music.album && music.album.imgUrl ? music.album.imgUrl : musicBackground
+    const artistName = music.artist && music.artist.name ? music.artist.name : '-'
+    const albumName = music.album && music.album.name ? music.album.name : '-'
 
     return (
         <Card variant="outlined">
             <CardContent>
 
                 <Typography variant="h5" color="text.primary" component="div" style={{ margin: '5px 10px' }}>
-                    {media.title}
+                    {music.name}
                 </Typography>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
@@ -36,7 +36,7 @@ const MediaCard = ( props: Props ) => {
                     <CardMedia
                         component="img"
                         sx={{ width: 56, height: 56, margin: '5px 10px' }}
-                        image={mediaImage}
+                        image={musicImage}
                     />
 
                     <div style={{ display: 'flex', flexDirection: 'column', marginRight: '10px' }}>
@@ -70,4 +70,4 @@ const MediaCard = ( props: Props ) => {
     )
 }
 
-export default MediaCard
+export default MusicCard

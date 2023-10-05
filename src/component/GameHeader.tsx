@@ -20,7 +20,7 @@ import { HEADER_KEYBOARD_SHORTCUTS } from '../data/Constants'
 
 interface Props {
     title?: string
-    gameStep?: GameStep
+    step?: GameStep
     game?: Game
     updateGame?: OnGameUpdate
     onPrevious?: () => void
@@ -28,7 +28,7 @@ interface Props {
 }
 
 const Header = ( props: Props ) => {
-    const { title, gameStep, game, updateGame, onPrevious, onNext } = props
+    const { title, step, game, updateGame, onPrevious, onNext } = props
 
     const navigate = useNavigate()
 
@@ -42,11 +42,11 @@ const Header = ( props: Props ) => {
 
     // selected helpers
 
-    const isHomeSelected = gameStep === undefined
-    const isSettingsSelected = gameStep == GameStep.SETTINGS
-    const isPlayersSelected = gameStep == GameStep.PLAYERS
-    const isQuizzSelected = gameStep == GameStep.QUIZZ
-    const isScoresSelected = gameStep == GameStep.SCORES
+    const isHomeSelected = step === undefined
+    const isSettingsSelected = step == GameStep.SETTINGS
+    const isPlayersSelected = step == GameStep.PLAYERS
+    const isQuizzSelected = step == GameStep.QUIZZ
+    const isScoresSelected = step == GameStep.SCORES
 
     // disabled helpers
 

@@ -7,11 +7,12 @@ import Grid from '@mui/material/Grid'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import { Game, GameId, GameStep, newGame, OnGameUpdate } from '../data/Game'
-import { toGamePage } from '../data/Navigate'
+import { toGamePage, toAdminThemesPage } from '../data/Navigate'
 
 import Page from '../component/Page'
 import GameCard from '../component/GameCard'
 import NextButton from '../component/NextButton'
+import AdminButton from '../component/AdminButton'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 
 interface Props {
@@ -27,6 +28,11 @@ const HomePage = ( props: Props ) => {
     const navigate = useNavigate()
 
     // update helpers
+
+    const toThemes = () => {
+        console.log( `[to-themes]` )
+        navigate( toAdminThemesPage() )
+    }
 
     const startGame = () => {
         console.log( `[start-game]` )
@@ -148,6 +154,10 @@ const HomePage = ( props: Props ) => {
                 </AccordionDetails>
                 
             </Accordion>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <AdminButton title="Themes" onNext={toThemes}/>
+            </div>
 
         </Page>
     )

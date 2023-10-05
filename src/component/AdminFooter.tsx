@@ -10,7 +10,7 @@ import { Game } from '../data/Game'
 interface Props {
 }
 
-const Footer = ( props: Props ) => {
+const AdminFooter = ( props: Props ) => {
 
     return (
         <>
@@ -27,4 +27,4 @@ const Footer = ( props: Props ) => {
     )
 }
 
-export default Footer
+export default AdminFooter

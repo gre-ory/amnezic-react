@@ -3,16 +3,18 @@
 // model
 
 export interface Artist {
+  id?: number
+  deezerId?: number
   name: string
-  picture: string
+  imgUrl?: string
 }
 
 // //////////////////////////////////////////////////
 // create
 
-export function newArtist( name: string, picture: string = "" ): Artist {
+export function newArtist( name: string, imgUrl?: string ): Artist {
   return {
     name: name,
-    picture: picture,
+    imgUrl: imgUrl,
   }
 }

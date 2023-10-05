@@ -9,6 +9,8 @@ import StartPage from './page/StartPage'
 import QuestionPage from './page/QuestionPage'
 import ScoresPage from './page/ScoresPage'
 import AvatarsPage from './page/AvatarsPage'
+import AdminThemesPage from './page/AdminThemesPage'
+import AdminThemePage from './page/AdminThemePage'
 
 import { Game, GameUpdater, loadGames, storeGames, clearGames, GameId } from './data/Game'
 
@@ -96,6 +98,8 @@ function App() {
           <Route path="/game/:gameId/scores" element={<ScoresPage games={games} updateGame={updateGame} addGame={addGame} />} />
           <Route path="/avatars" element={<AvatarsPage />} />
           <Route path="/cards" element={<PlayingCardsPage />} />
+          <Route path="/admin/theme" element={<AdminThemesPage />} />
+          <Route path="/admin/theme/:themeId" element={<AdminThemePage />} />
           <Route path="*" element={<Navigate to="/" replace />}/>
         </Routes>
       </HashRouter>

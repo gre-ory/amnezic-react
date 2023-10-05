@@ -25,7 +25,6 @@ import PlayerAvatar, { AvatarSize } from './PlayerAvatar'
 import { getQuestionAnswerStats, getQuestionStats } from '../data/PlayerStats'
 import PlayerCard from './PlayerCard'
 import { withStyles } from '@mui/styles'
-import MediaCard from './MediaCard'
 import MusicPlayer from './MusicPlayer'
 import { DEBUG, MAX_NB_SECONDS_LOADING, MAX_NB_SECONDS_PLAYING, ONE_SECOND } from '../data/Constants'
 
@@ -394,7 +393,7 @@ const QuestionCard = ( props: Props ) => {
 
                     <MusicPlayer 
                         questionId={question.id} 
-                        media={question.media}
+                        music={question.music}
                         failed={musicError}
                         loading={musicLoading}
                         info={musicPlayerInfo}

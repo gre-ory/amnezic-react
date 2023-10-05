@@ -98,7 +98,7 @@ const SettingsPage = ( props: Props ) => {
     const moreAnswer = moreAnswerDisabled ? undefined : onUserEvent( () => updateNbAnswer( game.settings.nbAnswer + nbAnswerIncrement ) )
 
     return (
-        <GamePage gameStep={GameStep.SETTINGS} game={game} updateGame={updateGame} onNext={onNext}>
+        <GamePage step={GameStep.SETTINGS} game={game} updateGame={updateGame} onNext={onNext}>
             
             <Grid container spacing={2}>
 

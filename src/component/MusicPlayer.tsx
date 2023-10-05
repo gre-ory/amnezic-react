@@ -9,15 +9,15 @@ import { Question, OnQuestionUpdate, QuestionId } from '../data/Question'
 import { onKeyEvent, onUserEvent } from '../data/Util'
 import { Box, CircularProgress, Tooltip, Typography } from '@mui/material'
 import { withStyles } from '@mui/styles'
-import MediaCard from './MediaCard'
-import { Media } from '../data/Media'
+import MusicCard from './MusicCard'
+import { Music } from '../data/Music'
 import musicBackground from '../static/music.png'
 import { MUSIC_PLAYER_KEYBOARD_SHORTCUTS } from '../data/Constants'
 
 
 interface Props {
     questionId: QuestionId
-    media: Media
+    music: Music
     failed: boolean
     loading: boolean
     info?: any
@@ -32,13 +32,13 @@ interface Props {
 }
 
 const MusicPlayer = ( props: Props ) => {
-    const { questionId, media, loading, info, started, playing, progress, played, onMusicLoaded, onMusicPlaying, onMusicPaused, onMusicEnded } = props
+    const { questionId, music, loading, info, started, playing, progress, played, onMusicLoaded, onMusicPlaying, onMusicPaused, onMusicEnded } = props
 
-    if ( !questionId && !media ) {
+    if ( !questionId && !music ) {
         return null
     }
         
-    const audioRef = React.useRef<HTMLAudioElement>( new Audio( media.music ) )
+    const audioRef = React.useRef<HTMLAudioElement>( new Audio( music.mp3Url ) )
 
     // const [ loading, setLoading ] = React.useState( true )
     // const [ isPlaying, setIsPlaying ] = React.useState( false )
@@ -143,9 +143,9 @@ const MusicPlayer = ( props: Props ) => {
     
         if ( !played ) {
 
-            if ( audioRef.current.src != media.music ) {
+            if ( audioRef.current.src != music.mp3Url ) {
                 console.log("new music...")
-                audioRef.current = new Audio( media.music )
+                audioRef.current = new Audio( music.mp3Url )
                 audioRef.current.loop = false
                 audioRef.current.volume = 1.0
                 reset()
@@ -262,7 +262,7 @@ const MusicPlayer = ( props: Props ) => {
     const onClick = started && playingMusic ? onPause : undefined
 
     return (
-        <LightTooltip title={played ? <MediaCard media={media} /> : false} >
+        <LightTooltip title={played ? <MusicCard music={music} /> : false} >
             <div 
                 style={{ 
                     width: '56px', 
@@ -272,7 +272,7 @@ const MusicPlayer = ( props: Props ) => {
                     border: played ? '1px solid #777' : 'none',
                     borderRadius: '28px', 
                     backgroundColor: played ? 'transparent' : '#eee',
-                    background: played ? media.album ? `url(${media.album.picture})` : `url(${musicBackground})` : 'none', 
+                    background: played ? music.album ? `url(${music.album.imgUrl})` : `url(${musicBackground})` : 'none', 
                     backgroundSize: '56px 56px' 
                 }}
             >                

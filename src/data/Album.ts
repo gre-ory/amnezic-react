@@ -3,16 +3,18 @@
 // model
 
 export interface Album {
-  title: string
-  picture: string
+  id?: number
+  deezerId?: number
+  name: string
+  imgUrl?: string
 }
 
 // //////////////////////////////////////////////////
 // create
 
-export function newAlbum( title: string, picture: string = "" ): Album {
+export function newAlbum( name: string, imgUrl?: string ): Album {
   return {
-    title: title,
-    picture: picture,
+    name: name,
+    imgUrl: imgUrl,
   }
 }
