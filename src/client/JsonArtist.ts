@@ -15,6 +15,15 @@ export function ToArtist( json: JsonArtist ): Artist {
     }
 }
 
+export function FromArtist( artist: Artist ): JsonArtist {
+    return {
+        id: artist.id,
+        deezerId: artist.deezerId,
+        name: artist.name,
+        imgUrl: artist.imgUrl,
+    }
+}
+
 // //////////////////////////////////////////////////
 // json
 

@@ -1,20 +1,23 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import Grid from '@mui/material/Grid';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { IconButton, Alert, AlertTitle, Box } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import { DataGrid, GridColDef } from '@mui/x-data-grid'
 
 import AdminPage from '../component/AdminPage'
+import CreateThemeModal from '../component/CreateThemeModal'
 
 import { FetchThemes } from '../client/FetchThemes'
+import { CreateTheme } from '../client/CreateTheme'
+import { RemoveTheme } from '../client/RemoveTheme'
 
 import { AdminStep } from '../data/Admin'
 import { ThemeInfo } from '../data/ThemeInfo'
 import { toAdminThemePage } from '../data/Navigate'
-import { toGamePage, toAdminThemesPage } from '../data/Navigate'
+import { onUserEvent } from '../data/Util'
 
 interface Props {
 }
@@ -26,14 +29,57 @@ const AdminThemesPage = ( props: Props ) => {
     const [themes, setThemes] = React.useState<ThemeInfo[]>()
     const [error, setError] = React.useState<Error>();
 
-    React.useEffect(() => {
+    const [ createThemeModal, setCreateThemeModal ] = React.useState( false )
+    const openCreateThemeModal = () => {
+        setCreateThemeModal(true)
+    }
+    const closeCreateThemeModal = () => {
+        setCreateThemeModal(false)
+    }
+    const createTheme = ( title: string, imgUrl?: string ) => {
+        if ( title ) {
+            CreateTheme(title,imgUrl).then((theme) => { fetchThemes() }).catch(onError)
+        } else {
+            console.log("missing theme title!")
+        }
+    }
+    
+    const editTheme = (theme: ThemeInfo) => {
+        return onUserEvent(() => {
+            console.log("click >>> edit theme", theme.id )
+            if ( theme.id ) {
+                toTheme(theme.id)
+            } else {
+                console.log("missing theme id!", theme)
+            }
+        })
+    }
+
+    const deleteTheme = (theme: ThemeInfo) => {
+        console.log("click >>> delete theme", theme.id )
+        if ( theme.id ) {
+            if (window.confirm('Are you sure you wish to delete this item?')) {
+                RemoveTheme(theme.id).then((ok) => { fetchThemes() }).catch(console.log)
+            }
+        } else {
+            console.log("missing theme id!", theme)
+        }
+    }
+    
+    const fetchThemes = () => {
         FetchThemes()
             .then((themes) => setThemes(themes))
-            .catch((err) => {
-                console.error(err)
-                setError(err)
-            });
-      }, [])
+            .catch(onError);
+    }
+
+    const onError = (err: Error) => {
+        console.error(err)
+        setError(err)
+    }
+
+    React.useEffect(() => {
+        fetchThemes()
+    }, [])
 
     console.log(error)
     if ( error !== undefined ) {
@@ -53,31 +99,34 @@ const AdminThemesPage = ( props: Props ) => {
     }
 
     const columns: GridColDef[] = [
-        { field: 'id', headerName: 'ID', width: 90 },
-        {
+          {
           field: 'imgUrl',
-          headerName: 'Picture',
-          width: 150,
+          headerName: ' ',
+          cellClassName: 'music-button-cell',
+          width: 56,
           editable: false,
+          disableColumnMenu: true,
+          sortable: false,
           renderCell: (params) => {
             if ( params.value == null ) {
                 return null
             }
-            return <img src={params.value} style={{ width: '100px', height: '100px' }} />
+            return <img src={params.value} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           },
         },
         {
           field: 'title',
           headerName: 'Title',
-          width: 150,
-          editable: true,
+          width: 500,
+          editable: false,
         },
         {
           field: 'nbQuestion',
-          headerName: 'Nb Questions',
+          headerName: ' ',
           type: 'number',
           width: 110,
           editable: false,
+          disableColumnMenu: true,
           valueFormatter: (params) => {
             if ( params.value == null ) {
                 return '-'
@@ -88,14 +137,60 @@ const AdminThemesPage = ( props: Props ) => {
             return `${params.value} questions`
           },
         },
+        {
+          field: 'actions',
+          headerName: 'Actions',
+          width: 110,
+          editable: false,
+            disableColumnMenu: true,
+          sortable: true,
+          renderHeader(params) {
+              return <IconButton 
+              color="primary"
+              aria-label="Add"
+              onClick={openCreateThemeModal}
+              >
+              <AddIcon />
+          </IconButton>
+          },
+          renderCell: (params) => {
+              return <>
+              <IconButton
+                  aria-label="Edit"
+                  onClick={editTheme(params.row)}
+              >
+                  <EditIcon />
+              </IconButton>
+              <IconButton
+              aria-label="Delete"
+              onClick={() => { deleteTheme(params.row) }}
+          >
+              <DeleteIcon />
+          </IconButton>
+          </>
+              
+              
+              
+              
+              
+        },
+        },
       ];
 
     return (
         <AdminPage step={AdminStep.THEMES}>
             <Box sx={{ height: 400, width: '100%' }}>
+
+            <CreateThemeModal
+                open={createThemeModal}
+                closeModal={closeCreateThemeModal}
+                createTheme={createTheme}
+            />
+
                 <DataGrid
                     rows={themes}
                     columns={columns}
+                    rowHeight={76}
                     initialState={{
                         pagination: {
                             paginationModel: {
@@ -105,9 +200,6 @@ const AdminThemesPage = ( props: Props ) => {
                     }}
                     pageSizeOptions={[10,25,50,100]}
                     disableRowSelectionOnClick
-                    onRowClick={(params,event,details) => {
-                        toTheme(params.row.id)
-                    }}
                     />
             </Box>
         </AdminPage>

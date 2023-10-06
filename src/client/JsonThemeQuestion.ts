@@ -1,7 +1,7 @@
 // //////////////////////////////////////////////////
 // import
 
-import { JsonMusic, ToMusic } from "./JsonMusic"
+import { JsonMusic, ToMusic, FromMusic } from "./JsonMusic"
 import { ThemeQuestion } from "../data/ThemeQuestion"
 
 // //////////////////////////////////////////////////
@@ -12,7 +12,16 @@ export function ToThemeQuestion( json: JsonThemeQuestion ): ThemeQuestion {
         id: json.id,
         text: json.text,
         hint: json.hint,
-        music: ToMusic( json.music ),
+        music: json.music ? ToMusic( json.music ): undefined,
+    }
+}
+
+export function FromThemeQuestion( question: ThemeQuestion ): JsonThemeQuestion {
+    return {
+        id: question.id,
+        text: question.text,
+        hint: question.hint,
+        music: question.music ? FromMusic( question.music ) : undefined,
     }
 }
 
@@ -20,5 +29,5 @@ export interface JsonThemeQuestion {
     id: number
     text: string
     hint: string
-    music: JsonMusic
+    music?: JsonMusic
 }

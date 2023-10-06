@@ -5,15 +5,13 @@ import { newArtist } from "../data/Artist"
 import { newAlbum } from "../data/Album"
 import { Music, newMusic } from "../data/Music"
 
-import { JsonArtist, ToArtist } from "./JsonArtist"
-import { JsonAlbum, ToAlbum } from "./JsonAlbum"
+import { JsonArtist, ToArtist, FromArtist } from "./JsonArtist"
+import { JsonAlbum, ToAlbum, FromAlbum } from "./JsonAlbum"
 
 // //////////////////////////////////////////////////
 // adapter
 
 export function ToMusic( json: JsonMusic ): Music {
-    const artist = json.artist ? newArtist( json.artist.name, json.artist.imgUrl ) : undefined
-    const album = json.album ? newAlbum( json.album.name, json.album.imgUrl ) : undefined
     return {
         id: json.id,
         deezerId: json.deezerId,
@@ -21,6 +19,17 @@ export function ToMusic( json: JsonMusic ): Music {
         mp3Url: json.mp3Url,
         album: json.album ? ToAlbum( json.album ) : undefined,
         artist: json.artist ? ToArtist( json.artist ) : undefined,
+    }
+}
+
+export function FromMusic( music: Music ): JsonMusic {
+    return {
+        id: music.id,
+        deezerId: music.deezerId,
+        name: music.name,
+        mp3Url: music.mp3Url,
+        album: music.album ? FromAlbum( music.album ) : undefined,
+        artist: music.artist ? FromArtist( music.artist ) : undefined,
     }
 }
 

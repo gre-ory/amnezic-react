@@ -11,5 +11,5 @@ export interface ThemeQuestion {
     id: number
     text: string
     hint: string
-    music: Music
+    music?: Music
 }

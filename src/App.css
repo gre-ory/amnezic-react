@@ -517,5 +517,12 @@ svg.icon {
   background-position-y: calc( var(--avatar-start-y) + 3 * var(--avatar-delta-y) );
 }
 
+/* ------------------------- music button ------------------------- */
+
+.music-button-cell {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 
 

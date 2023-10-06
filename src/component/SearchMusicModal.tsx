@@ -22,11 +22,12 @@ interface Props {
     closeModal: () => void
     isMusicIncluded: (music: Music) => boolean
     addMusic: (music: Music) => void
+    removeMusic: (music: Music) => void
     audioPlayer: AudioPlayerInterface
 }
 
 const SearchMusicModal = ( props: Props ) => {
-    const { open, closeModal, isMusicIncluded, addMusic, audioPlayer } = props
+    const { open, closeModal, isMusicIncluded, addMusic, removeMusic, audioPlayer } = props
 
     const [ search, SetSearch ] = React.useState<string>("")
     const [ submit, SetSubmit ] = React.useState<boolean>(false)
@@ -45,7 +46,7 @@ const SearchMusicModal = ( props: Props ) => {
     React.useEffect(() => {
         console.log(`submit: ${submit} / search: ${search}`)
         if ( submit && search ) {
-            SearchMusic(search,10)
+            SearchMusic(search,50)
             .then((musics) => {
                 SetMusics(musics)
                 SetSubmit(false)
@@ -61,9 +62,10 @@ const SearchMusicModal = ( props: Props ) => {
         {
             field: 'music',
             headerName: ' ',
-            width: 76,
+            width: 56,
             sortable: false,
             disableColumnMenu: true,
+            cellClassName: 'music-button-cell',
             renderCell: (params) => {
                 if (params.row == null) {
                     return null
@@ -92,7 +94,12 @@ const SearchMusicModal = ( props: Props ) => {
             disableColumnMenu: true,
             renderCell: (params) => {
                 if ( isMusicIncluded(params.row) ) {
-                    return <IconButton disabled>
+                    return <IconButton
+                            aria-label="Remove"
+                            onClick={onUserEvent(() => { 
+                                removeMusic(params.row)
+                                audioPlayer.unload()
+                            })}>
                         <CheckIcon />
                     </IconButton>
                 }
@@ -100,7 +107,7 @@ const SearchMusicModal = ( props: Props ) => {
                             aria-label="Add"
                             onClick={onUserEvent(() => { 
                                 addMusic(params.row)
-                                closeModal()
+                                audioPlayer.unload()
                             })}
                         >
                             <AddIcon />
@@ -132,15 +139,7 @@ const SearchMusicModal = ( props: Props ) => {
             <Box sx={style}>
                 <Grid container spacing={2} style={{ alignItems: 'center' }}>
                     
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    
-                        <IconButton aria-label="Close" onClick={closeModal}>
-                            <CloseIcon />
-                        </IconButton>
-
-                    </Grid>
-
-                    <Grid item xs={4} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '5px', marginBottom: '10px' }}>
+                    <Grid item xs={10} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginTop: '0px', marginBottom: '0px' }}>
                     
                             <TextField
                                 onChange={handleChange}
@@ -156,6 +155,14 @@ const SearchMusicModal = ( props: Props ) => {
                             </IconButton>
                     </Grid>
 
+                    <Grid item xs={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                    
+                        <IconButton aria-label="Close" onClick={closeModal}>
+                            <CloseIcon />
+                        </IconButton>
+
+                    </Grid>
+
                 </Grid>
 
                 {/* musics */}
@@ -164,17 +171,18 @@ const SearchMusicModal = ( props: Props ) => {
 
                     {musics && <Box sx={{ height: 400, width: '100%' }}>
                         <DataGrid
+                            density='compact'
                             rows={musics}
                             rowHeight={76}
                             columns={columns}
                             initialState={{
                                 pagination: {
                                     paginationModel: {
-                                        pageSize: 10,
+                                        pageSize: 50,
                                     },
                                 },
                             }}
-                            pageSizeOptions={[10,25,50,100]}
+                            pageSizeOptions={[50]}
                             disableRowSelectionOnClick
                             getRowId={(row) => { return row.deezerId}}
                             />

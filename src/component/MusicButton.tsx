@@ -36,9 +36,12 @@ const MusicButton = ( props: Props ) => {
     const width = size ? size : 56;
     const height = size ? size : 56;
 
-    const playIcon = <PlayArrowIcon sx={{ height: height, width: width, color: '#fff' }}/>
-    const pauseIcon = <PauseIcon sx={{ height: height, width: width, color: '#fff' }}/>
-    const downloadingIcon = <DownloadingIcon sx={{ height: height, width: width, color: '#fff' }}/>
+    const iconWidth = width*0.75;
+    const iconHeight = height*0.75;
+
+    const playIcon = <PlayArrowIcon sx={{ height: iconHeight, width: iconWidth, color: '#fff' }}/>
+    const pauseIcon = <PauseIcon sx={{ height: iconHeight, width: iconWidth, color: '#fff' }}/>
+    const downloadingIcon = <DownloadingIcon sx={{ height: iconHeight, width: iconWidth, color: '#fff' }}/>
 
     const [ loaded, setLoaded ] = React.useState(false)
     const [ icon, setIcon ] = React.useState(playIcon)
@@ -110,21 +113,21 @@ const MusicButton = ( props: Props ) => {
                 backgroundSize: `${width}px ${height}px`,
                 backgroundColor: '#999',
                 borderRadius: `5%`,
-            }}
+            }} 
+            onClick={onClick}
         >
 
             <Box 
                 sx={{
-                    width: `auto`,
-                    height: `auto`,
+                    width: `${width}px`,
+                    height: `${height}px`, 
                     position: 'relative',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    cursor: 'pointer',
                     opacity: '0.8',
-                }} 
-                onClick={onClick}
+                    cursor: 'pointer',
+                }}
             >
 
                 { icon }

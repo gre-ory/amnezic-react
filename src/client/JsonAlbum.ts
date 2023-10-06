@@ -15,6 +15,15 @@ export function ToAlbum( json: JsonAlbum ): Album {
     }
 }
 
+export function FromAlbum( album: Album ): JsonAlbum {
+    return {
+        id: album.id,
+        deezerId: album.deezerId,
+        name: album.name,
+        imgUrl: album.imgUrl,
+    }
+}
+
 // //////////////////////////////////////////////////
 // json
 
