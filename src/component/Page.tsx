@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { Game, GameStep } from '../data/Game'
 import { toHomePage, toGamePage } from '../data/Navigate'
 
-import Header from './Header'
-import Footer from './Footer'
+import Header from './GameHeader'
+import Footer from './GameFooter'
 
 interface Props {
     title?: string

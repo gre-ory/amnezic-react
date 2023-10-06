@@ -3,6 +3,14 @@ import { Game, GameStep } from './Game'
 // //////////////////////////////////////////////////
 // navigate
 
+export function toAdminThemesPage(): string {
+  return `/admin/theme`
+}
+
+export function toAdminThemePage( themeId: number ): string {
+  return `/admin/theme/${themeId}`
+}
+
 export function toHomePage(): string {
   return `/`
 }
