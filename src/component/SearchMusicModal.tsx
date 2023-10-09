@@ -46,7 +46,7 @@ const SearchMusicModal = ( props: Props ) => {
     React.useEffect(() => {
         console.log(`submit: ${submit} / search: ${search}`)
         if ( submit && search ) {
-            SearchMusic(search,50)
+            SearchMusic(search,100)
             .then((musics) => {
                 SetMusics(musics)
                 SetSubmit(false)
@@ -76,7 +76,7 @@ const SearchMusicModal = ( props: Props ) => {
         {
           field: 'name',
           headerName: 'Title',
-          width: 500,
+          flex: 1,
           renderCell: (params) => {
             const artist = params.row.artist ? params.row.artist.name : '-';
             const album = params.row.album ? params.row.album.name : '-';
@@ -122,7 +122,8 @@ const SearchMusicModal = ( props: Props ) => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 700,
+        width: '90%',
+        maxWidth: '700px',
         bgcolor: 'background.paper',
         borderRadius: '10px',
         boxShadow: 24,
@@ -178,11 +179,11 @@ const SearchMusicModal = ( props: Props ) => {
                             initialState={{
                                 pagination: {
                                     paginationModel: {
-                                        pageSize: 50,
+                                        pageSize: 100,
                                     },
                                 },
                             }}
-                            pageSizeOptions={[50]}
+                            pageSizeOptions={[100]}
                             disableRowSelectionOnClick
                             getRowId={(row) => { return row.deezerId}}
                             />

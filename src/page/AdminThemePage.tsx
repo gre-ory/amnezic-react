@@ -201,7 +201,7 @@ const AdminThemePage = ( props: Props ) => {
           headerName: 'Questions',
           editable: true,
           hideable: false,
-          width: 600,
+          flex: 1,
           renderCell: (params) => {
             const artist = params.row.artist ? params.row.artist.name : '-';
             const album = params.row.album ? params.row.album.name : '-';
@@ -214,7 +214,7 @@ const AdminThemePage = ( props: Props ) => {
         {
             field: 'actions',
             headerName: ' ',
-            width: 150,
+            width: 100,
             disableColumnMenu: true,
             sortable: false,
             renderHeader(params) {
@@ -246,7 +246,7 @@ const AdminThemePage = ( props: Props ) => {
       ];
 
     return (
-        <AdminPage title={`Theme #${theme.id} - ${theme.title}`} step={AdminStep.THEME}>
+        <AdminPage title={`Theme #${theme.id} - ${theme.title}`} step={AdminStep.THEME} onBack={toThemes}>
             <Grid container spacing={0} style={{ alignItems: 'center' }}>
                 <Grid item xs={10} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
                     <TextField
@@ -318,9 +318,6 @@ const AdminThemePage = ( props: Props ) => {
                     </Box>
                 </Grid>
             </Grid>
-            <>theme {themeId}</>
-
-            
 
         </AdminPage>
         

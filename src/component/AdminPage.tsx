@@ -11,18 +11,19 @@ import { DEBUG } from '../data/Constants'
 interface Props {
     title?: string
     step: AdminStep
+    onBack?: () => void
     children: any
 }
 
 const AdminPage = ( props: Props ) => {
-    const { title, step, children } = props
+    const { title, step, onBack, children } = props
 
     const navigate = useNavigate()
     
     return (
         <>
             <div className={`admin-page step-${step.toLowerCase()}`}>
-                <AdminHeader title={title} step={step}/>
+                <AdminHeader title={title} step={step} onBack={onBack}/>
                 {children}
                 <AdminFooter />
             </div>

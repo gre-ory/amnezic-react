@@ -16,7 +16,7 @@ import { RemoveTheme } from '../client/RemoveTheme'
 
 import { AdminStep } from '../data/Admin'
 import { ThemeInfo } from '../data/ThemeInfo'
-import { toAdminThemePage } from '../data/Navigate'
+import { toHomePage, toAdminThemePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 
 interface Props {
@@ -93,6 +93,11 @@ const AdminThemesPage = ( props: Props ) => {
         return null
     }
 
+    const toHome = () => {
+        console.log( `[to-home]` )
+        navigate( toHomePage() )
+    }
+
     const toTheme = ( themeId: number ) => {
         console.log( `[to-theme] ${themeId}` )
         navigate( toAdminThemePage( themeId ) )
@@ -117,30 +122,27 @@ const AdminThemesPage = ( props: Props ) => {
         {
           field: 'title',
           headerName: 'Title',
-          width: 500,
+          flex: 1,
           editable: false,
         },
         {
           field: 'nbQuestion',
           headerName: ' ',
           type: 'number',
-          width: 110,
+          width: 50,
           editable: false,
           disableColumnMenu: true,
           valueFormatter: (params) => {
             if ( params.value == null ) {
                 return '-'
             }
-            if ( params.value == 1 ) {
-                return `${params.value} question`
-            }
-            return `${params.value} questions`
+            return `${params.value}`
           },
         },
         {
           field: 'actions',
           headerName: 'Actions',
-          width: 110,
+          width: 100,
           editable: false,
             disableColumnMenu: true,
           sortable: true,
@@ -178,7 +180,7 @@ const AdminThemesPage = ( props: Props ) => {
       ];
 
     return (
-        <AdminPage step={AdminStep.THEMES}>
+        <AdminPage step={AdminStep.THEMES} onBack={toHome}>
             <Box sx={{ height: 400, width: '100%' }}>
 
             <CreateThemeModal
