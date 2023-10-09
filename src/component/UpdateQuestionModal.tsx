@@ -56,7 +56,8 @@ const UpdateQuestionModal = ( props: Props ) => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 700,
+        width: '90%',
+        maxWidth: '700px',
         bgcolor: 'background.paper',
         borderRadius: '10px',
         boxShadow: 24,
@@ -70,7 +71,9 @@ const UpdateQuestionModal = ( props: Props ) => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         > 
+        
             <Box sx={style}>
+
                 <Grid container spacing={0} style={{ alignItems: 'center' }}>
                     
                     <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>

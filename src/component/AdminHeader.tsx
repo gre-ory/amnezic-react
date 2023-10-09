@@ -8,18 +8,20 @@ import IconButton from '@mui/material/IconButton'
 
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
 import SkipNextIcon from '@mui/icons-material/SkipNext'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
 
 import { AdminStep } from '../data/Admin'
 
 interface Props {
     title?: string
     step?: AdminStep
+    onBack?: () => void
     onPrevious?: () => void
     onNext?: () => void
 }
 
 const Header = ( props: Props ) => {
-    const { title, step, onPrevious, onNext } = props
+    const { title, step, onBack, onPrevious, onNext } = props
 
     const navigate = useNavigate()
 
@@ -44,7 +46,21 @@ const Header = ( props: Props ) => {
         <Box className="header" sx={{ flexGrow: 1 }} style={{ marginBottom: '20px' }}>
             <AppBar position="static" color="transparent">
                 <Toolbar>
+
+                    {/* back */}
+
+                    {onBack && (
+                            <IconButton 
+                                aria-label="Back" 
+                                onClick={onBack}
+                            >
+                                <KeyboardArrowLeftIcon />
+                            </IconButton>
+                        )}
+
                     <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
+                        
 
                         {/* title */}
 
