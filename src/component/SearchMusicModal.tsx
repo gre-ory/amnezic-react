@@ -5,13 +5,17 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 
 import { Box, Grid, Modal, Button, TextField } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { SearchMusic } from '../client/SearchMusic';
+import { FetchPlaylist } from '../client/FetchPlaylist';
 
 import { Music } from '../data/Music';
+import { Playlist, getImgUrl } from '../data/Playlist';
 import { AudioPlayerInterface } from '../data/AudioPlayer';
 import { onUserEvent, onValueEvent } from '../data/Util';
 
@@ -24,14 +28,17 @@ interface Props {
     addMusic: (music: Music) => void
     removeMusic: (music: Music) => void
     audioPlayer: AudioPlayerInterface
+    playlistId?: number
 }
 
 const SearchMusicModal = ( props: Props ) => {
-    const { open, closeModal, isMusicIncluded, addMusic, removeMusic, audioPlayer } = props
+    const { open, closeModal, isMusicIncluded, addMusic, removeMusic, audioPlayer, playlistId } = props
 
     const [ search, SetSearch ] = React.useState<string>("")
     const [ submit, SetSubmit ] = React.useState<boolean>(false)
+    const [ loading, SetLoading ] = React.useState<boolean>(false)
     const [ musics, SetMusics ] = React.useState<Music[]>()
+    const [ playlist, SetPlaylist ] = React.useState<Playlist>()
 
     const handleChange = onValueEvent((value) => {
         console.log(`search: ${value}`)
@@ -43,20 +50,55 @@ const SearchMusicModal = ( props: Props ) => {
         SetSubmit(true);
     })
 
+    const onClear = onUserEvent(() => {
+        console.log(`onClear`)
+        SetSearch("")
+        SetMusics(undefined)
+    })
+    
+    const onClose = onUserEvent(() => {
+        console.log(`onClose`)
+        SetSearch("")
+        SetMusics(undefined)
+        closeModal()
+    })
+
     React.useEffect(() => {
-        console.log(`submit: ${submit} / search: ${search}`)
+        console.log(`submit: ${submit} / search: ${search} / playlistId: ${playlistId}`)
         if ( submit && search ) {
+            SetLoading(true)
             SearchMusic(search,100)
             .then((musics) => {
                 SetMusics(musics)
-                SetSubmit(false)
             })
             .catch((err) => {
                 console.log(err)
+            })
+            .finally(() => {
+                SetLoading(false)
                 SetSubmit(false)
             })
         }
     }, [submit])
+
+    React.useEffect(() => {
+        console.log(`playlistId: ${playlistId}`)
+        if ( playlistId ) {
+            SetLoading(true)
+            FetchPlaylist(playlistId)
+            .then((playlist) => {
+                SetPlaylist(playlist)
+                SetMusics(playlist.musics)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+            .finally(() => {
+                SetLoading(false)
+                SetSubmit(false)
+            })
+        }
+    }, [playlistId])
 
     const columns: GridColDef[] = [
         {
@@ -140,25 +182,47 @@ const SearchMusicModal = ( props: Props ) => {
             <Box sx={style}>
                 <Grid container spacing={2} style={{ alignItems: 'center' }}>
                     
-                    <Grid item xs={10} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginTop: '0px', marginBottom: '0px' }}>
-                    
-                            <TextField
-                                onChange={handleChange}
-                                id="outlined-name"
-                                label="Search"
-                                margin="normal"
-                                variant="outlined"
-                                style={{minWidth:'200px'}}
-                                type="text"
+                    <Grid item xs={10} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginTop: '0px', marginBottom: '10px' }}>
+
+                            {(playlistId && !playlist) && <>
+                                <Typography variant="caption" display="block" gutterBottom>Loading Playlist #{playlistId}...</Typography>
+                            </>}
+                            {(playlistId && playlist) && <>
+                                <img
+                                    src={getImgUrl(playlist)}
+                                    width="56" 
+                                    height="56"
+                                    style={{marginRight: '10px' }}
                                 />
-                            <IconButton aria-label="Search" onClick={onSubmit}>
-                                <SearchIcon />
-                            </IconButton>
+                                <Typography variant="overline" display="block" gutterBottom>{playlist.name}</Typography>
+                            </>}
+                            {!playlistId && <>
+                                <TextField
+                                    defaultValue={search}
+                                    value={search}
+                                    onChange={handleChange}
+                                    id="outlined-name"
+                                    label="Search music"
+                                    margin="normal"
+                                    variant="outlined"
+                                    style={{minWidth:'200px'}}
+                                    type="text"
+                                    size="small"
+                                    disabled={loading}
+                                    />
+                                <IconButton aria-label="Search" onClick={onSubmit} disabled={loading || !search}>
+                                    <SearchIcon />
+                                </IconButton>
+                                <IconButton aria-label="Clear" onClick={onClear} disabled={loading || !search}>
+                                    <SearchOffIcon />
+                                </IconButton>
+                            </>}
+
                     </Grid>
 
                     <Grid item xs={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                     
-                        <IconButton aria-label="Close" onClick={closeModal}>
+                        <IconButton aria-label="Close" onClick={onClose} size="small">
                             <CloseIcon />
                         </IconButton>
 
@@ -170,7 +234,9 @@ const SearchMusicModal = ( props: Props ) => {
                 
                 <Grid item xs={12} container spacing={1} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}> 
 
-                    {musics && <Box sx={{ height: 400, width: '100%' }}>
+                    <Box sx={{ height: 400, width: '100%' }}>
+                    {loading && <CircularProgress style={{ margin: '50px' }}/>} 
+                    {(!loading && musics) &&
                         <DataGrid
                             density='compact'
                             rows={musics}
@@ -186,8 +252,8 @@ const SearchMusicModal = ( props: Props ) => {
                             pageSizeOptions={[100]}
                             disableRowSelectionOnClick
                             getRowId={(row) => { return row.deezerId}}
-                            />
-                    </Box>}
+                            />}
+                    </Box>
 
                 </Grid>
             </Box>

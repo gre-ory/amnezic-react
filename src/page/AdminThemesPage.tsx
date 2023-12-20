@@ -144,8 +144,8 @@ const AdminThemesPage = ( props: Props ) => {
           headerName: 'Actions',
           width: 100,
           editable: false,
-            disableColumnMenu: true,
-          sortable: true,
+          disableColumnMenu: true,
+          sortable: false,
           renderHeader(params) {
               return <IconButton 
               color="primary"

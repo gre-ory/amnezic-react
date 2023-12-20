@@ -1,9 +1,7 @@
 // //////////////////////////////////////////////////
 // import
 
-import { newArtist } from "../data/Artist"
-import { newAlbum } from "../data/Album"
-import { Music, newMusic } from "../data/Music"
+import { Music } from "../data/Music"
 
 import { JsonArtist, ToArtist, FromArtist } from "./JsonArtist"
 import { JsonAlbum, ToAlbum, FromAlbum } from "./JsonAlbum"

@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom'
 
 import { Grid, Alert, AlertTitle, Box, IconButton, Typography, TextField } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
-import AddIcon from '@mui/icons-material/Add'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
@@ -19,6 +20,7 @@ import { UpdateTheme } from '../client/UpdateTheme'
 import { AdminStep } from '../data/Admin'
 import { Theme } from '../data/Theme'
 import { Music } from '../data/Music'
+import { Playlist } from '../data/Playlist'
 import { ThemeQuestion } from '../data/ThemeQuestion'
 import { toAdminThemesPage } from '../data/Navigate'
 import { onUserEvent, onValueEvent } from '../data/Util'
@@ -27,6 +29,7 @@ import { AudioPlayer } from '../data/AudioPlayer'
 import AdminPage from '../component/AdminPage'
 import MusicButton from '../component/MusicButton'
 import SearchMusicModal from '../component/SearchMusicModal'
+import SearchPlaylistModal from '../component/SearchPlaylistModal'
 import UpdateQuestionModal from '../component/UpdateQuestionModal'
 
 interface Props {
@@ -47,6 +50,7 @@ const AdminThemePage = ( props: Props ) => {
     const [needSave, setNeedSave] = React.useState<boolean>(false);
     const [error, setError] = React.useState<Error>();
     const [question, setQuestion] = React.useState<ThemeQuestion>();
+    const [ playlistId, SetPlaylistId ] = React.useState<number>();
 
     const handleTitleChange = onValueEvent((value) => {
         console.log(`SetTitle: ${value}`)
@@ -84,6 +88,7 @@ const AdminThemePage = ( props: Props ) => {
     const closeSearchMusicModal = () => {
         audioPlayer.pause()
         setSearchMusicModal(false)
+        SetPlaylistId(undefined)
     }
     const isMusicIncluded = (music: Music) => {
         if ( theme && theme.questions ) {
@@ -110,6 +115,26 @@ const AdminThemePage = ( props: Props ) => {
                     RemoveThemeQuestion(id,question.id).then(setTheme).catch(console.log)
                 }
             }
+        }
+    }
+
+    const [ searchPlaylistModal, setSearchPlaylistModal ] = React.useState( false )
+    const openSearchPlaylistModal = () => {
+        audioPlayer.pause()
+        setSearchPlaylistModal(true)
+    }
+    const closeSearchPlaylistModal = () => {
+        audioPlayer.pause()
+        setSearchPlaylistModal(false)
+    }
+    const selectPlaylist = (playlist: Playlist) => {
+        console.log("select playlist", playlist)
+        closeSearchPlaylistModal()
+        if ( playlist.deezerId ) {
+            SetPlaylistId(playlist.deezerId)
+            openSearchMusicModal()
+        } else {
+            SetPlaylistId(undefined)
         }
     }
 
@@ -218,13 +243,23 @@ const AdminThemePage = ( props: Props ) => {
             disableColumnMenu: true,
             sortable: false,
             renderHeader(params) {
-                return <IconButton 
-                color="primary"
-                aria-label="Add"
-                onClick={openSearchMusicModal}
-                >
-                <AddIcon />
-            </IconButton>
+                return <>
+                    <IconButton 
+                        color="primary"
+                        aria-label="Add from playlist"
+                        onClick={openSearchPlaylistModal}
+                    >
+                        <QueueMusicIcon />
+                    </IconButton>
+
+                    <IconButton 
+                        color="primary"
+                        aria-label="Add"
+                        onClick={openSearchMusicModal}
+                    >
+                        <MusicNoteIcon />
+                    </IconButton>
+                </>
             },
             renderCell: (params) => {
                 return <>
@@ -258,6 +293,7 @@ const AdminThemePage = ( props: Props ) => {
                         style={{width:'100%'}}
                         type="text"
                         value={theme.title}
+                        size="small"
                         />
                 </Grid>
                 <Grid item xs={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -274,6 +310,7 @@ const AdminThemePage = ( props: Props ) => {
                         style={{width:'100%'}}
                         type="text"
                         value={theme.imgUrl}
+                        size="small"
                         />
                 </Grid>
                 <Grid item xs={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
@@ -289,6 +326,12 @@ const AdminThemePage = ( props: Props ) => {
                         updateQuestion={updateQuestion}
                     />
                     
+                    <SearchPlaylistModal
+                        open={searchPlaylistModal}
+                        closeModal={closeSearchPlaylistModal}
+                        selectPlaylist={selectPlaylist}
+                    />
+                    
                     <SearchMusicModal
                         open={searchMusicModal}
                         closeModal={closeSearchMusicModal}
@@ -296,6 +339,7 @@ const AdminThemePage = ( props: Props ) => {
                         addMusic={addMusic}
                         removeMusic={removeMusic}
                         audioPlayer={audioPlayer}
+                        playlistId={playlistId}
                     />
 
                     <Box sx={{ height: 500, width: '100%' }}>
