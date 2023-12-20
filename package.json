@@ -60,6 +60,7 @@
     "@babel/core": "^7.21.0",
     "dotenv-cli": "^7.3.0",
     "env-cmd": "^10.1.0",
+    "renovate": "^37.105.0",
     "yarn-audit-fix": "^10.0.7"
   }
 }
