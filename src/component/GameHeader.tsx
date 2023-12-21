@@ -23,12 +23,14 @@ interface Props {
     step?: GameStep
     game?: Game
     updateGame?: OnGameUpdate
+    canPrevious?: () => boolean
     onPrevious?: () => void
+    canNext?: () => boolean
     onNext?: () => void
 }
 
 const Header = ( props: Props ) => {
-    const { title, step, game, updateGame, onPrevious, onNext } = props
+    const { title, step, game, updateGame, canPrevious, onPrevious, canNext, onNext } = props
 
     const navigate = useNavigate()
 
@@ -50,11 +52,22 @@ const Header = ( props: Props ) => {
 
     // disabled helpers
 
+    if ( game ) {
+        console.log(`game.${game.id}: disabled=${isSettingsPageDisabled( game )} : loaded=${game.loaded} : ended=${game.ended}`)
+    }
+
     const isHomeDisabled = false
     const isSettingsDisabled = isSettingsPageDisabled( game )
     const isPlayersDisabled = isPlayersPageDisabled( game )
     const isQuizzDisabled = isQuizzPageDisabled( game )
     const isScoresDisabled = isScoresPageDisabled( game )
+
+    // disable previous & next buttons
+
+    const previousVisible = onPrevious !== undefined
+    const previousDisabled = canPrevious !== undefined && !canPrevious()
+    const nextVisible = onNext !== undefined
+    const nextDisabled = canNext !== undefined && !canNext()
 
     // update helpers
 
@@ -79,14 +92,14 @@ const Header = ( props: Props ) => {
         const handleKeyPress = React.useCallback( onKeyEvent( ( key: string ): boolean => {
             switch ( key ) {
                 case 'ArrowLeft':
-                    if ( onPrevious ) {
+                    if ( previousVisible && !previousDisabled ) {
                         console.log( `header >>> key "${key}" >>> onPrevious()`);
                         onPrevious();
                         return true;
                     }
                     break;
                 case 'ArrowRight':
-                    if ( onNext ) {
+                    if ( nextVisible && !nextDisabled ) {
                         console.log( `header >>> key "${key}" >>> onNext()`);
                         onNext();
                         return true;
@@ -123,6 +136,8 @@ const Header = ( props: Props ) => {
                         isPlayersSelected ? playersTitle : 
                         isQuizzSelected ? quizzTitle : 
                         isScoresSelected ? scoresTitle : ''
+
+
 
     return (
         <Box className="header" sx={{ flexGrow: 1 }} style={{ marginBottom: '20px' }}>
@@ -222,20 +237,22 @@ const Header = ( props: Props ) => {
                         
                         <div>
 
-                            { onPrevious && (
+                            { previousVisible && (
                                 <IconButton 
                                     aria-label="Previous" 
                                     color="info"
+                                    disabled={previousDisabled}
                                     onClick={onPrevious}
                                 >
                                     <SkipPreviousIcon />
                                 </IconButton>
                             ) }
                             
-                            { onNext && (
+                            { nextVisible && (
                                 <IconButton 
                                     aria-label="Next" 
                                     color="info"
+                                    disabled={nextDisabled}
                                     onClick={onNext}
                                 >
                                     <SkipNextIcon />

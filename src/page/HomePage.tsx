@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
+import { Source } from '../data/Source'
 import { Game, GameId, GameStep, newGame, OnGameUpdate } from '../data/Game'
 import { toGamePage, toAdminThemesPage } from '../data/Navigate'
+import { onUserEvent } from '../data/Util'
 
 import Page from '../component/Page'
 import GameCard from '../component/GameCard'
@@ -34,9 +37,21 @@ const HomePage = ( props: Props ) => {
         navigate( toAdminThemesPage() )
     }
 
-    const startGame = () => {
-        console.log( `[start-game]` )
-        const game = newGame()
+    const startLegacyGame = () => {
+        startGame(Source.Legacy)
+    }
+
+    const startStoreGame = () => {
+        startGame(Source.Store)
+    }
+
+    const startDeezerGame = () => {
+        startGame(Source.Deezer)
+    }
+
+    const startGame = (source: Source) => {
+        console.log( `[start-game] source: ${source}` )
+        const game = newGame(source)
         addGame( game )
         navigate( toGamePage( game ) )
     }
@@ -93,67 +108,110 @@ const HomePage = ( props: Props ) => {
     const sortedGames = [ ...games ].sort( ( left: Game, right: Game ): number => {
         return right.updated - left.updated
     } )
+    const hasPreviousGames = sortedGames.length > 0
+
+    const unfinishedGames = [ ...sortedGames ].filter( game => !game.ended )
+    const hasUnfinishedGames = unfinishedGames.length > 0
+
+    const finishedGames = [ ...sortedGames ].filter( game => game.ended )
+    const hasFinishedGames = finishedGames.length > 0
 
     return (
-        <Page title="Amnezic" onNext={startGame}>
-            
+        <Page title="Amnezic">
 
-            {/* new game */}
+            <Grid container spacing={2}>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '200px' }}>
-                <NextButton title="New Game" onNext={startGame}/>
-            </div>
+                {/* new games */}
 
-            {/* prevous game */}
+                <Grid key="new-store-game" item xs={12} textAlign="left">
+                    <GameCard
+                        title="Start new game"
+                        startGame={startStoreGame}
+                    />
+                </Grid>
 
-            <Accordion>
-                
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} >
-                    Previous games
-                </AccordionSummary>
-                
-                <AccordionDetails>
-                    
-                    <Grid container spacing={2}>
+                <Grid key="new-deezer-game" item xs={12} textAlign="left">
+                    <GameCard
+                        title="Start new game based on deezer playlist"
+                        startGame={startDeezerGame}
+                    />
+                </Grid>
 
-                        {
-                            (
-                                <>
-                                    {sortedGames.map( game => {
-                                        return (
-                                            <Grid key={game.id} item xs={12} textAlign="left">
-                                                <GameCard
-                                                    game={game}
-                                                    resumeGame={resumeGame}
-                                                    deleteGame={deleteGame}
-                                                />
-                                            </Grid>
-                                        )
-                                    })}                        
-                                </>
-                            )
-                        }
+                <Grid key="new-legacy-game" item xs={12} textAlign="left">
+                    <GameCard
+                        title="Start new game based on legacy musics"
+                        startGame={startLegacyGame}
+                    />
+                </Grid>
 
-                        <Grid item xs={12} textAlign="right">
+                {/* prevous games */}
 
-                            {/* clear previous games */}
+                {hasPreviousGames && <>
 
-                            <IconButton
-                                title="Delete all games" 
-                                color="default" 
-                                disabled={games.length == 0} 
-                                onClick={deleteAllGames}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
+                    <Grid key="previous-games" item xs={10} textAlign="left">
+                        <Typography variant="h6" gutterBottom>Resume previous games</Typography>
+                    </Grid>
 
-                        </Grid>
+                    <Grid item xs={2} textAlign="right">
+
+                        {/* clear previous games */}
+
+                        <IconButton
+                            title="Delete all games" 
+                            color="default" 
+                            disabled={games.length == 0} 
+                            onClick={deleteAllGames}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
 
                     </Grid>
 
-                </AccordionDetails>
-                
-            </Accordion>
+                </>}
+
+                {/* unfinished games first */}
+
+                {
+                    (
+                        <>
+                            {unfinishedGames.map( game => {
+                                return (
+                                    <Grid key={game.id} item xs={12} textAlign="left">
+                                        <GameCard
+                                            game={game}
+                                            resumeGame={resumeGame}
+                                            deleteGame={deleteGame}
+                                        />
+                                    </Grid>
+                                )
+                            })}                        
+                        </>
+                    )
+                }
+
+                {/* finished games then */}
+
+                {
+                    (
+                        <>
+                            {finishedGames.map( game => {
+                                return (
+                                    <Grid key={game.id} item xs={12} textAlign="left">
+                                        <GameCard
+                                            game={game}
+                                            resumeGame={resumeGame}
+                                            deleteGame={deleteGame}
+                                        />
+                                    </Grid>
+                                )
+                            })}                        
+                        </>
+                    )
+                }
+            
+            </Grid>
+
+            {/* TODO admin */}
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <AdminButton title="Themes" onNext={toThemes}/>

@@ -10,6 +10,10 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import CheckIcon from '@mui/icons-material/Check'
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 import { FetchTheme } from '../client/FetchTheme'
 import { AddMusicToTheme } from '../client/AddMusicToTheme'
@@ -18,7 +22,8 @@ import { UpdateThemeQuestion } from '../client/UpdateThemeQuestion'
 import { UpdateTheme } from '../client/UpdateTheme'
 
 import { AdminStep } from '../data/Admin'
-import { Theme } from '../data/Theme'
+import { Theme, updateTitle, updateImgUrl, updateLanguageLabel, updateCategoryLabel } from '../data/Theme'
+import { Language, Category }  from '../data/ThemeLabels'
 import { Music } from '../data/Music'
 import { Playlist } from '../data/Playlist'
 import { ThemeQuestion } from '../data/ThemeQuestion'
@@ -53,17 +58,33 @@ const AdminThemePage = ( props: Props ) => {
     const [ playlistId, SetPlaylistId ] = React.useState<number>();
 
     const handleTitleChange = onValueEvent((value) => {
-        console.log(`SetTitle: ${value}`)
+        console.log(`theme: updateTitle: ${value}`)
         if ( theme ) {
-            setTheme( { ...theme, title: value } )
+            setTheme(updateTitle(value)(theme))
             setNeedSave(true)
         }
     })
 
     const handleImgUrlChange = onValueEvent((value) => {
-        console.log(`SetImgUrl: ${value}`)
+        console.log(`theme: updateImgUrl: ${value}`)
         if ( theme ) {
-            setTheme( { ...theme, imgUrl: value } )
+            setTheme(updateImgUrl(value)(theme))
+            setNeedSave(true)
+        }
+    })
+
+    const handleLanguageLabelChange = onValueEvent((value) => {
+        console.log(`theme: updateLanguageLabel: ${value}`)
+        if ( theme ) {
+            setTheme(updateLanguageLabel(value !== '' ? value as Language : undefined)(theme))
+            setNeedSave(true)
+        }
+    })
+
+    const handleCategoryLabelChange = onValueEvent((value) => {
+        console.log(`theme: updateCategoryLabel: ${value}`)
+        if ( theme ) {
+            setTheme(updateCategoryLabel(value as Category)(theme))
             setNeedSave(true)
         }
     })
@@ -300,6 +321,7 @@ const AdminThemePage = ( props: Props ) => {
                     {needSave && <IconButton color="primary" aria-label="Save" onClick={updateTheme}><SaveIcon /></IconButton>}
                     {!needSave && <IconButton disabled aria-label="Saved"><CheckIcon /></IconButton>}
                 </Grid>
+
                 <Grid item xs={10} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
                     <TextField
                         margin='dense'
@@ -315,6 +337,39 @@ const AdminThemePage = ( props: Props ) => {
                 </Grid>
                 <Grid item xs={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
                     {theme.imgUrl && <img src={theme.imgUrl} style={{ height: '56px', margin: '0 auto' }}/>}
+                </Grid>
+
+                <Grid item xs={5} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                    <InputLabel id="select-language-label">Language</InputLabel>
+                    <Select
+                        labelId="select-language-label"
+                        id="select-language"
+                        value={theme.labels && theme.labels.language ? theme.labels.language : ""}
+                        label="Language"
+                        onChange={handleLanguageLabelChange}
+                    >
+                        <MenuItem value=""><em>None</em></MenuItem>
+                        <MenuItem value={Language.French}>French</MenuItem>
+                        <MenuItem value={Language.English}>English</MenuItem>
+                    </Select>
+                </Grid>
+
+                <Grid item xs={5} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                    <InputLabel id="select-category-label">Category</InputLabel>
+                    <Select
+                        labelId="select-category-label"
+                        id="select-category"
+                        value={theme.labels && theme.labels.category? theme.labels.category : ""}
+                        label="Category"
+                        onChange={handleCategoryLabelChange}
+                        
+                    >
+                        <MenuItem value=""><em>None</em></MenuItem>
+                        <MenuItem value={Category.Genre}>Genre</MenuItem>
+                        <MenuItem value={Category.Top}>Top</MenuItem>
+                        <MenuItem value={Category.Decade}>Decade</MenuItem>
+                        <MenuItem value={Category.Year}>Year</MenuItem>
+                    </Select>
                 </Grid>
                 
                 <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>

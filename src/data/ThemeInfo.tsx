@@ -1,5 +1,10 @@
 
 // //////////////////////////////////////////////////
+// import
+
+import { ThemeLabels } from './ThemeLabels'
+
+// //////////////////////////////////////////////////
 // theme info
 
 export interface ThemeInfo {
@@ -7,4 +12,5 @@ export interface ThemeInfo {
     title: string
     imgUrl: string
     nbQuestion: number
+    labels: ThemeLabels
 }

@@ -5,7 +5,7 @@ import ReplayButton from '../component/ReplayButton'
 
 import GamePage from '../component/GamePage'
 
-import { Game, GameStep, OnGameUpdate, OnStep, selectGame, newGame } from '../data/Game'
+import { Game, GameStep, OnGameUpdate, OnStep, selectGame, newGameFromPrevious } from '../data/Game'
 import { toHomePage, toGamePage } from '../data/Navigate'
 import { Grid } from '@mui/material'
 import PlayerScoreCard from '../component/PlayerScoreCard'
@@ -40,9 +40,9 @@ const ScoresPage = ( props: Props ) => {
     }
 
     const restartNewGame = () => {
-        const game = newGame()
-        addGame( game )
-        navigate( toGamePage( game ) )
+        const newGame = newGameFromPrevious( game )
+        addGame( newGame )
+        navigate( toGamePage( newGame ) )
     }
 
     const onNext = () => {   

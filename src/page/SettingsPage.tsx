@@ -9,12 +9,16 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 
 import GamePage from '../component/GamePage'
+import PlaylistCard from '../component/PlaylistCard'
 
 import { Settings } from '../data/Settings'
-import { Game, GameStep, OnGameUpdate, selectGame, updateSettings, onSetUp } from '../data/Game'
+import { Game, GameStep, OnGameUpdate, selectGame, updateSettings, onSetUp, isLegacyGame, isStoreGame, isDeezerGame } from '../data/Game'
+import { Playlist } from '../data/Playlist'
+import { ThemeInfo } from '../data/ThemeInfo'
 import { toHomePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 import { INCREMENT_NB_ANSWER_PER_QUESTION, INCREMENT_NB_PLAYER, INCREMENT_NB_QUESTION, MAX_NB_ANSWER_PER_QUESTION, MAX_NB_PLAYER, MAX_NB_QUESTION, MIN_NB_ANSWER_PER_QUESTION, MIN_NB_PLAYER, MIN_NB_QUESTION } from '../data/Constants'
+import { FetchThemes } from '../client/FetchThemes'
 
 interface Props {
     games: Game[]
@@ -23,6 +27,9 @@ interface Props {
 
 const SettingsPage = ( props: Props ) => {
     const { games, updateGame } = props
+    
+    const [ themes, SetThemes ] = React.useState<ThemeInfo[]>()
+    const [ loading, SetLoading ] = React.useState<boolean>(false)
 
     const navigate = useNavigate()
 
@@ -39,6 +46,11 @@ const SettingsPage = ( props: Props ) => {
     if ( !game ) {
         return null
     }
+
+    const isLegacy = isLegacyGame( game )
+    const isStore = isStoreGame( game )
+    const isDeezer = isDeezerGame( game )
+
 
     // current state
 
@@ -82,9 +94,68 @@ const SettingsPage = ( props: Props ) => {
         } ) )
     }
 
+    const addThemeId = ( themeId: number ) => {
+        updateGame( game.id, updateSettings( ( settings: Settings ) => {
+            if ( !settings.themeIds ) {
+                settings.themeIds = [ themeId ]
+            } else {
+                settings.themeIds.push( themeId )
+            }
+            return settings 
+        } ) )
+    }
+
+    const removeThemeId = ( themeId: number ) => {
+        updateGame( game.id, updateSettings( ( settings: Settings ) => {
+            if ( settings.themeIds ) {
+                settings.themeIds = settings.themeIds.filter( id => id !== themeId )
+                if ( settings.themeIds.length === 0 ) {
+                    delete settings.themeIds
+                }
+            }
+            return settings 
+        } ) )
+    }
+
+    const onPlaylist = ( playlist?: Playlist ) => {
+        updateGame( game.id, updateSettings( ( settings: Settings ) => {
+            settings.playlist = playlist
+            return settings 
+        } ) )
+    }
+
+    const canNext = (): boolean => {
+        // validate settings
+        if ( !game ) {
+            return false
+        }
+        if ( !game.settings ) {
+            return false
+        }
+        if ( isDeezer ) {
+            if ( !game.settings.playlist ) {
+                return false
+            }
+            if ( !game.settings.playlist.deezerId ) {
+                return false
+            }
+        }
+        return true
+    }
+
     const onNext = () => {
         updateGame( game.id, onSetUp )
     }
+
+    React.useEffect( () => { 
+        if ( isStore ) {
+            SetLoading(true)
+            FetchThemes()
+                .then( themes => SetThemes( themes ) )
+                .catch( err => console.log( err ) )
+                .finally( () => SetLoading(false) )
+        }
+    }, [ isStore ] )
 
     // user events )
 
@@ -97,8 +168,10 @@ const SettingsPage = ( props: Props ) => {
     const lessAnswer = lessAnswerDisabled ? undefined : onUserEvent( () => updateNbAnswer( game.settings.nbAnswer - nbAnswerIncrement ) )
     const moreAnswer = moreAnswerDisabled ? undefined : onUserEvent( () => updateNbAnswer( game.settings.nbAnswer + nbAnswerIncrement ) )
 
+    const playlist = game.settings.playlist
+
     return (
-        <GamePage step={GameStep.SETTINGS} game={game} updateGame={updateGame} onNext={onNext}>
+        <GamePage step={GameStep.SETTINGS} game={game} updateGame={updateGame} canNext={canNext} onNext={onNext}>
             
             <Grid container spacing={2}>
 
@@ -229,6 +302,28 @@ const SettingsPage = ( props: Props ) => {
                         + {nbAnswerIncrement}
                     </Button>
                 </Grid>
+
+                {/* legacy settings */}
+
+                {isLegacy && <>
+                    Legacy settings
+                </>}
+
+                {/* store settings */}
+
+                {isStore && <>
+                    Store settings
+                </>}
+
+                {/* deezer playlist */}
+
+                {isDeezer && 
+                <Grid 
+                    item xs={12} 
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '20px' }}
+                >
+                    <PlaylistCard playlist={playlist} onPlaylist={onPlaylist}/>
+                </Grid>}
 
             </Grid>
 

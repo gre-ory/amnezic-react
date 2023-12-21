@@ -3,6 +3,7 @@
 
 import { addQuestion, Game } from "../data/Game"
 import { Music } from "../data/Music"
+import { Source } from "../data/Source"
 import { addAnswer, Question } from "../data/Question"
 
 import { JsonMusic, ToMusic } from "./JsonMusic"
@@ -16,6 +17,19 @@ export async function FetchGame( game: Game ) {
     requestURL = `${requestURL}?nb_question=${game.settings.nbQuestion}`
     requestURL = `${requestURL}&nb_answer=${game.settings.nbAnswer}`
     requestURL = `${requestURL}&nb_player=${game.settings.nbPlayer}`
+
+    if ( game.settings.source == Source.Legacy ) {
+        requestURL = `${requestURL}&sources=${Source.Legacy}`
+    } else if ( game.settings.source == Source.Deezer && game.settings.playlist ) {
+        requestURL = `${requestURL}&sources=${Source.Deezer}`
+        requestURL = `${requestURL}&deezer_playlist_id=${game.settings.playlist.deezerId}`
+    } else {
+        requestURL = `${requestURL}&sources=${Source.Store}`
+        if ( game.settings.themeIds && game.settings.themeIds.length > 0 ) {
+            requestURL = `${requestURL}&theme_ids=${game.settings.themeIds.join(",")}`
+        }
+    }
+
     console.log(`[api] requestURL = ${requestURL}`)
 
     const response = await fetch(requestURL, {method: 'PUT'})
