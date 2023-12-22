@@ -13,6 +13,7 @@ import Box from '@mui/material/Box'
 
 import GamePage from '../component/GamePage'
 import PlaylistCard from '../component/PlaylistCard'
+import LanguageChip from '../component/LanguageChip'
 
 import { Settings } from '../data/Settings'
 import { Game, GameStep, OnGameUpdate, selectGame, updateSettings, onSetUp, isLegacyGame, isStoreGame, isDeezerGame } from '../data/Game'
@@ -187,7 +188,7 @@ const SettingsPage = ( props: Props ) => {
         }
     }, [ isStore ] )
 
-    const categories = new Set<Category>();
+    const categories = new Set<Category | undefined>();
     const languages = new Set<Language>();
 
     for ( const theme of themes || [] ) {
@@ -200,6 +201,7 @@ const SettingsPage = ( props: Props ) => {
             languages.add( language )
         }
     }
+    categories.add( undefined )
 
     type ThemeFilter = ( theme: ThemeInfo ) => boolean
 
@@ -216,9 +218,12 @@ const SettingsPage = ( props: Props ) => {
         }
     }
 
-    const matchLanguage = ( language: Language ): ThemeFilter => {
+    const matchLanguage = ( language?: Language ): ThemeFilter => {
         return ( theme: ThemeInfo ) => {
-            return theme.labels.language !== undefined && theme.labels.language === language
+            if ( language === undefined ) {
+                return theme.labels.language === undefined
+            }
+            return theme.labels.language === language
         }
     }
 
@@ -283,11 +288,11 @@ const SettingsPage = ( props: Props ) => {
         toggleFilter(matchAll)
     }
 
-    const toggleCategory = ( category: Category ) => {
+    const toggleCategory = ( category?: Category ) => {
         toggleFilter(matchCategory( category ))
     }
 
-    const toggleLanguage = ( language: Language ) => {
+    const toggleLanguage = ( language?: Language ) => {
         toggleFilter(matchLanguage( language ))
     }
     
@@ -459,7 +464,7 @@ const SettingsPage = ( props: Props ) => {
             {/* store themes */}
 
             {isStore && themes &&
-                <Grid container spacing={0}>
+                <Grid container spacing={0} style={{ marginTop: '20px' }}>
                     <Grid item xs={4} />
                     <Grid item xs={8} style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}> 
                         
@@ -467,12 +472,32 @@ const SettingsPage = ( props: Props ) => {
                             label="All themes"
                             control={
                                 <Checkbox
+                                    size="small"
                                     checked={allOf(matchAll, isSelected)}
                                     indeterminate={bothOf(matchAll, isSelected)}
                                     onChange={toggleAll}
+                                    style={{ padding: '0 9px' }}
                                 />
                             }
                         />
+
+                        {
+                            Array.from( languages.values() ).map( language => {   
+                                return <FormControlLabel
+                                    key={language}
+                                    label={languageToLabel(language)}
+                                    control={
+                                        <Checkbox
+                                            size="small"
+                                            checked={allOf(matchLanguage(language), isSelected)}
+                                            indeterminate={bothOf(matchLanguage(language), isSelected)}
+                                            onChange={() => toggleLanguage(language)}
+                                            style={{ padding: '0 9px' }}
+                                        />
+                                    }
+                                /> 
+                            })
+                        }
 
                     </Grid>
 
@@ -488,9 +513,11 @@ const SettingsPage = ( props: Props ) => {
                                             label={categoryToLabel(category)}
                                             control={
                                                 <Checkbox
+                                                    size="small"
                                                     checked={allOf(matchCategory(category), isSelected)}
                                                     indeterminate={bothOf(matchCategory(category), isSelected)}
                                                     onChange={() => toggleCategory(category)}
+                                                    style={{ padding: '0 9px' }}
                                                 />
                                             }
                                         />
@@ -509,11 +536,16 @@ const SettingsPage = ( props: Props ) => {
                                                             label={theme.title}
                                                             control={
                                                                 <Checkbox
+                                                                    size="small"
                                                                     checked={isSelected(theme)}
                                                                     onChange={() => toggleTheme(theme)}
+                                                                    style={{ padding: '0 9px' }}
                                                                 />
                                                             }
                                                         />
+
+                                                        <LanguageChip language={theme.labels.language} />
+
                                                     </Grid>
                                                 </>
                                             )

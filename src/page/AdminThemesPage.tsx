@@ -9,6 +9,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid'
 
 import AdminPage from '../component/AdminPage'
 import CreateThemeModal from '../component/CreateThemeModal'
+import LanguageChip from '../component/LanguageChip'
 
 import { FetchThemes } from '../client/FetchThemes'
 import { CreateTheme } from '../client/CreateTheme'
@@ -16,7 +17,7 @@ import { RemoveTheme } from '../client/RemoveTheme'
 
 import { AdminStep } from '../data/Admin'
 import { ThemeInfo } from '../data/ThemeInfo'
-import { categoryToLabel, languageToLabel } from '../data/ThemeLabels'
+import { categoryToLabel, languageToLabel, languageToImgUrl } from '../data/ThemeLabels'
 import { toHomePage, toAdminThemePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 
@@ -144,12 +145,9 @@ const AdminThemesPage = ( props: Props ) => {
             headerName: 'Language',
             flex: 1,
             editable: false,
-            valueGetter: (params) => {
+            renderCell: (params) => {
                 const theme = params.row as ThemeInfo
-                if ( !theme.labels || !theme.labels.language ) {
-                    return '-'
-                }
-                return `${languageToLabel(theme.labels.language)}`
+                return <LanguageChip language={theme.labels.language} />
             },
         },
         {
