@@ -53,6 +53,18 @@ const ScoresPage = ( props: Props ) => {
         }        
     }
 
+    const buildTooltip = (rank: number, playerName: string, dataTooltip: string): string[] => {
+        if ( rank == 1 ) {
+            return [ " 1st - " + playerName + " ", " Score: " + dataTooltip + " " ]
+        } else if ( rank == 2 ) {
+            return [ " 2nd - " + playerName + " ", " Score: " + dataTooltip + " " ]
+        } else if ( rank == 3 ) {
+            return [ " 3rd - " + playerName + " ", " Score: " + dataTooltip + " " ]
+        } else {
+            return [ " " + rank + "th - " + playerName + " ", " Score: " + dataTooltip + " " ]
+        }
+    }
+
     //
     // sort players by score
     //
@@ -133,7 +145,7 @@ const ScoresPage = ( props: Props ) => {
                             <VictoryGroup
                                 key={`player-graph-${player.id}`}
                                 color={color}
-                                labels={({ datum }) => `#${index+1} - ${player.name}: ${datum.tooltip}`}
+                                labels={({ datum }) => buildTooltip(index+1,player.name,datum.tooltip)}
                                 labelComponent={
                                     <VictoryTooltip
                                         style={{ fontSize: 10 }}
@@ -149,7 +161,8 @@ const ScoresPage = ( props: Props ) => {
                             </VictoryGroup>
                         )
                     })}
-                    <VictoryAxis fixLabelOverlap={true}/>
+                    <VictoryAxis label="Questions" fixLabelOverlap={true} style={{ axisLabel: {fontSize: 12, padding: 30}, ticks: {stroke: "grey", size: 5}, tickLabels: {fontSize: 10, padding: 5} }}/>
+                    <VictoryAxis dependentAxis label="Score" style={{ axisLabel: {fontSize: 12, padding: 30}, ticks: {stroke: "grey", size: 5}, tickLabels: {fontSize: 10, padding: 5} }}/>
 
                 </VictoryChart>
 

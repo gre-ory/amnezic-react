@@ -136,17 +136,17 @@ export function computeVizualiationScoreData( stats: PlayerStats ): PlayerVizual
     
     let tooltip = ''
     if ( question.error ) {
-      tooltip = `${intermediateScore} (error)`
+      tooltip = `${intermediateScore} ( Q${questionNumber}: error )`
     } else if ( question.answers.length == 0 ) {
-      tooltip = `${intermediateScore} (miss)`
+      tooltip = `${intermediateScore} ( Q${questionNumber}: miss )`
     } else if ( question.score >= 0 ) {
-      tooltip = `${intermediateScore} (+${question.score})`
+      tooltip = `${intermediateScore} ( Q${questionNumber}: +${question.score} )`
     } else {
-      tooltip = `${intermediateScore} (${question.score})`
+      tooltip = `${intermediateScore} ( Q${questionNumber}: ${question.score} )`
     }
     
     data.push({
-      x: `Q${questionNumber}`,
+      x: `${questionNumber}`,
       y: intermediateScore,
       tooltip : tooltip
     })
