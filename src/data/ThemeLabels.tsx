@@ -12,11 +12,27 @@ export enum Language {
     English = 'en',
 }
 
+export function languageToLabel( language: Language ): string {
+    switch ( language ) {
+        case Language.French: return 'Français'
+        case Language.English: return 'English'
+    }
+}
+
 export enum Category {
     Top = 'top',
     Genre = 'genre',
     Decade = 'decade',
     Year = 'year',
+}
+
+export function categoryToLabel( category: Category ): string {
+    switch ( category ) {
+        case Category.Top: return 'Top'
+        case Category.Genre: return 'Genre'
+        case Category.Decade: return 'Decade'
+        case Category.Year: return 'Year'
+    }
 }
 
 // //////////////////////////////////////////////////

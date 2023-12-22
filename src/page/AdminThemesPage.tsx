@@ -16,6 +16,7 @@ import { RemoveTheme } from '../client/RemoveTheme'
 
 import { AdminStep } from '../data/Admin'
 import { ThemeInfo } from '../data/ThemeInfo'
+import { categoryToLabel, languageToLabel } from '../data/ThemeLabels'
 import { toHomePage, toAdminThemePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 
@@ -135,7 +136,7 @@ const AdminThemesPage = ( props: Props ) => {
                 if ( !theme.labels || !theme.labels.category ) {
                     return '-'
                 }
-                return `${theme.labels.category}`
+                return `${categoryToLabel(theme.labels.category)}`
             },
         },
         {
@@ -148,7 +149,7 @@ const AdminThemesPage = ( props: Props ) => {
                 if ( !theme.labels || !theme.labels.language ) {
                     return '-'
                 }
-                return `${theme.labels.language}`
+                return `${languageToLabel(theme.labels.language)}`
             },
         },
         {

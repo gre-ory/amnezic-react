@@ -23,7 +23,7 @@ import { UpdateTheme } from '../client/UpdateTheme'
 
 import { AdminStep } from '../data/Admin'
 import { Theme, updateTitle, updateImgUrl, updateLanguageLabel, updateCategoryLabel } from '../data/Theme'
-import { Language, Category }  from '../data/ThemeLabels'
+import { Language, Category, languageToLabel, categoryToLabel }  from '../data/ThemeLabels'
 import { Music } from '../data/Music'
 import { Playlist } from '../data/Playlist'
 import { ThemeQuestion } from '../data/ThemeQuestion'
@@ -340,36 +340,40 @@ const AdminThemePage = ( props: Props ) => {
                 </Grid>
 
                 <Grid item xs={5} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-                    <InputLabel id="select-language-label">Language</InputLabel>
-                    <Select
-                        labelId="select-language-label"
-                        id="select-language"
-                        value={theme.labels && theme.labels.language ? theme.labels.language : ""}
-                        label="Language"
-                        onChange={handleLanguageLabelChange}
-                    >
-                        <MenuItem value=""><em>None</em></MenuItem>
-                        <MenuItem value={Language.French}>French</MenuItem>
-                        <MenuItem value={Language.English}>English</MenuItem>
-                    </Select>
+                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                        <InputLabel id="select-language-label">Language</InputLabel>
+                        <Select
+                            labelId="select-language-label"
+                            id="select-language"
+                            value={theme.labels && theme.labels.language ? theme.labels.language : ""}
+                            label="Language"
+                            onChange={handleLanguageLabelChange}
+                        >
+                            <MenuItem value=""><em>None</em></MenuItem>
+                            <MenuItem value={Language.French}>{languageToLabel(Language.French)}</MenuItem>
+                            <MenuItem value={Language.English}>{languageToLabel(Language.English)}</MenuItem>
+                        </Select>
+                    </FormControl>
                 </Grid>
 
                 <Grid item xs={5} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-                    <InputLabel id="select-category-label">Category</InputLabel>
-                    <Select
-                        labelId="select-category-label"
-                        id="select-category"
-                        value={theme.labels && theme.labels.category? theme.labels.category : ""}
-                        label="Category"
-                        onChange={handleCategoryLabelChange}
-                        
-                    >
-                        <MenuItem value=""><em>None</em></MenuItem>
-                        <MenuItem value={Category.Genre}>Genre</MenuItem>
-                        <MenuItem value={Category.Top}>Top</MenuItem>
-                        <MenuItem value={Category.Decade}>Decade</MenuItem>
-                        <MenuItem value={Category.Year}>Year</MenuItem>
-                    </Select>
+                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                        <InputLabel id="select-category-label">Category</InputLabel>
+                        <Select
+                            labelId="select-category-label"
+                            id="select-category"
+                            value={theme.labels && theme.labels.category? theme.labels.category : ""}
+                            label="Category"
+                            onChange={handleCategoryLabelChange}
+                            
+                        >
+                            <MenuItem value=""><em>None</em></MenuItem>
+                            <MenuItem value={Category.Genre}>{categoryToLabel(Category.Genre)}</MenuItem>
+                            <MenuItem value={Category.Top}>{categoryToLabel(Category.Top)}</MenuItem>
+                            <MenuItem value={Category.Decade}>{categoryToLabel(Category.Decade)}</MenuItem>
+                            <MenuItem value={Category.Year}>{categoryToLabel(Category.Year)}</MenuItem>
+                        </Select>
+                    </FormControl>
                 </Grid>
                 
                 <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
