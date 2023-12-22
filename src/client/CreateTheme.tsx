@@ -8,7 +8,7 @@ import { JsonTheme, ToTheme } from "./JsonTheme"
 // //////////////////////////////////////////////////
 // create theme
 
-export async function CreateTheme( title: string, imgUrl?: string ): Promise<Theme> {
+export async function CreateTheme( title: string ): Promise<Theme> {
 
     let url = `${process.env.REACT_APP_API_ROOT_URI}/theme/new`
     console.log(`[client] requestURL = ${url}`)
@@ -16,7 +16,6 @@ export async function CreateTheme( title: string, imgUrl?: string ): Promise<The
     let body: JsonCreateThemeBody = {
         theme: {
             title: title,
-            imgUrl: imgUrl,
         }
     }
 
@@ -47,7 +46,6 @@ export interface JsonCreateThemeBody {
 
 export interface JsonCreateTheme {
     title: string
-    imgUrl?: string
 }
 
 export interface JsonCreateThemeResponse {

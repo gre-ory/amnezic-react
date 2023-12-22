@@ -16,6 +16,7 @@ import { RemoveTheme } from '../client/RemoveTheme'
 
 import { AdminStep } from '../data/Admin'
 import { ThemeInfo } from '../data/ThemeInfo'
+import { categoryToLabel, languageToLabel } from '../data/ThemeLabels'
 import { toHomePage, toAdminThemePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 
@@ -36,9 +37,9 @@ const AdminThemesPage = ( props: Props ) => {
     const closeCreateThemeModal = () => {
         setCreateThemeModal(false)
     }
-    const createTheme = ( title: string, imgUrl?: string ) => {
+    const createTheme = ( title: string ) => {
         if ( title ) {
-            CreateTheme(title,imgUrl).then((theme) => { fetchThemes() }).catch(onError)
+            CreateTheme(title).then((theme) => { fetchThemes() }).catch(onError)
         } else {
             console.log("missing theme title!")
         }
@@ -104,26 +105,52 @@ const AdminThemesPage = ( props: Props ) => {
     }
 
     const columns: GridColDef[] = [
-          {
-          field: 'imgUrl',
-          headerName: ' ',
-          cellClassName: 'music-button-cell',
-          width: 56,
-          editable: false,
-          disableColumnMenu: true,
-          sortable: false,
-          renderCell: (params) => {
-            if ( params.value == null ) {
-                return null
-            }
-            return <img src={params.value} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-          },
-        },
+        // {
+        //   field: 'imgUrl',
+        //   headerName: ' ',
+        //   cellClassName: 'music-button-cell',
+        //   width: 56,
+        //   editable: false,
+        //   disableColumnMenu: true,
+        //   sortable: false,
+        //   renderCell: (params) => {
+        //     if ( params.value == null ) {
+        //         return null
+        //     }
+        //     return <img src={params.value} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        //   },
+        // },
         {
           field: 'title',
           headerName: 'Title',
-          flex: 1,
+          flex: 3,
           editable: false,
+        },
+        {
+            field: 'category',
+            headerName: 'Category',
+            flex: 1,
+            editable: false,
+            valueGetter: (params) => {
+                const theme = params.row as ThemeInfo
+                if ( !theme.labels || !theme.labels.category ) {
+                    return '-'
+                }
+                return `${categoryToLabel(theme.labels.category)}`
+            },
+        },
+        {
+            field: 'language',
+            headerName: 'Language',
+            flex: 1,
+            editable: false,
+            valueGetter: (params) => {
+                const theme = params.row as ThemeInfo
+                if ( !theme.labels || !theme.labels.language ) {
+                    return '-'
+                }
+                return `${languageToLabel(theme.labels.language)}`
+            },
         },
         {
           field: 'nbQuestion',
@@ -192,7 +219,7 @@ const AdminThemesPage = ( props: Props ) => {
                 <DataGrid
                     rows={themes}
                     columns={columns}
-                    rowHeight={76}
+                    rowHeight={56}
                     initialState={{
                         pagination: {
                             paginationModel: {
@@ -202,6 +229,7 @@ const AdminThemesPage = ( props: Props ) => {
                     }}
                     pageSizeOptions={[10,25,50,100]}
                     disableRowSelectionOnClick
+                    density="compact"
                     />
             </Box>
         </AdminPage>

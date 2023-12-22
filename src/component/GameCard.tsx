@@ -44,13 +44,14 @@ const useStyles = makeStyles( () => ( {
 
 interface Props {
     game?: Game
+    title?: string
     startGame?: () => void
     resumeGame?: ( game: Game ) => void
     deleteGame?: ( game: Game ) => void
 }
 
 const GameCard = ( props: Props ) => {
-    const { game, startGame, resumeGame, deleteGame } = props
+    const { game, title, startGame, resumeGame, deleteGame } = props
     const classes = useStyles()
 
     if ( !game ) {
@@ -60,13 +61,8 @@ const GameCard = ( props: Props ) => {
         return (
             <div title="Start New Game" className={`${classes.gameCard} selectable`} onClick={onStart}>
                 <div className={classes.gameLine}> 
-                    <div className={classes.gameItem}><b>Start New Game</b></div>
-                    <div> </div>
-                </div>
-                <div className={classes.gameLine}> 
-                    <div> </div>
-                    <SkipNextIcon style={{ margin: '20px' }} color="primary"/>
-                    <div> </div>
+                    {title && <div className={classes.gameItem}><b>{title}</b></div>}
+                    {!title && <div className={classes.gameItem}><b>Start New Game</b></div>}
                 </div>
             </div>
         )

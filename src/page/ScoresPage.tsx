@@ -5,12 +5,12 @@ import ReplayButton from '../component/ReplayButton'
 
 import GamePage from '../component/GamePage'
 
-import { Game, GameStep, OnGameUpdate, OnStep, selectGame, newGame } from '../data/Game'
+import { Game, GameStep, OnGameUpdate, OnStep, selectGame, newGameFromPrevious } from '../data/Game'
 import { toHomePage, toGamePage } from '../data/Navigate'
 import { Grid } from '@mui/material'
 import PlayerScoreCard from '../component/PlayerScoreCard'
 import { Player } from '../data/Player'
-import { VictoryChart, VictoryLine, VictoryScatter, VictoryTooltip, VictoryGroup, VictoryVoronoiContainer, VictoryLegend } from 'victory'
+import { VictoryChart, VictoryLine, VictoryScatter, VictoryTooltip, VictoryGroup, VictoryAxis, VictoryVoronoiContainer, VictoryLegend } from 'victory'
 import { computeVizualiationScoreData } from '../data/PlayerStats'
 import PlayerAvatar, { AvatarSize } from '../component/PlayerAvatar'
 
@@ -40,9 +40,9 @@ const ScoresPage = ( props: Props ) => {
     }
 
     const restartNewGame = () => {
-        const game = newGame()
-        addGame( game )
-        navigate( toGamePage( game ) )
+        const newGame = newGameFromPrevious( game )
+        addGame( newGame )
+        navigate( toGamePage( newGame ) )
     }
 
     const onNext = () => {   
@@ -123,7 +123,7 @@ const ScoresPage = ( props: Props ) => {
 
                 {/* graph */}
 
-                <VictoryChart height={390}> 
+                <VictoryChart height={390} > 
 
                     {sortedPlayers.map( ( player, index ) => {
                         const data = computeVizualiationScoreData( player.stats )
@@ -149,6 +149,7 @@ const ScoresPage = ( props: Props ) => {
                             </VictoryGroup>
                         )
                     })}
+                    <VictoryAxis fixLabelOverlap={true}/>
 
                 </VictoryChart>
 

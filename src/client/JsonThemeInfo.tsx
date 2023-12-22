@@ -3,6 +3,8 @@
 
 import { ThemeInfo } from "../data/ThemeInfo"
 
+import { JsonThemeLabels, ToThemeLabels } from "./JsonTheme"
+
 // //////////////////////////////////////////////////
 // adapter
 
@@ -12,6 +14,7 @@ export function ToThemeInfo( json: JsonThemeInfo ): ThemeInfo {
         title: json.title,
         imgUrl: json.imgUrl,
         nbQuestion: json.nbQuestion,
+        labels: ToThemeLabels( json.labels ),
     }
 }
 
@@ -23,4 +26,5 @@ export interface JsonThemeInfo {
     title: string
     imgUrl: string
     nbQuestion: number
+    labels?: JsonThemeLabels
 }

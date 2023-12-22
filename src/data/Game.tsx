@@ -2,7 +2,7 @@ import { customAlphabet } from 'nanoid'
 
 import { FetchGame } from "../client/FetchGame"
 
-import { newSettings, Settings, SettingsUpdater } from './Settings'
+import { newSettings, Settings, SettingsUpdater, newSettingsFromPrevious } from './Settings'
 import { Player, PlayerId, PlayerUpdater } from './Player'
 import { addAnswer, isCorrect, Question, QuestionId, QuestionUpdater } from './Question'
 import { newArtist } from './Artist'
@@ -15,6 +15,7 @@ import { flagAnswerAsCorrect, flagAnswerAsIncorrect, flagQuestionAsError, flagQu
 import { ANSWER_ID_SUFFIX, DEBUG, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, MAX_NB_GAME, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
 import { buildDummyQuestions, buildLegacyQuestions, buildTestQuestions } from './Quizz'
 import { AvatarId } from './Avatar'
+import { Source } from './Source'
 
 // //////////////////////////////////////////////////
 // model
@@ -40,6 +41,7 @@ export interface Game {
   settings: Settings
   players: Player[]
   questions: Question[]
+  loaded: boolean
   started: boolean
   questionNumber?: number
   ended: boolean
@@ -54,19 +56,51 @@ export type OnPlayerUpdate = ( gameId: GameId, playerId: PlayerId, gameUpdater: 
 // //////////////////////////////////////////////////
 // create
 
-export function newGame( nbPlayer: number = DEFAULT_NB_PLAYER, nbQuestion: number = DEFAULT_NB_QUESTION, nbAnswer: number = DEFAULT_NB_ANSWER_PER_QUESTION ): Game {
+export function newGame( source: Source, nbPlayer: number = DEFAULT_NB_PLAYER, nbQuestion: number = DEFAULT_NB_QUESTION, nbAnswer: number = DEFAULT_NB_ANSWER_PER_QUESTION ): Game {
   return {
     id: newGameId(),  
     code: newGameCode(),  
     created: Date.now(),  
     updated: Date.now(),
     step: GameStep.SETTINGS,
-    settings: newSettings( nbPlayer, nbQuestion, nbAnswer ),
+    settings: newSettings( source, nbPlayer, nbQuestion, nbAnswer ),
     players: [],
     questions: [],
+    loaded: false,
     started: false,
     ended: false,
   }
+}
+
+export function newGameFromPrevious( previous: Game ): Game {
+  return {
+    id: newGameId(),  
+    code: newGameCode(),  
+    created: Date.now(),  
+    updated: Date.now(),
+    step: GameStep.SETTINGS,
+    settings: newSettingsFromPrevious( previous.settings ),
+    players: previous.players.map( player => newPlayerFromPrevious( player ) ),
+    questions: [],
+    loaded: false,
+    started: false,
+    ended: false,
+  }
+}
+
+// //////////////////////////////////////////////////
+// type
+
+export function isLegacyGame( game: Game ): boolean {
+  return game && game.settings && game.settings.source == Source.Legacy
+}
+
+export function isStoreGame( game: Game ): boolean {
+  return game && game.settings && game.settings.source == Source.Store
+}
+
+export function isDeezerGame( game: Game ): boolean {
+  return game && game.settings && game.settings.source == Source.Deezer
 }
 
 // //////////////////////////////////////////////////
@@ -85,6 +119,19 @@ export function addPlayer( game: Game, card: Card ): Player {
   }
   game.players.push( current )
   console.log( current )
+  return current
+}
+
+export function newPlayerFromPrevious( previous: Player ): Player {
+  const current: Player = {
+    id: previous.id, 
+    number: previous.number,
+    avatarId: previous.avatarId,
+    name: previous.name,
+    status: previous.status,
+    card: previous.card,
+    stats: newPlayerStats(),
+  }
   return current
 }
 
@@ -218,19 +265,19 @@ export function isSetUp( game: Game ): boolean {
 }
 
 export function isSettingsPageDisabled( game: Game | undefined ): boolean {
-  return ( game === undefined ) || game.ended || isSetUp( game ) 
+  return ( game === undefined ) || game.loaded || game.ended
 }
 
 export function isPlayersPageDisabled( game: Game | undefined ): boolean {
-  return ( game === undefined ) || game.ended || !isSetUp( game ) 
+  return ( game === undefined ) || !game.loaded || game.ended 
 }
 
 export function isQuizzPageDisabled( game: Game | undefined ): boolean {
-  return ( game === undefined ) || game.ended || !isSetUp( game ) 
+  return ( game === undefined ) || !game.loaded || game.ended 
 }
 
 export function isScoresPageDisabled( game: Game | undefined ): boolean {
-  return ( game === undefined ) || !game.started || !isSetUp( game )
+  return ( game === undefined ) || !game.loaded || !game.started
 }
 
 export function OnStep( gameStep: GameStep ): GameUpdater {
@@ -268,6 +315,7 @@ export function onSetUp( game: Game ): Game {
     console.log( `[on-set-up] missing game type >>> FALLBACK to 'legacy'` )
     game = buildLegacyQuestions( game )
   }
+  game.loaded = true
 
   //
   // create default players

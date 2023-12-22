@@ -21,22 +21,16 @@ const CreateThemeModal = ( props: Props ) => {
     const { open, closeModal, createTheme } = props
 
     const [ title, SetTitle ] = React.useState<string>()
-    const [ imgUrl, SetImgUrl ] = React.useState<string>()
 
     const handleTitleChange = onValueEvent((value) => {
         console.log(`SetTitle: ${value}`)
         SetTitle(value);
     })
 
-    const handleImgUrlChange = onValueEvent((value) => {
-        console.log(`SetImgUrl: ${value}`)
-        SetImgUrl(value);
-    })
-
     const onSubmit = onUserEvent(() => {
-        console.log(`createTheme: ${title} - ${imgUrl}`)
+        console.log(`createTheme: ${title}`)
         if ( title ) {
-            createTheme(title,imgUrl);
+            createTheme(title);
             closeModal();
         }
     })
@@ -74,18 +68,6 @@ const CreateThemeModal = ( props: Props ) => {
                             onChange={handleTitleChange}
                             id="theme-title"
                             label="Title"
-                            margin="normal"
-                            variant="outlined"
-                            style={{minWidth:'200px'}}
-                            type="text"
-                            />
-                    </Grid>
-
-                    <Grid item xs={12} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '5px', marginBottom: '10px' }}>
-                        <TextField
-                            onChange={handleImgUrlChange}
-                            id="theme-img-url"
-                            label="Image URL"
                             margin="normal"
                             variant="outlined"
                             style={{minWidth:'200px'}}
