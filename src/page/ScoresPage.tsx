@@ -10,7 +10,7 @@ import { toHomePage, toGamePage } from '../data/Navigate'
 import { Grid } from '@mui/material'
 import PlayerScoreCard from '../component/PlayerScoreCard'
 import { Player } from '../data/Player'
-import { VictoryChart, VictoryLine, VictoryScatter, VictoryTooltip, VictoryGroup, VictoryVoronoiContainer, VictoryLegend } from 'victory'
+import { VictoryChart, VictoryLine, VictoryScatter, VictoryTooltip, VictoryGroup, VictoryAxis, VictoryVoronoiContainer, VictoryLegend } from 'victory'
 import { computeVizualiationScoreData } from '../data/PlayerStats'
 import PlayerAvatar, { AvatarSize } from '../component/PlayerAvatar'
 
@@ -123,7 +123,7 @@ const ScoresPage = ( props: Props ) => {
 
                 {/* graph */}
 
-                <VictoryChart height={390}> 
+                <VictoryChart height={390} > 
 
                     {sortedPlayers.map( ( player, index ) => {
                         const data = computeVizualiationScoreData( player.stats )
@@ -149,6 +149,7 @@ const ScoresPage = ( props: Props ) => {
                             </VictoryGroup>
                         )
                     })}
+                    <VictoryAxis fixLabelOverlap={true}/>
 
                 </VictoryChart>
 
