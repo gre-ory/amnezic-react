@@ -1,8 +1,10 @@
 // //////////////////////////////////////////////////
 // import
 
+import { UserSession } from "../data/UserSession"
 import { Playlist } from "../data/Playlist"
 
+import { DefaultHeaders } from "./Headers"
 import { JsonPlaylist, ToPlaylist } from "./JsonPlaylist"
 
 // //////////////////////////////////////////////////
@@ -10,10 +12,13 @@ import { JsonPlaylist, ToPlaylist } from "./JsonPlaylist"
 
 export async function FetchPlaylist( playlistId: number ): Promise<Playlist> {
 
-    let requestURL = `${process.env.REACT_APP_API_ROOT_URI}/deezer/playlist/${playlistId}`
-    console.log(`[api] requestURL = ${requestURL}`)
+    let url = `${process.env.REACT_APP_API_ROOT_URI}/deezer/playlist/${playlistId}`
+    console.log(`[api] requestURL = ${url}`)
 
-    const response = await fetch(requestURL, {method: 'GET'})
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: DefaultHeaders(),
+    })
     if (!response.ok) {
         const message = `An error has occured while fetching playlist: ${response.status} ${response.body}`;
         throw new Error(message);

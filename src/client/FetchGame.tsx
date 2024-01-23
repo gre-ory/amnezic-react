@@ -6,6 +6,7 @@ import { Music } from "../data/Music"
 import { Source } from "../data/Source"
 import { addAnswer, Question } from "../data/Question"
 
+import { DefaultHeaders } from "./Headers"
 import { JsonMusic, ToMusic } from "./JsonMusic"
 
 // //////////////////////////////////////////////////
@@ -13,26 +14,29 @@ import { JsonMusic, ToMusic } from "./JsonMusic"
 
 export async function FetchGame( game: Game ) {
 
-    let requestURL = `${process.env.REACT_APP_API_ROOT_URI}/game/new`
-    requestURL = `${requestURL}?nb_question=${game.settings.nbQuestion}`
-    requestURL = `${requestURL}&nb_answer=${game.settings.nbAnswer}`
-    requestURL = `${requestURL}&nb_player=${game.settings.nbPlayer}`
+    let url = `${process.env.REACT_APP_API_ROOT_URI}/game/new`
+    url = `${url}?nb_question=${game.settings.nbQuestion}`
+    url = `${url}&nb_answer=${game.settings.nbAnswer}`
+    url = `${url}&nb_player=${game.settings.nbPlayer}`
 
     if ( game.settings.source == Source.Legacy ) {
-        requestURL = `${requestURL}&sources=${Source.Legacy}`
+        url = `${url}&sources=${Source.Legacy}`
     } else if ( game.settings.source == Source.Deezer && game.settings.playlist ) {
-        requestURL = `${requestURL}&sources=${Source.Deezer}`
-        requestURL = `${requestURL}&deezer_playlist_id=${game.settings.playlist.deezerId}`
+        url = `${url}&sources=${Source.Deezer}`
+        url = `${url}&deezer_playlist_id=${game.settings.playlist.deezerId}`
     } else {
-        requestURL = `${requestURL}&sources=${Source.Store}`
+        url = `${url}&sources=${Source.Store}`
         if ( game.settings.themeIds && game.settings.themeIds.length > 0 ) {
-            requestURL = `${requestURL}&theme_ids=${game.settings.themeIds.join(",")}`
+            url = `${url}&theme_ids=${game.settings.themeIds.join(",")}`
         }
     }
 
-    console.log(`[api] requestURL = ${requestURL}`)
+    console.log(`[api] requestURL = ${url}`)
 
-    const response = await fetch(requestURL, {method: 'PUT'})
+    const response = await fetch(url, {
+        method: 'PUT',
+        headers: DefaultHeaders(),
+    })
     if (!response.ok) {
         const message = `An error has occured while fetching new game: ${response.status} ${response.body}`;
         throw new Error(message);

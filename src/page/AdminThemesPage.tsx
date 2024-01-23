@@ -15,6 +15,7 @@ import { FetchThemes } from '../client/FetchThemes'
 import { CreateTheme } from '../client/CreateTheme'
 import { RemoveTheme } from '../client/RemoveTheme'
 
+import { UserSession } from '../data/UserSession'
 import { AdminStep } from '../data/Admin'
 import { ThemeInfo } from '../data/ThemeInfo'
 import { categoryToLabel, languageToLabel, languageToImgUrl } from '../data/ThemeLabels'
@@ -22,11 +23,17 @@ import { toHomePage, toAdminThemePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 
 interface Props {
+    session?: UserSession
 }
 
 const AdminThemesPage = ( props: Props ) => {
+    const { session } = props
 
     const navigate = useNavigate()
+
+    if ( !session ) {
+        return null
+    }
 
     const [themes, setThemes] = React.useState<ThemeInfo[]>()
     const [error, setError] = React.useState<Error>();
@@ -40,7 +47,9 @@ const AdminThemesPage = ( props: Props ) => {
     }
     const createTheme = ( title: string ) => {
         if ( title ) {
-            CreateTheme(title).then((theme) => { fetchThemes() }).catch(onError)
+            CreateTheme(session,title)
+                .then((theme) => { fetchThemes() })
+                .catch(onError)
         } else {
             console.log("missing theme title!")
         }
@@ -61,7 +70,9 @@ const AdminThemesPage = ( props: Props ) => {
         console.log("click >>> delete theme", theme.id )
         if ( theme.id ) {
             if (window.confirm('Are you sure you wish to delete this item?')) {
-                RemoveTheme(theme.id).then((ok) => { fetchThemes() }).catch(console.log)
+                RemoveTheme(session,theme.id)
+                    .then((ok) => { fetchThemes() })
+                    .catch(onError)
             }
         } else {
             console.log("missing theme id!", theme)

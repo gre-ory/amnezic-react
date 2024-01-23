@@ -1,16 +1,18 @@
 // //////////////////////////////////////////////////
 // import
 
+import { UserSession } from "../data/UserSession"
 import { Theme } from "../data/Theme"
 import { ThemeQuestion } from "../data/ThemeQuestion"
 
+import { SessionHeaders } from "./Headers"
 import { JsonTheme, ToTheme } from "./JsonTheme"
 import { JsonThemeQuestion, FromThemeQuestion } from "./JsonThemeQuestion"
 
 // //////////////////////////////////////////////////
 // update theme question
 
-export async function UpdateThemeQuestion( themeId: number, question: ThemeQuestion ): Promise<Theme> {
+export async function UpdateThemeQuestion( session: UserSession, themeId: number, question: ThemeQuestion ): Promise<Theme> {
 
     let url = `${process.env.REACT_APP_API_ROOT_URI}/theme-question/${themeId}/${question.id}`
     console.log(`[client] requestURL = ${url}`)
@@ -21,9 +23,7 @@ export async function UpdateThemeQuestion( themeId: number, question: ThemeQuest
 
     const response = await fetch(url, {
         method: 'POST',
-        headers: {
-            'content-type': 'application/json;charset=UTF-8',
-        },
+        headers: SessionHeaders(session),
         body: JSON.stringify(body),
     })
     if (!response.ok) {

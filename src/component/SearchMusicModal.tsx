@@ -68,16 +68,16 @@ const SearchMusicModal = ( props: Props ) => {
         if ( submit && search ) {
             SetLoading(true)
             SearchMusic(search,100)
-            .then((musics) => {
-                SetMusics(musics)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-            .finally(() => {
-                SetLoading(false)
-                SetSubmit(false)
-            })
+                .then((musics) => {
+                    SetMusics(musics)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+                .finally(() => {
+                    SetLoading(false)
+                    SetSubmit(false)
+                })
         }
     }, [submit])
 
@@ -86,17 +86,17 @@ const SearchMusicModal = ( props: Props ) => {
         if ( playlistId ) {
             SetLoading(true)
             FetchPlaylist(playlistId)
-            .then((playlist) => {
-                SetPlaylist(playlist)
-                SetMusics(playlist.musics)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-            .finally(() => {
-                SetLoading(false)
-                SetSubmit(false)
-            })
+                .then((playlist) => {
+                    SetPlaylist(playlist)
+                    SetMusics(playlist.musics)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+                .finally(() => {
+                    SetLoading(false)
+                    SetSubmit(false)
+                })
         }
     }, [playlistId])
 

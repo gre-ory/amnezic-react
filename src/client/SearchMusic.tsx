@@ -1,12 +1,15 @@
 // //////////////////////////////////////////////////
 // import
 
+import { UserSession } from "../data/UserSession"
 import { Music } from "../data/Music"
 
+import { DefaultHeaders } from "./Headers"
 import { JsonMusic, ToMusic } from "./JsonMusic"
 
 // //////////////////////////////////////////////////
 // search music
+
 
 export async function SearchMusic( search: string, limit: number ): Promise<Music[]> {
 
@@ -15,6 +18,7 @@ export async function SearchMusic( search: string, limit: number ): Promise<Musi
 
     const response = await fetch(url, {
         method: 'GET',
+        headers: DefaultHeaders(),
     })
     if (!response.ok) {
         const message = `An error has occured while searching music: ${response.status} ${response.body}`;

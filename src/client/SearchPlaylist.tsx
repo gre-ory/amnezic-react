@@ -3,6 +3,7 @@
 
 import { Playlist } from "../data/Playlist"
 
+import { DefaultHeaders } from "./Headers"
 import { JsonPlaylist, ToPlaylist } from "./JsonPlaylist"
 
 // //////////////////////////////////////////////////
@@ -15,6 +16,7 @@ export async function SearchPlaylist( search: string, limit: number ): Promise<P
 
     const response = await fetch(url, {
         method: 'GET',
+        headers: DefaultHeaders(),
     })
     if (!response.ok) {
         const message = `An error has occured while searching playlist: ${response.status} ${response.body}`;

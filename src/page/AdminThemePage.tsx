@@ -21,6 +21,7 @@ import { RemoveThemeQuestion } from '../client/RemoveThemeQuestion'
 import { UpdateThemeQuestion } from '../client/UpdateThemeQuestion'
 import { UpdateTheme } from '../client/UpdateTheme'
 
+import { UserSession } from '../data/UserSession'
 import { AdminStep } from '../data/Admin'
 import { Theme, updateTitle, updateImgUrl, updateLanguageLabel, updateCategoryLabel } from '../data/Theme'
 import { Language, Category, languageToLabel, categoryToLabel }  from '../data/ThemeLabels'
@@ -38,23 +39,28 @@ import SearchPlaylistModal from '../component/SearchPlaylistModal'
 import UpdateQuestionModal from '../component/UpdateQuestionModal'
 
 interface Props {
+    session?: UserSession
 }
 
 const AdminThemePage = ( props: Props ) => {
+    const { session } = props
 
     const navigate = useNavigate()
 
     const { themeId } = useParams()
-    
+
+    if ( !session ) {
+        return null
+    }
     if ( !themeId ) {
         return null
     }
     const id = parseInt(themeId,10)
 
-    const [theme, setTheme] = React.useState<Theme>();
-    const [needSave, setNeedSave] = React.useState<boolean>(false);
-    const [error, setError] = React.useState<Error>();
-    const [question, setQuestion] = React.useState<ThemeQuestion>();
+    const [ theme, setTheme ] = React.useState<Theme>();
+    const [ needSave, setNeedSave ] = React.useState<boolean>(false);
+    const [ error, setError ] = React.useState<Error>();
+    const [ question, setQuestion ] = React.useState<ThemeQuestion>();
     const [ playlistId, SetPlaylistId ] = React.useState<number>();
 
     const handleTitleChange = onValueEvent((value) => {
@@ -123,7 +129,9 @@ const AdminThemePage = ( props: Props ) => {
     }
     const addMusic = (music: Music) => {
         if ( music.deezerId ) {
-            AddMusicToTheme(id,music.deezerId).then(setTheme).catch(console.log)
+            AddMusicToTheme(session,id,music.deezerId)
+                .then(setTheme)
+                .catch(onError)
         } else {
             console.log("missing deezer id!", music)
         }
@@ -133,7 +141,9 @@ const AdminThemePage = ( props: Props ) => {
         if ( theme ) {
             for ( var question of theme.questions ) {
                 if ( question.music && question.music.id && question.music.deezerId == music.deezerId ) {
-                    RemoveThemeQuestion(id,question.id).then(setTheme).catch(console.log)
+                    RemoveThemeQuestion(session,id,question.id)
+                        .then(setTheme)
+                        .catch(onError)
                 }
             }
         }
@@ -175,15 +185,19 @@ const AdminThemePage = ( props: Props ) => {
 
     const updateTheme = () => {
         if ( theme ) {
-            UpdateTheme(theme).then((theme) => {
-                setTheme(theme)
-                setNeedSave(false)
-            }).catch(console.log)
+            UpdateTheme(session,theme)
+                .then((theme) => {
+                    setTheme(theme)
+                    setNeedSave(false)
+                })
+                .catch(onError)
         }
     }
 
     const updateQuestion = (question: ThemeQuestion) => {
-        UpdateThemeQuestion(id,question).then(setTheme).catch(console.log)
+        UpdateThemeQuestion(session,id,question)
+            .then(setTheme)
+            .catch(onError)
     }
 
     const removeQuestion = (question: ThemeQuestion) => {
@@ -193,7 +207,9 @@ const AdminThemePage = ( props: Props ) => {
             console.log("click >>> remove question", question.id )
             if ( question.id ) {
                 if (window.confirm('Are you sure you wish to delete this question?')) {
-                    RemoveThemeQuestion(id,question.id).then(setTheme).catch(console.log)
+                    RemoveThemeQuestion(session,id,question.id)
+                        .then(setTheme)
+                        .catch(onError)
                 }
             } else {
                 console.log("missing question id!", question)
@@ -204,11 +220,13 @@ const AdminThemePage = ( props: Props ) => {
     React.useEffect(() => {
         FetchTheme(id)
             .then((theme) => setTheme(theme))
-            .catch((err) => {
-                console.error(err)
-                setError(err)
-            });
+            .catch(onError);
       }, [])
+
+    const onError = (err: Error) => {
+        console.error(err)
+        setError(err)
+    }
 
     console.log(error)
     if ( error !== undefined ) {

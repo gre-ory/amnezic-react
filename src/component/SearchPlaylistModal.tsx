@@ -65,16 +65,16 @@ const SearchPlaylistModal = ( props: Props ) => {
         if ( submit && search ) {
             SetLoading(true)
             SearchPlaylist(search,100)
-            .then((playlists) => {
-                SetPlaylists(playlists)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-            .finally(() => {
-                SetLoading(false)
-                SetSubmit(false)
-            })
+                .then((playlists) => {
+                    SetPlaylists(playlists)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+                .finally(() => {
+                    SetLoading(false)
+                    SetSubmit(false)
+                })
         }
     }, [submit,search])
 
