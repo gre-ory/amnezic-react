@@ -1,12 +1,11 @@
 import React from 'react'
 
-import { IconButton, Typography } from '@mui/material';
+import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ForwardIcon from '@mui/icons-material/Forward';
 import SearchIcon from '@mui/icons-material/Search';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
-
-import { Box, Grid, Modal, Button, TextField } from '@mui/material';
+import { Box, Grid, Modal, TextField } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -89,6 +88,7 @@ const SearchPlaylistModal = ( props: Props ) => {
                         src={getImgUrl(params.row)}
                         width="56" 
                         height="56"
+                        alt=""
                       />
           },
         },

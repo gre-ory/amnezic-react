@@ -8,8 +8,6 @@ import { Playlist } from "./Playlist"
 // //////////////////////////////////////////////////
 // model
 
-
-
 export interface Settings {
   source: Source
   nbPlayer: number

@@ -1,21 +1,21 @@
 import { customAlphabet } from 'nanoid'
+import log from "loglevel";
 
 import { FetchGame } from "../client/FetchGame"
 
 import { newSettings, Settings, SettingsUpdater, newSettingsFromPrevious } from './Settings'
 import { Player, PlayerId, PlayerUpdater } from './Player'
-import { addAnswer, isCorrect, Question, QuestionId, QuestionUpdater } from './Question'
-import { newArtist } from './Artist'
-import { newAlbum } from './Album'
-import { range, toTimeString, toZeroPadString } from './Util'
-import { Music, newMusic } from './Music'
+import { isCorrect, Question, QuestionId, QuestionUpdater } from './Question'
+import { range, toZeroPadString } from './Util'
+import { Music } from './Music'
 import { GameStats, newGameStats } from './GameStats'
 import { Card, DefaultCards } from './Card'
 import { flagAnswerAsCorrect, flagAnswerAsIncorrect, flagQuestionAsError, flagQuestionAsMiss, newPlayerStats } from './PlayerStats'
-import { ANSWER_ID_SUFFIX, DEBUG, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, MAX_NB_GAME, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
+import { ANSWER_ID_SUFFIX, DEFAULT_NB_ANSWER_PER_QUESTION, DEFAULT_NB_PLAYER, DEFAULT_NB_QUESTION, MAX_NB_GAME, PLAYER_ID_SUFFIX, QUESTION_ID_SUFFIX } from './Constants'
 import { buildDummyQuestions, buildLegacyQuestions, buildTestQuestions } from './Quizz'
 import { AvatarId } from './Avatar'
 import { Source } from './Source'
+import { config } from '../config'
 
 // //////////////////////////////////////////////////
 // model
@@ -92,15 +92,15 @@ export function newGameFromPrevious( previous: Game ): Game {
 // type
 
 export function isLegacyGame( game: Game ): boolean {
-  return game && game.settings && game.settings.source == Source.Legacy
+  return game && game.settings && game.settings.source === Source.Legacy
 }
 
 export function isStoreGame( game: Game ): boolean {
-  return game && game.settings && game.settings.source == Source.Store
+  return game && game.settings && game.settings.source === Source.Store
 }
 
 export function isDeezerGame( game: Game ): boolean {
-  return game && game.settings && game.settings.source == Source.Deezer
+  return game && game.settings && game.settings.source === Source.Deezer
 }
 
 // //////////////////////////////////////////////////
@@ -174,7 +174,7 @@ export function updatePlayer( playerId: PlayerId, update: PlayerUpdater ): GameU
     }
     return {
       ...game,
-      players: game.players.map( player => player.id == playerId ? update( player ) : player ),
+      players: game.players.map( player => player.id === playerId ? update( player ) : player ),
     }
   }
 }
@@ -186,7 +186,7 @@ export function updateQuestion( questionId: QuestionId, update: QuestionUpdater 
     }
     return {
       ...game,
-      questions: game.questions.map( question => question.id == questionId ? update( question ) : question ),
+      questions: game.questions.map( question => question.id === questionId ? update( question ) : question ),
     }
   }
 }
@@ -234,7 +234,7 @@ export function selectGame( games: Game[], gameId: string | undefined ): Game | 
   if ( !gameId ) {
     return undefined
   }
-  const game = gameId ? loadGames().find( g => g.id == gameId ) : undefined
+  const game = gameId ? loadGames().find( g => g.id === gameId ) : undefined
   console.log(`[select] game #${gameId} : ${ game !== undefined ? 'OK' : 'KO' }`)
   return game
 }
@@ -244,7 +244,7 @@ export function selectQuestion( game: Game | undefined, questionParam: string | 
     return undefined
   }
   const questionNumber: number = parseInt( questionParam )
-  const question = game.questions && questionNumber ? game.questions.find( question => question.number == questionNumber ) : undefined
+  const question = game.questions && questionNumber ? game.questions.find( question => question.number === questionNumber ) : undefined
   console.log(`[select] question #${questionNumber} : ${ question !== undefined ? 'OK' : 'KO' }`)
   return question
 }
@@ -301,19 +301,24 @@ export function onSetUp( game: Game ): Game {
   // build questions ( based on game type )
   //
 
-  console.log(process.env)
-  console.log(`game type = ${process.env.REACT_APP_GAME_TYPE}`)
-  if ( process.env.REACT_APP_GAME_TYPE == 'dummy' ) {
-    game = buildDummyQuestions( game )
-  } else if ( process.env.REACT_APP_GAME_TYPE == 'test' ) {
-    game = buildTestQuestions( game )
-  } else if ( process.env.REACT_APP_GAME_TYPE == 'legacy' ) {
-    game = buildLegacyQuestions( game )
-  } else if ( process.env.REACT_APP_GAME_TYPE == 'api' ) {
-    FetchGame( game )
-  } else {
-    console.log( `[on-set-up] missing game type >>> FALLBACK to 'legacy'` )
-    game = buildLegacyQuestions( game )
+  const gameType = config.gameType()
+  switch ( gameType ) {
+    case 'dummy':
+      game = buildDummyQuestions( game )
+      break
+    case 'test':
+      game = buildTestQuestions( game )
+      break
+    case 'legacy':
+      game = buildLegacyQuestions( game )
+      break
+    case 'api':
+      FetchGame( game )
+      break
+    default:
+      log.warn("[on-set-up] missing game type >>> FALLBACK to 'legacy'")
+      game = buildLegacyQuestions( game )
+      break
   }
   game.loaded = true
 
@@ -336,7 +341,7 @@ export function onSetUp( game: Game ): Game {
 export function onStartGame( game: Game ): Game {
   console.log( `[on-start-game] ${game.id}` )
 
-  if ( !game.questions || game.questions.length == 0 ) {
+  if ( !game.questions || game.questions.length === 0 ) {
     return game
   }
 

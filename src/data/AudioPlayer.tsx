@@ -40,12 +40,6 @@ export class AudioPlayer implements AudioPlayerInterface {
     onAudioReset?: () => void = undefined
     onAudioUnload?: () => void = undefined
 
-
-    // //////////////////////////////////////////////////
-    // constructor
-
-    constructor() {}
-    
     // //////////////////////////////////////////////////
     // unload
     
@@ -80,7 +74,7 @@ export class AudioPlayer implements AudioPlayerInterface {
 
     load( src: string ): void {
         console.log(`[load] src=${src}`)
-        if ( this.audioRef.current.src != src ) {
+        if ( this.audioRef.current.src !== src ) {
 
             this.audioRef.current = new Audio( src )
             this.audioRef.current.loop = false

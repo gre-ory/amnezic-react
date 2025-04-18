@@ -16,20 +16,16 @@ import AdminThemesPage from './page/AdminThemesPage'
 import AdminThemePage from './page/AdminThemePage'
 import PlayingCardsPage from './page/PlayingCardsPage'
 
-import { UserSession } from './data/UserSession'
-import { LoginRequest } from './data/LoginRequest'
-import { Game, GameUpdater, loadGames, storeGames, clearGames, GameId } from './data/Game'
+import { UserSession, loadSession, storeSession } from './data/UserSession'
+import { Game, GameUpdater, loadGames, storeGames, GameId } from './data/Game'
 import { onUserEvent } from './data/Util'
 import { QuestionId, QuestionUpdater } from './data/Question'
 
-import { Login } from './client/Login'
 import { Logout } from './client/Logout'
 
 import LoginModal from './component/LoginModal'
 
 import './App.css';
-
-import { loadingButtonClasses } from '@mui/lab'
 
 function App() {
 
@@ -38,7 +34,7 @@ function App() {
   //
 
   const [ games, setGames ] = React.useState( loadGames() )
-  const [ session, setSession ] = React.useState<UserSession>()
+  const [ session, setSession ] = React.useState<UserSession | undefined>( loadSession() )
 
   function addGame( game: Game ) {
       console.log( `[add-game] ${game.id}` )
@@ -48,13 +44,13 @@ function App() {
       } )
   }
 
-  function deleteGame( game: Game ) {
-      console.log( `[delete-game] ${game.id}` )
-      setGames( prev => {
-        const newGames = prev.filter( g => g.id !== game.id ) 
-        return storeGames( newGames )
-      } )
-  }
+  // function deleteGame( game: Game ) {
+  //     console.log( `[delete-game] ${game.id}` )
+  //     setGames( prev => {
+  //       const newGames = prev.filter( g => g.id !== game.id ) 
+  //       return storeGames( newGames )
+  //     } )
+  // }
 
   function deleteGames( gameIds: GameId[] ) {
       console.log( `[delete-games]` )
@@ -85,7 +81,7 @@ function App() {
     console.log( `[update-question] ${gameId} - ${questionId}` )
     setGames( prev => {
       const newGames = prev.map( game => {
-        if ( game.id != gameId ) {
+        if ( game.id !== gameId ) {
           return game
         }
         game.questions = game.questions.map( question => question.id === questionId ? update( question ) : question )
@@ -103,7 +99,7 @@ function App() {
       setLoginModal(false)
   }
   const onLogin = (session: UserSession) => {
-    setSession(session)
+    setSession(storeSession(session))
   }
   const logout = onUserEvent(() => {
     if ( session ) {

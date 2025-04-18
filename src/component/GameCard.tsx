@@ -4,12 +4,10 @@ import { makeStyles } from '@mui/styles'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography'
 import LinearProgress from '@mui/material/LinearProgress'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import PersonIcon from '@mui/icons-material/Person'
-import SkipNextIcon from '@mui/icons-material/SkipNext'
 
 import { Game } from '../data/Game'
 import { onUserEvent, toDateTimeString } from '../data/Util'
@@ -74,7 +72,7 @@ const GameCard = ( props: Props ) => {
     const onDelete = deleteGame ? onUserEvent( () => deleteGame( game ) ) : undefined
 
     const progress = game.ended ? 100 : game.stats ? game.stats.progress : 0
-    const state = game.ended ? 'ended' : game.stats ? `${Math.round(game.stats.progress)}%` : 'not started'
+    // const state = game.ended ? 'ended' : game.stats ? `${Math.round(game.stats.progress)}%` : 'not started'
 
     return (        
         <div title="Resume Game" className={`${classes.gameCard} selectable`} onClick={onResume}>

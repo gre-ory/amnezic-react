@@ -7,12 +7,14 @@ import { User } from "../data/User"
 import { SessionHeaders } from "./Headers"
 import { JsonUser, FromUser, ToUser } from "./JsonUser"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // create user
 
 export async function CreateUser( session: UserSession, user: User ): Promise<User> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/user/new`
+    const url = config.apiUrl(`/user/new`);
     console.log(`[client] requestURL = ${url}`)
 
     let body: JsonCreateUserBody = {

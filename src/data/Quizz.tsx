@@ -6,10 +6,9 @@ import { newArtist } from "./Artist"
 import { addQuestion, Game } from "./Game"
 import { newMusic } from "./Music"
 import { addAnswer, Question } from "./Question"
-import { Settings } from "./Settings"
 import { pick, pickIndexes, range, shuffle } from "./Util"
-import legacyJson from '../static/legacy.json';
-import { Shuffle } from "@mui/icons-material"
+import legacyJson from '../static/legacy.json'
+import { config } from '../config'
 
 // //////////////////////////////////////////////////
 // dummy game
@@ -79,7 +78,7 @@ export function buildDummyQuestions( game: Game ): Game {
         const question: Question = addQuestion( game, artist, music )
 
         for ( let j = 0 ; j < nbAnswer ; j++ ) {
-        if ( i % nbAnswer == j ) {
+        if ( i % nbAnswer === j ) {
             addAnswer( question, artist, music.name, true )
         } else {
             addAnswer( question, `artist ${j+1}`, `hint ${j+1}`, false )
@@ -95,7 +94,7 @@ export function buildDummyQuestions( game: Game ): Game {
 
 export function buildTestQuestions( game: Game ): Game {
 
-    const genre = legacyJson.genres.find( genre => genre.genre === "Bruitages" );
+    const genre: any = legacyJson.genres.find( (genre: any) => genre && genre.genre === "Bruitages" );
     if ( genre ) {
         const musics = genre.musics || []
 
@@ -128,7 +127,7 @@ export function buildLegacyQuestions( game: Game ): Game {
     const nbQuestion = game.settings.nbQuestion
     const nbAnswer = game.settings.nbAnswer
 
-    const nbMusic = legacyJson.genres.map( genre => genre.musics.length ).reduce( ( previous, current ) => previous + current, 0 )
+    const nbMusic: number = legacyJson.genres.map( (genre: any): number => genre && genre.musics ? genre.musics.length : 0 ).reduce( ( previous: number, current: number ): number => previous + current, 0 )
     const questionIndexes = pickIndexes( nbQuestion, nbMusic )
 
     for ( const questionIndex of questionIndexes ) {
@@ -153,11 +152,11 @@ export function buildLegacyQuestions( game: Game ): Game {
             const correctMusic = musics[ correctIndex ]
             console.log(correctMusic.artist)
             const artist = newArtist( correctMusic.artist && correctMusic.artist.name ? correctMusic.artist.name : '???' )
-            const musicURL = process.env.REACT_APP_LEGACY_ROOT_URI + correctMusic.mp3Url
+            const musicURL = config.legacyUrl(`/${correctMusic.mp3Url}`)
             const music = newMusic( correctMusic.title || '???', musicURL, artist, undefined )
             const question: Question = addQuestion( game, genre.genre, music )
 
-            const indexes = pickIndexes( nbAnswer + 1, musics.length ).filter( index => index != correctIndex ).slice( 0, nbAnswer - 1 )
+            const indexes = pickIndexes( nbAnswer + 1, musics.length ).filter( index => index !== correctIndex ).slice( 0, nbAnswer - 1 )
             indexes.push( correctIndex )
             shuffle( indexes )
 

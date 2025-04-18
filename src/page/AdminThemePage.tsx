@@ -13,7 +13,7 @@ import CheckIcon from '@mui/icons-material/Check'
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 
 import { FetchTheme } from '../client/FetchTheme'
 import { AddMusicToTheme } from '../client/AddMusicToTheme'
@@ -47,15 +47,8 @@ const AdminThemePage = ( props: Props ) => {
 
     const navigate = useNavigate()
 
-    const { themeId } = useParams()
-
-    if ( !session ) {
-        return null
-    }
-    if ( !themeId ) {
-        return null
-    }
-    const id = parseInt(themeId,10)
+    const { themeIdParameter } = useParams()
+    const themeId: number = themeIdParameter ? parseInt(themeIdParameter,10) : 0
 
     const [ theme, setTheme ] = React.useState<Theme>();
     const [ needSave, setNeedSave ] = React.useState<boolean>(false);
@@ -120,7 +113,7 @@ const AdminThemePage = ( props: Props ) => {
     const isMusicIncluded = (music: Music) => {
         if ( theme && theme.questions ) {
             for ( var question of theme.questions ) {
-                if ( question.music && question.music.deezerId == music.deezerId ) {
+                if ( question.music && question.music.deezerId === music.deezerId ) {
                     return true
                 }
             }
@@ -128,23 +121,41 @@ const AdminThemePage = ( props: Props ) => {
         return false
     }
     const addMusic = (music: Music) => {
-        if ( music.deezerId ) {
-            AddMusicToTheme(session,id,music.deezerId)
-                .then(setTheme)
-                .catch(onError)
-        } else {
-            console.log("missing deezer id!", music)
+        if ( !session ) {
+            console.log("[add-music] missing session! ", music)
+            return
         }
+        if ( !themeId ) {
+            console.log("[add-music] missing theme id! ", music)
+            return
+        }
+        if ( !music.deezerId ) {
+            console.log("[add-music] missing deezer id! ", music)
+            return
+        }
+        AddMusicToTheme(session,themeId,music.deezerId)
+            .then(setTheme)
+            .catch(onError)
     }
     
     const removeMusic = (music: Music) => {
-        if ( theme ) {
-            for ( var question of theme.questions ) {
-                if ( question.music && question.music.id && question.music.deezerId == music.deezerId ) {
-                    RemoveThemeQuestion(session,id,question.id)
-                        .then(setTheme)
-                        .catch(onError)
-                }
+        if ( !session ) {
+            console.log("[remove-music] missing session! ", music)
+            return
+        }
+        if ( !themeId ) {
+            console.log("[remove-music] missing theme id! ", music)
+            return
+        }
+        if ( !theme ) {
+            console.log("[remove-music] missing theme! ", music)
+            return
+        }
+        for ( var question of theme.questions ) {
+            if ( question.music && question.music.id && question.music.deezerId === music.deezerId ) {
+                RemoveThemeQuestion(session,themeId,question.id)
+                    .then(setTheme)
+                    .catch(onError)
             }
         }
     }
@@ -184,18 +195,32 @@ const AdminThemePage = ( props: Props ) => {
     }
 
     const updateTheme = () => {
-        if ( theme ) {
-            UpdateTheme(session,theme)
-                .then((theme) => {
-                    setTheme(theme)
-                    setNeedSave(false)
-                })
-                .catch(onError)
+        if ( !session ) {
+            console.log("[update-theme] missing session! ")
+            return
         }
+        if ( !theme ) {
+            console.log("[update-theme] missing theme! ")
+            return
+        }
+        UpdateTheme(session,theme)
+            .then((theme) => {
+                setTheme(theme)
+                setNeedSave(false)
+            })
+            .catch(onError)
     }
 
     const updateQuestion = (question: ThemeQuestion) => {
-        UpdateThemeQuestion(session,id,question)
+        if ( !session ) {
+            console.log("[update-question] missing session! ", question)
+            return
+        }
+        if ( !themeId ) {
+            console.log("[update-question] missing theme id! ", question)
+            return
+        }
+        UpdateThemeQuestion(session,themeId,question)
             .then(setTheme)
             .catch(onError)
     }
@@ -205,23 +230,38 @@ const AdminThemePage = ( props: Props ) => {
             console.log("click >>> pause music" )
             audioPlayer.pause()
             console.log("click >>> remove question", question.id )
-            if ( question.id ) {
-                if (window.confirm('Are you sure you wish to delete this question?')) {
-                    RemoveThemeQuestion(session,id,question.id)
-                        .then(setTheme)
-                        .catch(onError)
-                }
-            } else {
-                console.log("missing question id!", question)
+            if ( !session ) {
+                console.log("[remove-question] missing session! ", question)
+                return
+            }
+            if ( !themeId ) {
+                console.log("[remove-question] missing theme id! ", question)
+                return
+            }
+            if ( !question.id ) {
+                console.log("[remove-question] missing question id! ", question)
+                return
+            }
+            if (window.confirm('Are you sure you wish to delete this question?')) {
+                RemoveThemeQuestion(session,themeId,question.id)
+                    .then(setTheme)
+                    .catch(onError)
             }
         })
     }
 
     React.useEffect(() => {
-        FetchTheme(id)
+        if ( !themeId ) {
+            console.log("[fetch-theme] missing theme id! ")
+            return
+        }
+        FetchTheme(themeId)
             .then((theme) => setTheme(theme))
             .catch(onError);
-      }, [])
+        return () => {
+            setTheme(undefined)
+        }
+      }, [ themeId ])
 
     const onError = (err: Error) => {
         console.error(err)
@@ -234,10 +274,6 @@ const AdminThemePage = ( props: Props ) => {
                     <AlertTitle>Error</AlertTitle>
                     <strong>{error.message}</strong>
                 </Alert>
-    }
-    console.log(theme)
-    if ( theme === undefined ) {
-        return null
     }
 
     const toThemes = () => {
@@ -267,8 +303,8 @@ const AdminThemePage = ( props: Props ) => {
           hideable: false,
           flex: 1,
           renderCell: (params) => {
-            const artist = params.row.artist ? params.row.artist.name : '-';
-            const album = params.row.album ? params.row.album.name : '-';
+            // const artist = params.row.artist ? params.row.artist.name : '-';
+            // const album = params.row.album ? params.row.album.name : '-';
             return <div style={{ justifyContent: 'left' }}>
                 <Typography align='left'><b>{params.row.text ? params.row.text : "-"}</b></Typography>
                 <Typography align='left' color="textSecondary">{params.row.hint ? params.row.hint : "-"}</Typography>
@@ -319,6 +355,16 @@ const AdminThemePage = ( props: Props ) => {
         },
       ];
 
+    if ( !session ) {
+        return null
+    }
+    if ( !themeId || themeId === 0 ) {
+        return null
+    }
+    if ( theme === undefined ) {
+        return null
+    }
+
     return (
         <AdminPage title={`Theme #${theme.id} - ${theme.title}`} step={AdminStep.THEME} onBack={toThemes}>
             <Grid container spacing={0} style={{ alignItems: 'center' }}>
@@ -354,7 +400,7 @@ const AdminThemePage = ( props: Props ) => {
                         />
                 </Grid>
                 <Grid item xs={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-                    {theme.imgUrl && <img src={theme.imgUrl} style={{ height: '56px', margin: '0 auto' }}/>}
+                    {theme.imgUrl && <img src={theme.imgUrl} style={{ height: '56px', margin: '0 auto' }} alt=""/>}
                 </Grid>
 
                 <Grid item xs={5} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>

@@ -5,18 +5,14 @@ import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import { Source } from '../data/Source'
 import { Game, GameId, GameStep, newGame, OnGameUpdate } from '../data/Game'
 import { toGamePage, toAdminThemesPage } from '../data/Navigate'
-import { onUserEvent } from '../data/Util'
 
 import Page from '../component/Page'
 import GameCard from '../component/GameCard'
-import NextButton from '../component/NextButton'
 import AdminButton from '../component/AdminButton'
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 
 interface Props {
     games: Game[]
@@ -99,7 +95,7 @@ const HomePage = ( props: Props ) => {
         if ( oldGameIds.length > 0 ) {
             deleteGames( oldGameIds )
         }
-    }, [] )
+    }, [ games, deleteGames ] )
 
     //
     // sort games
@@ -111,10 +107,10 @@ const HomePage = ( props: Props ) => {
     const hasPreviousGames = sortedGames.length > 0
 
     const unfinishedGames = [ ...sortedGames ].filter( game => !game.ended )
-    const hasUnfinishedGames = unfinishedGames.length > 0
+    // const hasUnfinishedGames = unfinishedGames.length > 0
 
     const finishedGames = [ ...sortedGames ].filter( game => game.ended )
-    const hasFinishedGames = finishedGames.length > 0
+    // const hasFinishedGames = finishedGames.length > 0
 
     return (
         <Page title="Amnezic">
@@ -159,7 +155,7 @@ const HomePage = ( props: Props ) => {
                         <IconButton
                             title="Delete all games" 
                             color="default" 
-                            disabled={games.length == 0} 
+                            disabled={games.length === 0} 
                             onClick={deleteAllGames}
                         >
                             <DeleteIcon />

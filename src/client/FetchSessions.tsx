@@ -6,12 +6,14 @@ import { UserSession } from "../data/UserSession"
 import { SessionHeaders } from "./Headers"
 import { JsonUserSession, ToUserSession } from "./JsonUserSession"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // themes
 
 export async function FetchSessions( session: UserSession ): Promise<UserSession[]> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/session`
+    const url = config.apiUrl(`/session`);
     console.log(`[api] requestURL = ${url}`)
 
     const response = await fetch(url, {

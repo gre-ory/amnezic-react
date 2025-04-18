@@ -7,12 +7,14 @@ import { Theme } from "../data/Theme"
 import { SessionHeaders } from "./Headers"
 import { JsonTheme, ToTheme } from "./JsonTheme"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // remove theme question
 
 export async function RemoveThemeQuestion( session: UserSession, themeId: number, questionId: number ): Promise<Theme> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/theme-question/${themeId}/${questionId}`
+    const url = config.apiUrl(`/theme-question/${themeId}/${questionId}`)
     console.log(`[client] requestURL = ${url}`)
 
     const response = await fetch(url, {

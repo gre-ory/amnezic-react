@@ -7,12 +7,14 @@ import { Theme } from "../data/Theme"
 import { SessionHeaders } from "./Headers"
 import { JsonTheme, ToTheme } from "./JsonTheme"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // add music to them
 
 export async function AddMusicToTheme( session: UserSession, themeId: number, deezerId: number ): Promise<Theme> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/theme-question/${themeId}/new?deezer_id=${deezerId}`
+    const url = config.apiUrl(`/theme-question/${themeId}/new?deezer_id=${deezerId}`);
     console.log(`[client] requestURL = ${url}`)
 
     const response = await fetch(url, {

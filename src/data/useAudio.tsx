@@ -222,7 +222,7 @@ export function createHTMLMediaHook<T extends HTMLAudioElement>() {
       if (props.autoPlay && el.paused) {
         controls.play();
       }
-    }, [props.src]);
+    }, [props.src,controls,props.autoPlay,setState]);
 
     return [element, state, controls, ref] as const;
   };

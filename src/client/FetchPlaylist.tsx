@@ -1,18 +1,19 @@
 // //////////////////////////////////////////////////
 // import
 
-import { UserSession } from "../data/UserSession"
 import { Playlist } from "../data/Playlist"
 
 import { DefaultHeaders } from "./Headers"
 import { JsonPlaylist, ToPlaylist } from "./JsonPlaylist"
+
+import { config } from '../config'
 
 // //////////////////////////////////////////////////
 // fetch theme
 
 export async function FetchPlaylist( playlistId: number ): Promise<Playlist> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/deezer/playlist/${playlistId}`
+    const url = config.apiUrl(`/deezer/playlist/${playlistId}`);
     console.log(`[api] requestURL = ${url}`)
 
     const response = await fetch(url, {

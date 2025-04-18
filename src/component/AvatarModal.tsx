@@ -70,7 +70,7 @@ const AvatarModal = ( props: Props ) => {
                                         <PlayerAvatar 
                                             id={newAvatarId} 
                                             size={AvatarSize.M}
-                                            selected={avatarId == newAvatarId} 
+                                            selected={avatarId === newAvatarId} 
                                             onClick={() => onAvatarChange(newAvatarId)}
                                         />
                                     </Grid>

@@ -2,32 +2,12 @@ import React from 'react'
 import { useParams } from 'react-router'
 import { useNavigate } from 'react-router-dom'
 
-import LinearProgress from '@mui/material/LinearProgress'
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
-import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import SkipNextIcon from '@mui/icons-material/SkipNext'
-import NextButton from '../component/NextButton'
-
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineDot from '@mui/lab/TimelineDot';
-
 import GamePage from '../component/GamePage'
 import QuestionCard from '../component/QuestionCard'
 
 import { Game, GameStep, OnGameUpdate, selectGame, selectQuestion, onQuestionNumber, onEndGame, onAnswers } from '../data/Game'
-import { QuestionId, OnQuestionUpdate, onQuestionPlayed, onQuestionCompleted } from '../data/Question'
+import { OnQuestionUpdate, onQuestionPlayed, onQuestionCompleted } from '../data/Question'
 import { toHomePage, toGamePage } from '../data/Navigate'
-import { onUserEvent } from '../data/Util'
 import { DEBUG } from '../data/Constants'
 
 interface Props {
@@ -53,11 +33,11 @@ const QuestionPage = ( props: Props ) => {
         } else if ( !question ) {
             console.log(`[effect] UNKNOWN question! >>> NAVIGATE to home`)
             navigate( toHomePage() )     
-        } else if ( game.questionNumber != question.number ) {
+        } else if ( game.questionNumber !== question.number ) {
             console.log(`[effect] NEW question! >>> NAVIGATE to question ${game.questionNumber}`)
             navigate( toGamePage( game ) )    
         }  
-    }, [ game ] )
+    }, [ game, navigate, question ] )
     
     if ( !game ) {
         return null

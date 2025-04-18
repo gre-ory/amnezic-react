@@ -1,13 +1,10 @@
 import React from 'react'
 
-import { IconButton, Typography } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
+import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
 
 import { Box, Grid, Modal, Button, TextField } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 import { onUserEvent, onValueEvent } from '../data/Util';
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Language, categoryToLabel, languageToLabel, languageToImgUrl } from '../data/ThemeLabels'
+import { Language, languageToLabel, languageToImgUrl } from '../data/ThemeLabels'
 
 interface Props {
     language?: Language

@@ -5,12 +5,14 @@ import { UserSession } from "../data/UserSession"
 
 import { SessionHeaders } from "./Headers"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // flush user sessions
 
 export async function FlushUserSessions( session: UserSession ): Promise<boolean> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/session`
+    const url = config.apiUrl(`/session`)
     console.log(`[client] requestURL = ${url}`)
 
     const response = await fetch(url, {

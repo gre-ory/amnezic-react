@@ -9,14 +9,13 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Box from '@mui/material/Box'
 
 import GamePage from '../component/GamePage'
 import PlaylistCard from '../component/PlaylistCard'
 import LanguageChip from '../component/LanguageChip'
 
 import { Settings } from '../data/Settings'
-import { Game, GameStep, OnGameUpdate, selectGame, updateSettings, onSetUp, isLegacyGame, isStoreGame, isDeezerGame } from '../data/Game'
+import { Game, GameStep, OnGameUpdate, selectGame, updateSettings, onSetUp, isStoreGame, isDeezerGame } from '../data/Game'
 import { Playlist } from '../data/Playlist'
 import { ThemeInfo } from '../data/ThemeInfo'
 import { Language, Category, categoryToLabel, languageToLabel } from '../data/ThemeLabels'
@@ -24,7 +23,6 @@ import { toHomePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 import { INCREMENT_NB_ANSWER_PER_QUESTION, INCREMENT_NB_PLAYER, INCREMENT_NB_QUESTION, MAX_NB_ANSWER_PER_QUESTION, MAX_NB_PLAYER, MAX_NB_QUESTION, MIN_NB_ANSWER_PER_QUESTION, MIN_NB_PLAYER, MIN_NB_QUESTION } from '../data/Constants'
 import { FetchThemes } from '../client/FetchThemes'
-import { NoiseControlOff } from '@mui/icons-material'
 
 interface Props {
     games: Game[]
@@ -41,19 +39,32 @@ const SettingsPage = ( props: Props ) => {
 
     const { gameId } = useParams()
     const game = selectGame( games, gameId )
-    
+
     React.useEffect( () => { 
         if ( !game ) {
             console.log(`[effect] MISSING game! >>> NAVIGATE home`)
             navigate( toHomePage() )    
         }
+    }, [ game, navigate ] )
+
+    React.useEffect( () => { 
+        if ( !game ) {
+            return
+        }
+        if ( !isStoreGame( game ) ) {
+            return
+        }
+        SetLoading(true)
+        FetchThemes()
+            .then( themes => SetThemes( themes ) )
+            .catch( err => console.log( err ) )
+            .finally( () => SetLoading(false) )
     }, [ game ] )
 
     if ( !game ) {
         return null
     }
 
-    const isLegacy = isLegacyGame( game )
     const isStore = isStoreGame( game )
     const isDeezer = isDeezerGame( game )
 
@@ -177,16 +188,6 @@ const SettingsPage = ( props: Props ) => {
     }
 
     // themes
-
-    React.useEffect( () => { 
-        if ( isStore ) {
-            SetLoading(true)
-            FetchThemes()
-                .then( themes => SetThemes( themes ) )
-                .catch( err => console.log( err ) )
-                .finally( () => SetLoading(false) )
-        }
-    }, [ isStore ] )
 
     const categories = new Set<Category | undefined>();
     const languages = new Set<Language>();
@@ -571,6 +572,8 @@ const SettingsPage = ( props: Props ) => {
                     <PlaylistCard playlist={playlist} onPlaylist={onPlaylist}/>
                 </Grid>
             </Grid>}
+
+            {loading && <>loading...</>}
 
         </GamePage>
     )

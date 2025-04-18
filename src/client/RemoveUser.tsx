@@ -5,12 +5,14 @@ import { UserSession } from "../data/UserSession"
 
 import { SessionHeaders } from "./Headers"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // remove user
 
 export async function RemoveUser( session: UserSession, userId: number ): Promise<boolean> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/user/${userId}`
+    const url = config.apiUrl(`/user/${userId}`)
     console.log(`[client] requestURL = ${url}`)
 
     const response = await fetch(url, {

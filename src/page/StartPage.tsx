@@ -29,7 +29,7 @@ const StartPage = ( props: Props ) => {
             console.log(`[effect] NAVIGATE to question #${game.questionNumber}`)
             navigate( toGamePage( game ) )    
         }
-    }, [ game ] ) 
+    }, [ game, navigate ] ) 
     
     if ( !game ) {
         return null

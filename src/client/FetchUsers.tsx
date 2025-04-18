@@ -7,12 +7,14 @@ import { User } from "../data/User"
 import { SessionHeaders } from "./Headers"
 import { JsonUser, ToUser } from "./JsonUser"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // users
 
 export async function FetchUsers( session: UserSession ): Promise<User[]> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/user`
+    const url = config.apiUrl(`/user`);
     console.log(`[api] requestURL = ${url}`)
 
     const response = await fetch(url, {

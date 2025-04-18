@@ -12,7 +12,7 @@ interface Props {
 
 const NextButton = ( props: Props ) => {
     const { title, onNext } = props
-    const description = title && title != '' ? title : 'Next'   
+    const description = title && title !== '' ? title : 'Next'   
     
     // user events
 

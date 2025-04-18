@@ -1,14 +1,9 @@
 import React from 'react'
 
-import { IconButton, Typography } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
+import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
-import SearchIcon from '@mui/icons-material/Search';
-
 import { Box, Grid, Modal, Button, TextField } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 import { ThemeQuestion } from '../data/ThemeQuestion';
 import { onUserEvent, onValueEvent } from '../data/Util';
@@ -22,10 +17,6 @@ interface Props {
 
 const UpdateQuestionModal = ( props: Props ) => {
     const { open, closeModal, question, updateQuestion } = props
-
-    if ( !question ) {
-        return null
-    }
 
     const [ text, SetText ] = React.useState<string>("")
     const [ hint, SetHint ] = React.useState<string>("")
@@ -41,15 +32,23 @@ const UpdateQuestionModal = ( props: Props ) => {
     })
 
     const onSubmit = onUserEvent(() => {
-        console.log(`[update-question] text: ${text} / hint: ${hint}`)
-        updateQuestion({ ...question, text: text, hint: hint});
-        closeModal();
+        if ( question ) {
+            console.log(`[update-question] text: ${text} / hint: ${hint}`)
+            updateQuestion({ ...question, text: text, hint: hint});
+            closeModal();
+        }
     })
 
     React.useEffect(() => {
-        SetText(question.text)
-        SetHint(question.hint)
+        if ( question ) {
+            SetText(question.text)
+            SetHint(question.hint)
+        }
     }, [question])
+
+    if ( !question ) {
+        return null
+    }
 
     const style = {
         position: 'absolute',

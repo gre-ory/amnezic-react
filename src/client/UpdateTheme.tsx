@@ -3,18 +3,18 @@
 
 import { UserSession } from "../data/UserSession"
 import { Theme } from "../data/Theme"
-import { ThemeQuestion } from "../data/ThemeQuestion"
 
 import { SessionHeaders } from "./Headers"
 import { JsonTheme, FromTheme, ToTheme } from "./JsonTheme"
-import { JsonThemeQuestion, FromThemeQuestion } from "./JsonThemeQuestion"
+
+import { config } from '../config'
 
 // //////////////////////////////////////////////////
 // update theme
 
 export async function UpdateTheme( session: UserSession, theme: Theme ): Promise<Theme> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/theme/${theme.id}`
+    const url = config.apiUrl(`/theme/${theme.id}`);
     console.log(`[client] requestURL = ${url}`)
 
     let body: JsonUpdateThemeBody = {

@@ -1,8 +1,6 @@
 import { Album } from './Album'
 import { Artist } from './Artist'
 
-import musicBackground from '../static/music-black.png'
-
 // //////////////////////////////////////////////////
 // model
 

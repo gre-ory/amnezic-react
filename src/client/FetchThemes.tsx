@@ -1,18 +1,19 @@
 // //////////////////////////////////////////////////
 // import
 
-import { UserSession } from "../data/UserSession"
 import { ThemeInfo } from "../data/ThemeInfo"
 
 import { DefaultHeaders } from "./Headers"
 import { JsonThemeInfo, ToThemeInfo } from "./JsonThemeInfo"
+
+import { config } from '../config'
 
 // //////////////////////////////////////////////////
 // themes
 
 export async function FetchThemes(): Promise<ThemeInfo[]> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/theme`
+    const url = config.apiUrl(`/theme`);
     console.log(`[api] requestURL = ${url}`)
 
     const response = await fetch(url, {

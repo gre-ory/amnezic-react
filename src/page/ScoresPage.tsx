@@ -1,18 +1,18 @@
 import React from 'react'
 import { useParams } from 'react-router'
 import { useNavigate } from 'react-router-dom'
-import ReplayButton from '../component/ReplayButton'
+
+import { Grid } from '@mui/material'
+
+import { VictoryChart, VictoryLine, VictoryScatter, VictoryTooltip, VictoryGroup, VictoryAxis } from 'victory'
+
+import { Game, GameStep, OnGameUpdate, OnStep, selectGame } from '../data/Game'
+import { toHomePage } from '../data/Navigate'
+import { Player } from '../data/Player'
+import { computeVizualiationScoreData } from '../data/PlayerStats'
 
 import GamePage from '../component/GamePage'
-
-import { Game, GameStep, OnGameUpdate, OnStep, selectGame, newGameFromPrevious } from '../data/Game'
-import { toHomePage, toGamePage } from '../data/Navigate'
-import { Grid } from '@mui/material'
 import PlayerScoreCard from '../component/PlayerScoreCard'
-import { Player } from '../data/Player'
-import { VictoryChart, VictoryLine, VictoryScatter, VictoryTooltip, VictoryGroup, VictoryAxis, VictoryVoronoiContainer, VictoryLegend } from 'victory'
-import { computeVizualiationScoreData } from '../data/PlayerStats'
-import PlayerAvatar, { AvatarSize } from '../component/PlayerAvatar'
 
 interface Props {
     games: Game[]
@@ -21,7 +21,7 @@ interface Props {
 }
 
 const ScoresPage = ( props: Props ) => {
-    const { games, updateGame, addGame } = props
+    const { games, updateGame } = props
 
     const navigate = useNavigate()
 
@@ -33,17 +33,17 @@ const ScoresPage = ( props: Props ) => {
             console.log(`[effect] MISSING game! >>> NAVIGATE home`)
             navigate( toHomePage() )    
         }
-    }, [ game ] )
+    }, [ game, navigate ] )
     
     if ( !game ) {
         return null
     }
 
-    const restartNewGame = () => {
-        const newGame = newGameFromPrevious( game )
-        addGame( newGame )
-        navigate( toGamePage( newGame ) )
-    }
+    // const restartNewGame = () => {
+    //     const newGame = newGameFromPrevious( game )
+    //     addGame( newGame )
+    //     navigate( toGamePage( newGame ) )
+    // }
 
     const onNext = () => {   
         if ( game.ended ) {
@@ -54,11 +54,11 @@ const ScoresPage = ( props: Props ) => {
     }
 
     const buildTooltip = (rank: number, playerName: string, dataTooltip: string): string[] => {
-        if ( rank == 1 ) {
+        if ( rank === 1 ) {
             return [ " 1st - " + playerName + " ", " Score: " + dataTooltip + " " ]
-        } else if ( rank == 2 ) {
+        } else if ( rank === 2 ) {
             return [ " 2nd - " + playerName + " ", " Score: " + dataTooltip + " " ]
-        } else if ( rank == 3 ) {
+        } else if ( rank === 3 ) {
             return [ " 3rd - " + playerName + " ", " Score: " + dataTooltip + " " ]
         } else {
             return [ " " + rank + "th - " + playerName + " ", " Score: " + dataTooltip + " " ]

@@ -2,16 +2,14 @@ import React from 'react'
 
 import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import SearchIcon from '@mui/icons-material/Search';
-import SearchOffIcon from '@mui/icons-material/SearchOff';
 
-import { Box, Grid, Modal, TextField } from '@mui/material';
+import { Box, Modal, TextField, Button } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
 
 import { Login } from '../client/Login';
 
-import { LoginRequest } from '../data/LoginRequest';
 import { UserSession } from '../data/UserSession';
-import { onUserEvent, onValueEvent } from '../data/Util';
+import { onUserEvent, onValueEvent, onEnterEvent } from '../data/Util';
 
 interface Props {
     open: boolean
@@ -24,6 +22,7 @@ const LoginModal = ( props: Props ) => {
 
     const [ name, SetName ] = React.useState<string>("")
     const [ password, SetPassword ] = React.useState<string>("")
+    const [ error, SetError ] = React.useState<string>("")
     const [ submit, SetSubmit ] = React.useState<boolean>(false)
 
     const handleNameChange = onValueEvent((value) => {
@@ -36,16 +35,14 @@ const LoginModal = ( props: Props ) => {
         SetPassword(value);
     })
 
-    const onSubmit = onUserEvent(() => {
-        console.log(`submit: true`)
-        SetSubmit(true);
-    })
-
-    const onClear = onUserEvent(() => {
-        console.log(`onClear`)
-        SetName("")
-        SetPassword("")
-    })
+    const login = () => {
+        if ( name && password ) {
+            console.log( `[login] ${name} - ${password} >>> submit` )
+            SetSubmit(true);
+        }
+    }
+    const onSubmit = onUserEvent(login)
+    const onEnter = onEnterEvent(login)
     
     const onClose = onUserEvent(() => {
         console.log(`onClose`)
@@ -54,22 +51,25 @@ const LoginModal = ( props: Props ) => {
         closeModal()
     })
 
-    const onSession = (session: UserSession) => {
-        console.log(`onSession`)
-        SetName("")
-        SetPassword("")
-        onLogin(session)
-        closeModal()
-    }
-
-    const onError = (err: any) => {
-        console.log(err)
-    }
-
     React.useEffect(() => {
-        console.log(`submit: ${submit} / name: ${name} / password: ${password}`)
-        if ( submit && name && password ) {
-            console.log( `[login] ${name} - ${password}` )
+        
+        const onSession = (session: UserSession) => {
+            console.log(`onSession`)
+            SetName("")
+            SetPassword("")
+            onLogin(session)
+            closeModal()
+        }
+
+        const onError = (err: any) => {
+            console.log(`onError`)
+            console.log(err)
+            SetError("Wrong credentials")
+        }
+
+        console.log(`submit: ${submit}`)
+        if ( submit ) {
+            SetError("")
             Login({ name: name, password: password })
                 .then(onSession)
                 .catch(onError)
@@ -77,7 +77,7 @@ const LoginModal = ( props: Props ) => {
                     SetSubmit(false)
                 })
         }
-    }, [submit])
+    }, [submit, name, password, SetName, SetPassword, onLogin, closeModal])
 
     const style = {
         position: 'absolute',
@@ -100,52 +100,63 @@ const LoginModal = ( props: Props ) => {
             aria-describedby="modal-modal-description"
         > 
             <Box sx={style}>
-                <Grid container spacing={2} style={{ alignItems: 'center' }}>
-                    
-                    <Grid item xs={10} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginTop: '0px', marginBottom: '10px' }}>
+                
+                <div style={{ textAlign: 'center', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                    Login
+                </div>
 
-                        <TextField
-                            defaultValue={name}
-                            value={name}
-                            onChange={handleNameChange}
-                            id="outlined-name"
-                            label="Name"
-                            margin="normal"
-                            variant="outlined"
-                            style={{minWidth:'200px'}}
-                            type="text"
-                            size="small"
-                            />
-                        <TextField
-                            defaultValue={password}
-                            value={password}
-                            onChange={handlePasswordChange}
-                            id="outlined-password"
-                            label="Password"
-                            margin="normal"
-                            variant="outlined"
-                            style={{minWidth:'200px'}}
-                            type="password"
-                            size="small"
-                            />
-                        <IconButton aria-label="Search" onClick={onSubmit} disabled={submit || !name || !password}>
-                            <SearchIcon />
-                        </IconButton>
-                        <IconButton aria-label="Clear" onClick={onClear} disabled={submit || ( !name && !password )}>
-                            <SearchOffIcon />
-                        </IconButton>
+                <div>
+                    <TextField
+                        defaultValue={name}
+                        value={name}
+                        onChange={handleNameChange}
+                        onKeyDown={onEnter}
+                        id="outlined-name"
+                        label="Name"
+                        margin="normal"
+                        variant="outlined"
+                        style={{minWidth:'200px'}}
+                        type="text"
+                        size="small"
+                        />
+                        
+                </div>   
 
-                    </Grid>
+                <div>
+                    <TextField
+                        defaultValue={password}
+                        value={password}
+                        onChange={handlePasswordChange}
+                        onKeyDown={onEnter}
+                        id="outlined-password"
+                        label="Password"
+                        margin="normal"
+                        variant="outlined"
+                        style={{minWidth:'200px'}}
+                        type="password"
+                        size="small"
+                        />
+                </div>
 
-                    <Grid item xs={2} textAlign="center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    
-                        <IconButton aria-label="Close" onClick={onClose} size="small">
-                            <CloseIcon />
-                        </IconButton>
+                {error && 
+                    <Snackbar
+                        open
+                        autoHideDuration={6000}
+                        message={error}
+                        sx={{ bottom: { xs: 90, sm: 0 } }}
+                        />
+                }
 
-                    </Grid>
+                <div style={{ textAlign: 'right' }}>
+                {submit ? <>loading</> : <>
+                    <Button variant="outlined" onClick={closeModal} style={{ marginRight: '20px' }}>Cancel</Button>
+                    <Button variant="contained" onClick={onSubmit} disabled={submit || !name || !password}>Login</Button>
+                </>}
+                </div>
 
-                </Grid>
+                <IconButton aria-label="Close" onClick={onClose} size="small" style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                    <CloseIcon />
+                </IconButton>
 
             </Box>
 

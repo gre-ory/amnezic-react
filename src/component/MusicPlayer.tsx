@@ -2,10 +2,8 @@ import React from 'react'
 
 import IconButton from '@mui/material/IconButton'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import PauseIcon from '@mui/icons-material/Pause'
 
-import { Game, OnGameUpdate } from '../data/Game'
-import { Question, OnQuestionUpdate, QuestionId } from '../data/Question'
+import { QuestionId } from '../data/Question'
 import { onKeyEvent, onUserEvent } from '../data/Util'
 import { Box, CircularProgress, Tooltip, Typography } from '@mui/material'
 import { withStyles } from '@mui/styles'
@@ -34,10 +32,6 @@ interface Props {
 const MusicPlayer = ( props: Props ) => {
     const { questionId, music, loading, info, started, playing, progress, played, onMusicLoaded, onMusicPlaying, onMusicPaused, onMusicEnded } = props
 
-    if ( !questionId && !music ) {
-        return null
-    }
-        
     const audioRef = React.useRef<HTMLAudioElement>( new Audio( music.mp3Url ) )
 
     // const [ loading, setLoading ] = React.useState( true )
@@ -143,7 +137,7 @@ const MusicPlayer = ( props: Props ) => {
     
         if ( !played ) {
 
-            if ( audioRef.current.src != music.mp3Url ) {
+            if ( audioRef.current.src !== music.mp3Url ) {
                 console.log("new music...")
                 audioRef.current = new Audio( music.mp3Url )
                 audioRef.current.loop = false
@@ -205,34 +199,32 @@ const MusicPlayer = ( props: Props ) => {
     // keyboard shortcuts
     // 
 
-    if ( MUSIC_PLAYER_KEYBOARD_SHORTCUTS ) {
+    const handleKeyPress = React.useCallback( onKeyEvent( ( key: string ): boolean => {
+        switch ( key ) {
+            case ' ':
+                console.log( `music-player >>> key "${key}" >>> toggleMusic()`);
+                toggleMusic();
+                return true;
+            case 'ArrowUp':
+                console.log( `music-player >>> key "${key}" >>> moreVolume()`);
+                moreVolume();
+                return true;
+            case 'ArrowDown':
+                console.log( `music-player >>> key "${key}" >>> lessVolume()`);
+                lessVolume();
+                return true;
+        } 
+        return false;
+    } ), [ toggleMusic, moreVolume, lessVolume ] );
 
-        const handleKeyPress = React.useCallback( onKeyEvent( ( key: string ): boolean => {
-            switch ( key ) {
-                case ' ':
-                    console.log( `music-player >>> key "${key}" >>> toggleMusic()`);
-                    toggleMusic();
-                    return true;
-                case 'ArrowUp':
-                    console.log( `music-player >>> key "${key}" >>> moreVolume()`);
-                    moreVolume();
-                    return true;
-                case 'ArrowDown':
-                    console.log( `music-player >>> key "${key}" >>> lessVolume()`);
-                    lessVolume();
-                    return true;
-            } 
-            return false;
-        } ), [ toggleMusic, moreVolume, lessVolume ] );
-
-        React.useEffect( () => {
+    React.useEffect( () => {
+        if ( MUSIC_PLAYER_KEYBOARD_SHORTCUTS ) {
             document.addEventListener( 'keydown', handleKeyPress );
             return () => {
                 document.removeEventListener( 'keydown', handleKeyPress );
             };
-        }, [ handleKeyPress ] ); 
-
-    }  
+        }
+    }, [ handleKeyPress ] ); 
 
     //
     // tooltip
@@ -260,6 +252,10 @@ const MusicPlayer = ( props: Props ) => {
     ) : undefined
     
     const onClick = started && playingMusic ? onPause : undefined
+
+    if ( !questionId && !music ) {
+        return null
+    }
 
     return (
         <LightTooltip title={played ? <MusicCard music={music} /> : false} >

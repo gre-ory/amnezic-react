@@ -6,12 +6,14 @@ import { Playlist } from "../data/Playlist"
 import { DefaultHeaders } from "./Headers"
 import { JsonPlaylist, ToPlaylist } from "./JsonPlaylist"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // search playlist
 
 export async function SearchPlaylist( search: string, limit: number ): Promise<Playlist[]> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/deezer/playlist?search=${search}&limit=${limit}`
+    const url = config.apiUrl(`/deezer/playlist?search=${search}&limit=${limit}`);
     console.log(`[client] requestURL = ${url}`)
 
     const response = await fetch(url, {

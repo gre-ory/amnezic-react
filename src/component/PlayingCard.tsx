@@ -1,12 +1,5 @@
 import React from 'react'
 
-import IconButton from '@mui/material/IconButton';
-import AddIcon from '@mui/icons-material/Add';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-
 import { Card, CardSize } from '../data/Card'
 import PlayingCardIcon from './PlayingCardIcon';
 
@@ -21,7 +14,7 @@ interface Props {
 const PlayingCard = ( props: Props ) => {
     const { card, cardSize, selected, disabled, onClick } = props
 
-    if ( card == undefined ) {
+    if ( card === undefined ) {
         return (
             <div className={`card size-${cardSize} card--empty`} onClick={onClick}>
                 <div className="card--header">

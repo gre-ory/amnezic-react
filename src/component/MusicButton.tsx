@@ -1,18 +1,12 @@
 import React from 'react'
 
-import IconButton from '@mui/material/IconButton'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import PauseIcon from '@mui/icons-material/Pause'
 import DownloadingIcon from '@mui/icons-material/Downloading'
 
-import { Game, OnGameUpdate } from '../data/Game'
-import { Question, OnQuestionUpdate, QuestionId } from '../data/Question'
-import { onKeyEvent, onUserEvent } from '../data/Util'
-import { Box, CircularProgress, Tooltip, Typography } from '@mui/material'
-import { withStyles } from '@mui/styles'
-import MusicCard from './MusicCard'
+import { onUserEvent } from '../data/Util'
+import { Box } from '@mui/material'
 import { Music, getImgUrl } from '../data/Music'
-import { MUSIC_PLAYER_KEYBOARD_SHORTCUTS } from '../data/Constants'
 
 import { AudioPlayerInterface } from '../data/AudioPlayer'
 
@@ -24,10 +18,6 @@ interface Props {
 
 const MusicButton = ( props: Props ) => {
     const { audioPlayer, music, size } = props
-
-    if ( !music ) {
-        return null
-    }
         
     //
     // load music
@@ -45,6 +35,10 @@ const MusicButton = ( props: Props ) => {
 
     const [ loaded, setLoaded ] = React.useState(false)
     const [ icon, setIcon ] = React.useState(playIcon)
+
+    if ( !music ) {
+        return null
+    }
 
     //
     // toggle music
@@ -77,10 +71,10 @@ const MusicButton = ( props: Props ) => {
         audioPlayer.loadAndPlay( music.mp3Url )
     }
 
-    const pauseMusic = () => { 
-        console.log( `[pause-music]` )
-        audioPlayer.pause()
-    }
+    // const pauseMusic = () => { 
+    //     console.log( `[pause-music]` )
+    //     audioPlayer.pause()
+    // }
 
     const toggleMusic = () => { 
         console.log( `[toggle-music]` )

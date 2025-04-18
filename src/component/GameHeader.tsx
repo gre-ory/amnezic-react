@@ -45,10 +45,10 @@ const Header = ( props: Props ) => {
     // selected helpers
 
     const isHomeSelected = step === undefined
-    const isSettingsSelected = step == GameStep.SETTINGS
-    const isPlayersSelected = step == GameStep.PLAYERS
-    const isQuizzSelected = step == GameStep.QUIZZ
-    const isScoresSelected = step == GameStep.SCORES
+    const isSettingsSelected = step === GameStep.SETTINGS
+    const isPlayersSelected = step === GameStep.PLAYERS
+    const isQuizzSelected = step === GameStep.QUIZZ
+    const isScoresSelected = step === GameStep.SCORES
 
     // disabled helpers
 
@@ -87,35 +87,36 @@ const Header = ( props: Props ) => {
 
     // keyboard shortcuts
 
-    if ( HEADER_KEYBOARD_SHORTCUTS ) {
-
-        const handleKeyPress = React.useCallback( onKeyEvent( ( key: string ): boolean => {
-            switch ( key ) {
-                case 'ArrowLeft':
-                    if ( previousVisible && !previousDisabled ) {
-                        console.log( `header >>> key "${key}" >>> onPrevious()`);
-                        onPrevious();
-                        return true;
-                    }
-                    break;
-                case 'ArrowRight':
-                    if ( nextVisible && !nextDisabled ) {
-                        console.log( `header >>> key "${key}" >>> onNext()`);
-                        onNext();
-                        return true;
-                    }
-                    break;
-            } 
-            return false;
-        } ), [ onPrevious, onNext ] );
+    const handleKeyPress = React.useCallback( onKeyEvent( ( key: string ): boolean => {
+        switch ( key ) {
+            case 'ArrowLeft':
+                if ( previousVisible && !previousDisabled ) {
+                    console.log( `header >>> key "${key}" >>> onPrevious()`);
+                    onPrevious();
+                    return true;
+                }
+                break;
+            case 'ArrowRight':
+                if ( nextVisible && !nextDisabled ) {
+                    console.log( `header >>> key "${key}" >>> onNext()`);
+                    onNext();
+                    return true;
+                }
+                break;
+        } 
+        return false;
+    } ), [ previousVisible, previousDisabled, onPrevious, nextVisible, nextDisabled, onNext ] );
+    
+    React.useEffect( () => {
+        if ( HEADER_KEYBOARD_SHORTCUTS ) {
         
-        React.useEffect( () => {
             document.addEventListener( 'keydown', handleKeyPress );
             return () => {
                 document.removeEventListener( 'keydown', handleKeyPress );
             };
-        }, [ handleKeyPress ] );
-    }
+        }
+        return () => {};
+    }, [ handleKeyPress ] );
 
     // menu 
 

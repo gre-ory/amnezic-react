@@ -2,7 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Game, GameStep } from '../data/Game'
-import { toHomePage, toGamePage } from '../data/Navigate'
+import { toGamePage } from '../data/Navigate'
 
 import GameHeader from './GameHeader'
 import GameFooter from './GameFooter'
@@ -30,7 +30,7 @@ const GamePage = ( props: Props ) => {
             console.log(`[effect] INVALID game step! ( current step: ${step}, game step: ${game.step} )>>> NAVIGATE`)
             navigate( toGamePage( game ), { replace: true } )    
         }
-    }, [ game ] )
+    }, [ game, navigate, step ] )
     
     return (
         <>

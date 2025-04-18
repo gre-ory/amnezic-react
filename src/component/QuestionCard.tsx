@@ -1,32 +1,23 @@
 import React from 'react'
 
-import LinearProgress from '@mui/material/LinearProgress'
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
 import Paper from '@mui/material/Paper'
-import CardMedia from '@mui/material/CardMedia'
-import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import PauseIcon from '@mui/icons-material/Pause'
-import SkipNextIcon from '@mui/icons-material/SkipNext'
-import Slide from '@mui/material/Slide';
-
-import { Game, onAnswers, onErrorAnswers, OnGameUpdate, onQuestionNumber } from '../data/Game'
-import { Player, PlayerId } from '../data/Player'
-import { Question, OnQuestionUpdate, onQuestionPlayed, onQuestionCompleted, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer, onQuestionError } from '../data/Question'
-import { range, onUserEvent } from '../data/Util'
-import { Alert, Avatar, Badge, Fade, Grow, Tooltip } from '@mui/material'
-import PlayingCard from './PlayingCard'
-import { CardSize } from '../data/Card'
-import { Answer, AnswerId } from '../data/Answer'
-import PlayerAvatar, { AvatarSize } from './PlayerAvatar'
-import { getQuestionAnswerStats, getQuestionStats } from '../data/PlayerStats'
-import PlayerCard from './PlayerCard'
+import { Alert, Avatar, Badge, Tooltip } from '@mui/material'
 import { withStyles } from '@mui/styles'
-import MusicPlayer from './MusicPlayer'
+
+import { Game, onErrorAnswers, OnGameUpdate } from '../data/Game'
+import { Player, PlayerId } from '../data/Player'
+import { Question, OnQuestionUpdate, addPlayerAnswer, removePlayerAnswer, hasPlayerAnswer, onQuestionError } from '../data/Question'
+import { range } from '../data/Util'
+import { CardSize } from '../data/Card'
+import { AnswerId } from '../data/Answer'
+import { getQuestionAnswerStats, getQuestionStats } from '../data/PlayerStats'
 import { DEBUG, MAX_NB_SECONDS_LOADING, MAX_NB_SECONDS_PLAYING, ONE_SECOND } from '../data/Constants'
+
+import PlayingCard from './PlayingCard'
+import PlayerAvatar, { AvatarSize } from './PlayerAvatar'
+import PlayerCard from './PlayerCard'
+import MusicPlayer from './MusicPlayer'
 
 interface Props {
     game: Game
@@ -50,20 +41,16 @@ const QuestionCard = ( props: Props ) => {
     const [ nbSecondsPlayed, setNbSecondsPlayed ] = React.useState( 0 )
     const [ musicEnded, setMusicEnded ] = React.useState( false )
 
-    if ( !game || !question ) {
-        return null
-    }
-
     React.useEffect( () => {
-        if ( questionId != question.id ) {
+        if ( questionId !== question.id ) {
             console.log( `new question >>> setQuestionId( ${question.id} ) + reset()` ) 
             setQuestionId( question.id )
             reset()
         }
     }, [ questionId, question.id ] );
         
-    const musicError = question.status == 'error'
-    const musicPlayed = musicEnded || question.status == 'played' || question.status == 'completed'
+    const musicError = question.status === 'error'
+    const musicPlayed = musicEnded || question.status === 'played' || question.status === 'completed'
 
     //
     // update helpers
@@ -157,9 +144,9 @@ const QuestionCard = ( props: Props ) => {
         setNbShownAnswers( 0 )
     }
 
-    const resetOnPlayed = () => {
+    const resetOnPlayed = React.useCallback(() => {
         setNbShownAnswers( question.answers.length )
-    }
+    }, [question])
 
     const onMusicLoaded = ( nbSeconds: number ) => {
         console.log( `onMusicLoaded >>> setMusicLoading( false ) + setNbSeconds( Math.min( ${nbSeconds}, ${MAX_NB_SECONDS_PLAYING} ) )` ) 
@@ -171,11 +158,11 @@ const QuestionCard = ( props: Props ) => {
         setMusicEnded( false )
     }
 
-    const onMusicFailed = () => {
+    const onMusicFailed = React.useCallback(() => {
         console.log( `onMusicFailed >>> flagQuestionAsFailed() + setMusicLoading( false )` )
         setMusicLoading( false )
         flagQuestionAsFailed()
-    }
+    }, [flagQuestionAsFailed])
 
     const onMusicPlaying = () => {
         if ( musicStarted && !musicPlayed ) {
@@ -201,17 +188,17 @@ const QuestionCard = ( props: Props ) => {
         reset() 
     }
 
-    const showNextAnswer = () => {        
-        if ( nbShownAnswers == question.answers.length ) {
+    const showNextAnswer = React.useCallback(() => {        
+        if ( nbShownAnswers === question.answers.length ) {
             console.log( 'showNextAnswer >>> setMusicReady( true )' ) 
             setMusicReady( true )
         } else {            
             // console.log( `showNextAnswer >>> ${nbShownAnswers} + 1` ) 
             setNbShownAnswers( nbShownAnswers + 1 )
         }
-    }
+    }, [nbShownAnswers])
 
-    const showCountDown = () => {
+    const showCountDown = React.useCallback(() => {
         if ( countDown > 1 ) {
             // console.log( `showCountDown >>> ${countDown} - 1` ) 
             setCountDown( countDown - 1 )
@@ -221,9 +208,9 @@ const QuestionCard = ( props: Props ) => {
             setMusicStarted( true )
             setMusicPlaying( true )
         }
-    }
+    }, [countDown])
 
-    const showNbSecondsPlayed = () => {
+    const showNbSecondsPlayed = React.useCallback( () => {
         if ( nbSecondsPlayed < nbSecondsTotal ) {
             // console.log( `showNbSecondsPlayed >>> ${nbSecondsPlayed} + 1` ) 
             setNbSecondsPlayed( nbSecondsPlayed + 1 )
@@ -233,7 +220,7 @@ const QuestionCard = ( props: Props ) => {
             setMusicEnded( true )
             onMusicEnded()
         }
-    }
+    }, [ nbSecondsPlayed, nbSecondsTotal, onMusicEnded ] )
 
     React.useEffect( () => {
         let timerId: any = undefined;
@@ -266,12 +253,16 @@ const QuestionCard = ( props: Props ) => {
         return () => {
             timerId && clearInterval( timerId );
         }
-    }, [ musicLoading, musicError, countDown, nbShownAnswers, musicReady, musicStarted, musicPlaying, nbSecondsPlayed, musicPlayed ] );
+    }, [musicError, musicLoading, musicPlayed, musicPlaying, musicReady, musicStarted, onMusicFailed, resetOnPlayed, showCountDown, showNbSecondsPlayed, showNextAnswer ] );
+
+    if ( !game || !question ) {
+        return null
+    }
 
     const progress = musicPlayed ? 100 : !musicStarted ? 0 : Math.ceil( Math.min( nbSecondsPlayed, nbSecondsTotal ) * 100 / nbSecondsTotal )
     const musicPaused = !musicPlayed && musicStarted && !musicPlaying
     const showHints = progress > 50
-    const countingDown = musicReady && !musicStarted
+    // const countingDown = musicReady && !musicStarted
 
     let musicPlayerInfo = undefined
     if ( musicError ) {
@@ -324,7 +315,7 @@ const QuestionCard = ( props: Props ) => {
 
                     const shown = index < nbShownAnswers
                     const hidden = musicError || !shown
-                    const answerNumber = answer.id % 100 
+                    // const answerNumber = answer.id % 100 
                     const color = musicPlayed ? answer.correct ? '#00c508' : 'grey' : 'grey'
                     const backgroundColor = musicPlayed ? answer.correct ? '#00ff131f' : 'white' : 'white'
                     
@@ -358,10 +349,10 @@ const QuestionCard = ( props: Props ) => {
                                         justifyContent: 'flex-end',
                                     }}
                                 >
-                                    { ( question.status == 'played' ) && (
+                                    { ( question.status === 'played' ) && (
                                         game.players.map( ( player: Player ) => {
                                             const disabled = hasAnswer( player.id, answer.id )
-                                            const onClick = question.status == 'played' && !disabled ? () => addAnswer( player.id, answer.id ) : undefined
+                                            const onClick = question.status === 'played' && !disabled ? () => addAnswer( player.id, answer.id ) : undefined
                                             return (
                                                 <div key={`answer-${answer.id}-${player.id}`} style={{ marginLeft: '5px' }}>
                                                     <PlayingCard
@@ -420,10 +411,10 @@ const QuestionCard = ( props: Props ) => {
                             if ( !answer ) {
                                 return null
                             }
-                            const correct = question.status == 'completed' ? answer.correct : undefined
+                            // const correct = question.status === 'completed' ? answer.correct : undefined
                             const answerStats = getQuestionAnswerStats( player.stats, question.id, playerAnswer.answerId )
-                            const score = question.status == 'completed' && answerStats ? answerStats.score : undefined
-                            const onClick = question.status == 'played' ? () => removeAnswer( player.id, answer.id ) : undefined                            
+                            const score = question.status === 'completed' && answerStats ? answerStats.score : undefined
+                            const onClick = question.status === 'played' ? () => removeAnswer( player.id, answer.id ) : undefined                            
                             return ( 
                                 <div key={`selected-${answer.id}-${player.id}`} style={{ transition: 'transform 1000ms cubic-bezier(0, 0, 0.2, 1) 1000ms' }}>                               
                                     <Badge className='card--badge' badgeContent={badgeValue(score)} color={badgeColor(score)}>                                    
@@ -463,7 +454,7 @@ const QuestionCard = ( props: Props ) => {
                 sortedPlayers.map( player => {
                     const tooltipId = `player-tooltip-${player.id}`
                     const questionStats = getQuestionStats( player.stats, question.id )
-                    const score = question.status == 'completed' && questionStats ? questionStats.score : undefined
+                    const score = question.status === 'completed' && questionStats ? questionStats.score : undefined
                     const disableTooltip = !musicPlayed
                     return (
                         <LightTooltip 

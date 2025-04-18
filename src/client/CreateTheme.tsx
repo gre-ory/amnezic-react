@@ -7,12 +7,14 @@ import { Theme } from "../data/Theme"
 import { SessionHeaders } from "./Headers"
 import { JsonTheme, ToTheme } from "./JsonTheme"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // create theme
 
 export async function CreateTheme( session: UserSession, title: string ): Promise<Theme> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/theme/new`
+    const url = config.apiUrl(`/theme/new`);
     console.log(`[client] requestURL = ${url}`)
 
     let body: JsonCreateThemeBody = {

@@ -1,5 +1,4 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
@@ -23,8 +22,6 @@ interface Props {
 const Header = ( props: Props ) => {
     const { title, step, onBack, onPrevious, onNext } = props
 
-    const navigate = useNavigate()
-
     // title helpers
 
     const themesTitle = 'Themes'
@@ -32,9 +29,9 @@ const Header = ( props: Props ) => {
 
     // selected helpers
 
-    const isNoneSelected = step === undefined
-    const isThemesSelected = step == AdminStep.THEMES
-    const isThemeSelected = step == AdminStep.THEME
+    // const isNoneSelected = step === undefined
+    const isThemesSelected = step === AdminStep.THEMES
+    const isThemeSelected = step === AdminStep.THEME
 
     // title 
 

@@ -1,25 +1,15 @@
 import React from 'react'
 
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import Grid from '@mui/material/Grid'
-import TextField from '@mui/material/TextField'
-import Modal from '@mui/material/Modal'
-import IconButton from '@mui/material/IconButton'
-import CloseIcon from '@mui/icons-material/Close'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech'
 
-import { Game, OnGameUpdate, updatePlayer } from '../data/Game'
-import { Card as DataCard, CardSymbol, CardColor, CardSize, DefaultCards } from '../data/Card'
+import { Game } from '../data/Game'
 import { Player } from '../data/Player'
 
-import PlayingCard from './PlayingCard'
-import PlayingCardIcon from './PlayingCardIcon'
 import PlayerAvatar, { AvatarSize } from './PlayerAvatar';
 import { Accordion, AccordionDetails, AccordionSummary, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
-import { ColorizeRounded } from '@mui/icons-material'
 
 interface Props {
     game: Game
@@ -30,7 +20,7 @@ interface Props {
 }
 
 const PlayerScoreCard = ( props: Props ) => {
-    const { game, player, position, color, medalColor } = props
+    const { player, position, color, medalColor } = props
 
     if ( !player.number ) {
         return null

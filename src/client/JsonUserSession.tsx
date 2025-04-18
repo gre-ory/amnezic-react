@@ -1,7 +1,6 @@
 // //////////////////////////////////////////////////
 // import
 
-import { User } from "../data/User"
 import { UserSession } from "../data/UserSession"
 
 import { JsonUser, ToUser } from "./JsonUser"

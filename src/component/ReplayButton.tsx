@@ -10,12 +10,12 @@ interface Props {
 
 const ReplayButton = ( props: Props ) => {
     const { title, onClick } = props
-    const description = title && title != '' ? title : 'Replay'    
+    const description = title && title !== '' ? title : 'Replay'  
 
     return (
         <IconButton color="secondary" title={description} aria-label={description} onClick={onClick}>
             <ReplayIcon />
-        </IconButton>
+        </IconButton> 
     )
 }
 

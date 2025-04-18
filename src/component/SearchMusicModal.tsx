@@ -7,7 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 
-import { Box, Grid, Modal, Button, TextField } from '@mui/material';
+import { Box, Grid, Modal, TextField } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -64,7 +64,7 @@ const SearchMusicModal = ( props: Props ) => {
     })
 
     React.useEffect(() => {
-        console.log(`submit: ${submit} / search: ${search} / playlistId: ${playlistId}`)
+        console.log(`submit: ${submit} / search: ${search}`)
         if ( submit && search ) {
             SetLoading(true)
             SearchMusic(search,100)
@@ -79,7 +79,7 @@ const SearchMusicModal = ( props: Props ) => {
                     SetSubmit(false)
                 })
         }
-    }, [submit])
+    }, [submit,search])
 
     React.useEffect(() => {
         console.log(`playlistId: ${playlistId}`)
@@ -193,6 +193,7 @@ const SearchMusicModal = ( props: Props ) => {
                                     width="56" 
                                     height="56"
                                     style={{marginRight: '10px' }}
+                                    alt=""
                                 />
                                 <Typography variant="overline" display="block" gutterBottom>{playlist.name}</Typography>
                             </>}

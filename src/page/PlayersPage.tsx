@@ -28,7 +28,7 @@ const PlayersPage = ( props: Props ) => {
             console.log(`[effect] MISSING game! >>> NAVIGATE home`)
             navigate( toHomePage() )    
         }
-    }, [ game ] )
+    }, [ game, navigate ] )
     
     if ( !game || !game.players ) {
         return null

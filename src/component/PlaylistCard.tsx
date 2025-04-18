@@ -3,17 +3,11 @@ import React from 'react'
 import { makeStyles } from '@mui/styles'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography'
-import LinearProgress from '@mui/material/LinearProgress'
 import MusicNoteIcon from '@mui/icons-material/MusicNote'
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import PersonIcon from '@mui/icons-material/Person'
-import SkipNextIcon from '@mui/icons-material/SkipNext'
-import { Chip, Stack } from '@mui/material';
 
 import { Playlist } from '../data/Playlist'
-import { onUserEvent, toDateTimeString } from '../data/Util'
+import { onUserEvent } from '../data/Util'
 
 import SearchPlaylistModal from './SearchPlaylistModal'
 
@@ -88,7 +82,7 @@ const PlaylistCard = ( props: Props ) => {
                 </div>
                 {playlist && <div style={{ marginLeft: '5%', width: '95%' }}>
                     <div className={classes.playlistLine}> 
-                        {playlist.imgUrl && <div className={classes.playlistItem}><img src={playlist.imgUrl}/></div>}
+                        {playlist.imgUrl && <div className={classes.playlistItem}><img src={playlist.imgUrl} alt=""/></div>}
                         <div className={classes.playlistItem}><PersonIcon style={{ marginRight: '10px' }} color="primary"/> by {playlist.user}</div>
                         <div className={classes.playlistItem}><MusicNoteIcon style={{ marginRight: '10px' }} color="primary"/> {playlist.nbMusics} musics</div>
                     </div>

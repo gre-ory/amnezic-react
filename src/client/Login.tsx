@@ -8,12 +8,14 @@ import { DefaultHeaders } from "./Headers"
 import { JsonLoginRequest, FromLoginRequest } from "./JsonLoginRequest"
 import { JsonUserSession, ToUserSession } from "./JsonUserSession"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // login
 
 export async function Login( request: LoginRequest ): Promise<UserSession> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/login`
+    const url = config.apiUrl(`/login`)
     console.log(`[client] requestURL = ${url}`)
 
     let body: JsonLoginBody = {

@@ -5,16 +5,12 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField'
-import Modal from '@mui/material/Modal'
-import IconButton from '@mui/material/IconButton'
-import CloseIcon from '@mui/icons-material/Close'
 
 import { Game, OnGameUpdate, updatePlayer } from '../data/Game'
-import { Card as DataCard, CardSymbol, CardColor, CardSize, DefaultCards } from '../data/Card'
+import { Card as DataCard, CardSymbol, CardColor, CardSize } from '../data/Card'
 import { Player } from '../data/Player'
 
 import PlayingCard from './PlayingCard'
-import PlayingCardIcon from './PlayingCardIcon'
 import PlayerAvatar, { AvatarSize } from './PlayerAvatar';
 import { Typography } from '@mui/material'
 import PlayingCardModal from './PlayingCardModal'

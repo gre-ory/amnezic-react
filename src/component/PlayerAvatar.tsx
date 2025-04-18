@@ -1,8 +1,6 @@
 import React from 'react'
 import { AvatarId } from '../data/Avatar'
 
-import { PlayerId } from '../data/Player'
-
 interface Props {
     id: AvatarId
     size: AvatarSize

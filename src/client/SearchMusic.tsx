@@ -1,11 +1,12 @@
 // //////////////////////////////////////////////////
 // import
 
-import { UserSession } from "../data/UserSession"
 import { Music } from "../data/Music"
 
 import { DefaultHeaders } from "./Headers"
 import { JsonMusic, ToMusic } from "./JsonMusic"
+
+import { config } from '../config'
 
 // //////////////////////////////////////////////////
 // search music
@@ -13,7 +14,7 @@ import { JsonMusic, ToMusic } from "./JsonMusic"
 
 export async function SearchMusic( search: string, limit: number ): Promise<Music[]> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/deezer/music?search=${search}&limit=${limit}`
+    const url = config.apiUrl(`/deezer/music?search=${search}&limit=${limit}`);
     console.log(`[client] requestURL = ${url}`)
 
     const response = await fetch(url, {

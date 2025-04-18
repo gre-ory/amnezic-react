@@ -103,6 +103,22 @@ export function onKeyEvent( keyCallback: KeyCallback ): EventCallback {
     }
 }
 
+export type EnterCallback = () => void
+
+export function onEnterEvent( enterCallback: EnterCallback ): EventCallback {
+    return ( event: any ) => {
+        if ( event.key === 'Enter' ) {
+            console.log( `key-event [${event.key}] >>> callback` )    
+            enterCallback()
+            console.log( `key-event [${event.key}] >>> handled! >>> stop propagation!` )    
+            event.stopPropagation()
+            event.preventDefault()
+        } else {
+            console.log( `key-event [${event.key}] >>> propagate...` )    
+        }
+    }
+}
+
 // //////////////////////////////////////////////////
 // value event
 

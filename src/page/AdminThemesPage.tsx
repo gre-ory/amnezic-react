@@ -18,7 +18,7 @@ import { RemoveTheme } from '../client/RemoveTheme'
 import { UserSession } from '../data/UserSession'
 import { AdminStep } from '../data/Admin'
 import { ThemeInfo } from '../data/ThemeInfo'
-import { categoryToLabel, languageToLabel, languageToImgUrl } from '../data/ThemeLabels'
+import { categoryToLabel } from '../data/ThemeLabels'
 import { toHomePage, toAdminThemePage } from '../data/Navigate'
 import { onUserEvent } from '../data/Util'
 
@@ -31,10 +31,6 @@ const AdminThemesPage = ( props: Props ) => {
 
     const navigate = useNavigate()
 
-    if ( !session ) {
-        return null
-    }
-
     const [themes, setThemes] = React.useState<ThemeInfo[]>()
     const [error, setError] = React.useState<Error>();
 
@@ -46,13 +42,17 @@ const AdminThemesPage = ( props: Props ) => {
         setCreateThemeModal(false)
     }
     const createTheme = ( title: string ) => {
-        if ( title ) {
-            CreateTheme(session,title)
-                .then((theme) => { fetchThemes() })
-                .catch(onError)
-        } else {
-            console.log("missing theme title!")
+        if ( !session ) {
+            console.log("[create-theme] missing session! ")
+            return
         }
+        if ( !title ) {
+            console.log("[create-theme] missing theme title! ")
+            return
+        }
+        CreateTheme(session,title)
+            .then((theme) => { fetchThemes() })
+            .catch(onError)
     }
     
     const editTheme = (theme: ThemeInfo) => {
@@ -67,23 +67,26 @@ const AdminThemesPage = ( props: Props ) => {
     }
 
     const deleteTheme = (theme: ThemeInfo) => {
-        console.log("click >>> delete theme", theme.id )
-        if ( theme.id ) {
-            if (window.confirm('Are you sure you wish to delete this item?')) {
-                RemoveTheme(session,theme.id)
-                    .then((ok) => { fetchThemes() })
-                    .catch(onError)
-            }
-        } else {
-            console.log("missing theme id!", theme)
+        if ( !session ) {
+            console.log("[delete-theme] missing session! ", theme)
+            return
+        }
+        if ( !theme.id ) {
+            console.log("[delete-theme] missing theme id! ", theme)
+            return
+        }
+        if (window.confirm('Are you sure you wish to delete this item?')) {
+            RemoveTheme(session,theme.id)
+                .then((ok) => { fetchThemes() })
+                .catch(onError)
         }
     }
     
-    const fetchThemes = () => {
+    const fetchThemes = React.useCallback(() => {
         FetchThemes()
             .then((themes) => setThemes(themes))
             .catch(onError);
-    }
+    }, [])
 
     const onError = (err: Error) => {
         console.error(err)
@@ -92,7 +95,7 @@ const AdminThemesPage = ( props: Props ) => {
 
     React.useEffect(() => {
         fetchThemes()
-    }, [])
+    }, [ fetchThemes ])
 
     console.log(error)
     if ( error !== undefined ) {
@@ -214,6 +217,10 @@ const AdminThemesPage = ( props: Props ) => {
         },
         },
       ];
+
+    if ( !session ) {
+        return null
+    }
 
     return (
         <AdminPage step={AdminStep.THEMES} onBack={toHome}>

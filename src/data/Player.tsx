@@ -1,5 +1,4 @@
 
-import { customAlphabet } from 'nanoid'
 import { AvatarId } from './Avatar'
 
 import { Card } from './Card'

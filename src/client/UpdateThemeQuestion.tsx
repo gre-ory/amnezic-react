@@ -9,12 +9,14 @@ import { SessionHeaders } from "./Headers"
 import { JsonTheme, ToTheme } from "./JsonTheme"
 import { JsonThemeQuestion, FromThemeQuestion } from "./JsonThemeQuestion"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // update theme question
 
 export async function UpdateThemeQuestion( session: UserSession, themeId: number, question: ThemeQuestion ): Promise<Theme> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/theme-question/${themeId}/${question.id}`
+    const url = config.apiUrl(`/theme-question/${themeId}/${question.id}`);
     console.log(`[client] requestURL = ${url}`)
 
     let body: JsonUpdateThemeQuestionBody = {

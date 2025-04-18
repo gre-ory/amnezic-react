@@ -1,7 +1,6 @@
 import React from 'react'
-import Typography from '@mui/material/Typography';
 
-import { Card, CardColor, CardSymbol } from '../data/Card'
+import { CardColor, CardSymbol } from '../data/Card'
 import ClubIcon from './icon/ClubIcon';
 import DiamondIcon from './icon/DiamondIcon';
 import CircleIcon from './icon/CircleIcon';

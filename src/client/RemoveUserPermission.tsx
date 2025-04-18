@@ -8,12 +8,14 @@ import { UserPermission } from "../data/UserPermission"
 import { SessionHeaders } from "./Headers"
 import { JsonUser, ToUser } from "./JsonUser"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // remove user permission
 
 export async function RemoveUserPermission( session: UserSession, userId: number, permission: UserPermission ): Promise<User> {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/user-permission/${userId}/${permission}`
+    const url = config.apiUrl(`/user-permission/${userId}/${permission}`);
     console.log(`[client] requestURL = ${url}`)
 
     const response = await fetch(url, {

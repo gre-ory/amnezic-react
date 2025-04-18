@@ -9,19 +9,21 @@ import { addAnswer, Question } from "../data/Question"
 import { DefaultHeaders } from "./Headers"
 import { JsonMusic, ToMusic } from "./JsonMusic"
 
+import { config } from '../config'
+
 // //////////////////////////////////////////////////
 // fetch game
 
 export async function FetchGame( game: Game ) {
 
-    let url = `${process.env.REACT_APP_API_ROOT_URI}/game/new`
+    let url = config.apiUrl(`/game/new`)
     url = `${url}?nb_question=${game.settings.nbQuestion}`
     url = `${url}&nb_answer=${game.settings.nbAnswer}`
     url = `${url}&nb_player=${game.settings.nbPlayer}`
 
-    if ( game.settings.source == Source.Legacy ) {
+    if ( game.settings.source === Source.Legacy ) {
         url = `${url}&sources=${Source.Legacy}`
-    } else if ( game.settings.source == Source.Deezer && game.settings.playlist ) {
+    } else if ( game.settings.source === Source.Deezer && game.settings.playlist ) {
         url = `${url}&sources=${Source.Deezer}`
         url = `${url}&deezer_playlist_id=${game.settings.playlist.deezerId}`
     } else {

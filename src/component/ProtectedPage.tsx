@@ -1,4 +1,3 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { UserSession } from '../data/UserSession'
@@ -35,7 +34,7 @@ const ProtectedPage = ( props: Props ) => {
     // check permission ( optional )
 
     if ( permission !== undefined ) {
-        if ( !session.user.permissions.find(p => p == permission) ) {
+        if ( !session.user.permissions.find(p => p === permission) ) {
             console.log( `[error] missing user permission "${permission}"!` )
             navigate( toHomePage() )
             return null
